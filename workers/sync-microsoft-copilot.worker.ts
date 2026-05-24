@@ -31,6 +31,13 @@ export async function syncMicrosoftCopilot(
   const errors: string[] = [];
 
   try {
+    // Clear demo/seed data before writing real API data
+    await Promise.all([
+      prisma.businessAiDaily.deleteMany({ where: { organizationId, provider: "microsoft_copilot" } }),
+      prisma.seatUsageDaily.deleteMany({ where: { organizationId, provider: "microsoft_copilot" } }),
+      prisma.providerUserMapping.deleteMany({ where: { organizationId, provider: "microsoft_copilot" } }),
+    ]);
+
     const cred  = parseMicrosoftCredential(raw);
     const today = startOfDay(new Date());
 

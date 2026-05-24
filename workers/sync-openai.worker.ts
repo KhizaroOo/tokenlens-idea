@@ -32,6 +32,14 @@ function estimateCost(
   );
 }
 
+/** Delete demo/seed rows for this provider before writing live data */
+async function purgeDemoData(organizationId: string, provider: string) {
+  await Promise.all([
+    prisma.aiUsageDaily.deleteMany({ where: { organizationId, provider } }),
+    prisma.aiModelUsageDaily.deleteMany({ where: { organizationId, provider } }),
+  ]);
+}
+
 export async function syncOpenAI(
   organizationId: string
 ): Promise<{ synced: number; errors: string[] }> {
@@ -43,6 +51,9 @@ export async function syncOpenAI(
   const errors: string[] = [];
 
   try {
+    // Clear demo/seed data before writing real API data
+    await purgeDemoData(organizationId, "openai");
+
     const pages = await fetchOpenAIUsage(apiKey, startDate, endDate);
     let synced = 0;
 

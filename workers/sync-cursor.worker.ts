@@ -19,6 +19,12 @@ export async function syncCursor(
   const errors: string[] = [];
 
   try {
+    // Clear demo/seed data before writing real API data
+    await Promise.all([
+      prisma.developerAiDaily.deleteMany({ where: { organizationId, provider: "cursor" } }),
+      prisma.seatUsageDaily.deleteMany({ where: { organizationId, provider: "cursor" } }),
+    ]);
+
     const endDate   = new Date();
     const startDate = subDays(endDate, 7);
 

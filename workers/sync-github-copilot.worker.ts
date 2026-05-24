@@ -19,6 +19,13 @@ export async function syncGitHubCopilot(
   const errors: string[] = [];
 
   try {
+    // Clear demo/seed data before writing real API data
+    await Promise.all([
+      prisma.developerAiDaily.deleteMany({ where: { organizationId, provider: "github_copilot" } }),
+      prisma.seatUsageDaily.deleteMany({ where: { organizationId, provider: "github_copilot" } }),
+      prisma.providerUserMapping.deleteMany({ where: { organizationId, provider: "github_copilot" } }),
+    ]);
+
     const cred = parseGitHubCredential(raw);
     const today = startOfDay(new Date());
 
