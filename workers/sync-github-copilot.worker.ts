@@ -52,7 +52,10 @@ export async function syncGitHubCopilot(
     });
 
     // ── Per-user metrics ──────────────────────────────────────────────────────
-    const userMetrics = await fetchCopilotUserMetrics(cred);
+    const { metrics: userMetrics, source: metricsSource } = await fetchCopilotUserMetrics(cred);
+    if (metricsSource === "none") {
+      errors.push("Warning: GitHub Copilot metrics API unavailable — seat count synced but per-user metrics skipped");
+    }
     let synced = 1; // seat row
 
     // Map seat data for users not in metrics API response

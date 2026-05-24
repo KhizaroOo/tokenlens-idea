@@ -31,7 +31,33 @@ export interface MicrosoftCredential {
 }
 
 export function parseMicrosoftCredential(raw: string): MicrosoftCredential {
-  try { return JSON.parse(raw); } catch { throw new Error("Invalid Microsoft credential format"); }
+  let parsed: Record<string, unknown>;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    throw new Error(
+      "Invalid Microsoft credential format. Expected JSON: {\"tenantId\":\"...\",\"clientId\":\"...\",\"clientSecret\":\"...\"}"
+    );
+  }
+  const { tenantId, clientId, clientSecret } = parsed as Partial<MicrosoftCredential>;
+  if (!tenantId || typeof tenantId !== "string") {
+    throw new Error("Microsoft credential missing tenantId (Azure Directory/Tenant ID)");
+  }
+  if (!clientId || typeof clientId !== "string") {
+    throw new Error("Microsoft credential missing clientId (Application/Client ID from Entra App Registration)");
+  }
+  if (!clientSecret || typeof clientSecret !== "string") {
+    throw new Error("Microsoft credential missing clientSecret (Client Secret Value from Entra App Registration)");
+  }
+  // Basic GUID format check for tenantId and clientId
+  const guidRe = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (!guidRe.test(tenantId)) {
+    throw new Error(`tenantId does not look like a valid GUID: "${tenantId}" — copy it from Azure Portal → Entra ID → Overview`);
+  }
+  if (!guidRe.test(clientId)) {
+    throw new Error(`clientId does not look like a valid GUID: "${clientId}" — copy it from your App Registration → Overview`);
+  }
+  return { tenantId, clientId, clientSecret };
 }
 
 async function getAccessToken(cred: MicrosoftCredential): Promise<string> {

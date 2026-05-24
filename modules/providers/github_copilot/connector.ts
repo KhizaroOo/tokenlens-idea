@@ -96,16 +96,43 @@ export async function fetchCopilotSeats(cred: GitHubCredential): Promise<Copilot
   return { total_seats: totalSeats, seats: allSeats };
 }
 
-export async function fetchCopilotUserMetrics(cred: GitHubCredential): Promise<CopilotUserMetric[]> {
+export async function fetchCopilotUserMetrics(
+  cred: GitHubCredential
+): Promise<{ metrics: CopilotUserMetric[]; source: "metrics_api" | "seat_data" | "none" }> {
+  // Try new metrics endpoint (post-April 2026)
+  const newEndpoints = [
+    `/orgs/${cred.org}/copilot/metrics/reports/users-28-day/latest`,
+    `/orgs/${cred.org}/copilot/usage`,
+  ];
+
+  for (const endpoint of newEndpoints) {
+    try {
+      const data = await ghFetch(cred.token, endpoint);
+      const users = data.users ?? data.data ?? [];
+      if (Array.isArray(users) && users.length > 0) {
+        return { metrics: users, source: "metrics_api" };
+      }
+    } catch {
+      // Try next endpoint
+      continue;
+    }
+  }
+
+  // Fallback: derive basic metrics from seat data
   try {
-    // New metrics API (post-April 2026)
-    const data = await ghFetch(
-      cred.token,
-      `/orgs/${cred.org}/copilot/metrics/reports/users-28-day/latest`
-    );
-    return data.users ?? [];
+    const { seats } = await fetchCopilotSeats(cred);
+    const derived: CopilotUserMetric[] = seats.map(s => ({
+      user_id: 0,
+      user_login: s.assignee.login,
+      last_activity_at: s.last_activity_at,
+      total_completions_count: 0,
+      total_completions_accepted_count: 0,
+      total_active_days: s.last_activity_at
+        ? ((Date.now() - new Date(s.last_activity_at).getTime()) / 86400000 <= 7 ? 1 : 0)
+        : 0,
+    }));
+    return { metrics: derived, source: "seat_data" };
   } catch {
-    // Fallback: derive from seat data
-    return [];
+    return { metrics: [], source: "none" };
   }
 }

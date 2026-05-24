@@ -196,7 +196,11 @@ function ConfigureModal({
                     type={showKey ? "text" : "password"}
                     value={apiKey}
                     onChange={e => setApiKey(e.target.value)}
-                    placeholder={prov.key === "anthropic" ? "sk-ant-admin-..." : "Enter admin API key…"}
+                    placeholder={
+                      prov.key === "anthropic" ? "sk-ant-admin-..." :
+                      prov.key === "cursor"    ? "Enter Cursor admin API key…" :
+                      "Enter admin API key…"
+                    }
                     className={INPUT_CLS + " pr-9"}
                   />
                   <button type="button" onClick={() => setShowKey(!showKey)}
@@ -204,6 +208,30 @@ function ConfigureModal({
                     {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
+                {prov.key === "anthropic" && (
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Get your Admin API key at{" "}
+                    <a href="https://console.anthropic.com/settings/admin-keys" target="_blank" rel="noreferrer" className="text-emerald-400 hover:underline">
+                      console.anthropic.com → Admin Keys
+                    </a>
+                  </p>
+                )}
+                {prov.key === "openai" && (
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Get your Admin API key at{" "}
+                    <a href="https://platform.openai.com/settings/organization/admin-keys" target="_blank" rel="noreferrer" className="text-emerald-400 hover:underline">
+                      platform.openai.com → Organization → Admin Keys
+                    </a>
+                  </p>
+                )}
+                {prov.key === "cursor" && (
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Get your Admin API key at{" "}
+                    <a href="https://www.cursor.com/settings" target="_blank" rel="noreferrer" className="text-emerald-400 hover:underline">
+                      cursor.com → Settings → Admin API Key
+                    </a>
+                  </p>
+                )}
               </div>
               <Button type="submit" size="sm" disabled={saving || !apiKey.trim()}
                 className="w-full bg-emerald-500 hover:bg-emerald-600 text-white gap-2">
@@ -231,7 +259,12 @@ function ConfigureModal({
                     {showKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">Required scope: <code className="bg-muted px-1 rounded">manage_billing:copilot</code></p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Required scope: <code className="bg-muted px-1 rounded">manage_billing:copilot</code> — generate at{" "}
+                  <a href="https://github.com/settings/tokens" target="_blank" rel="noreferrer" className="text-emerald-400 hover:underline">
+                    github.com/settings/tokens
+                  </a>
+                </p>
               </div>
               <Button type="submit" size="sm" disabled={saving || !ghOrg.trim() || !ghPat.trim()}
                 className="w-full bg-emerald-500 hover:bg-emerald-600 text-white gap-2">
@@ -264,7 +297,12 @@ function ConfigureModal({
                     {showSecret ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                   </button>
                 </div>
-                <p className="mt-1 text-xs text-muted-foreground">App registration requires <code className="bg-muted px-1 rounded">Reports.Read.All</code> application permission (admin consent)</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  App registration requires <code className="bg-muted px-1 rounded">Reports.Read.All</code> application permission with admin consent.{" "}
+                  <a href="https://portal.azure.com/#blade/Microsoft_AAD_RegisteredApps/ApplicationsListBlade" target="_blank" rel="noreferrer" className="text-emerald-400 hover:underline">
+                    Create app registration in Azure Portal
+                  </a>
+                </p>
               </div>
               <Button type="submit" size="sm" disabled={saving || !msTenant.trim() || !msClientId.trim() || !msSecret.trim()}
                 className="w-full bg-emerald-500 hover:bg-emerald-600 text-white gap-2">
@@ -621,7 +659,9 @@ export default function SettingsPage() {
                 {providersByCategory(cat).map(prov => {
                   const isAnthropicKey = prov.key === "anthropic";
                   const isCC           = prov.key === "claude_code";
-                  const isConn         = isAnthropicKey ? connected : false;
+                  const isConn         = isAnthropicKey || isCC
+                    ? connected
+                    : provConnections[prov.key] === "connected";
 
                   return (
                     <div key={prov.key}
@@ -784,7 +824,11 @@ export default function SettingsPage() {
       {configProv && (
         <ConfigureModal
           prov={configProv}
-          isConnected={configProv.key === "anthropic" ? connected : false}
+          isConnected={
+            configProv.key === "anthropic" || configProv.key === "claude_code"
+              ? connected
+              : provConnections[configProv.key] === "connected"
+          }
           onConnect={handleConnect}
           onDisconnect={handleDisconnect}
           onClose={() => setConfigProv(null)}
