@@ -20,8 +20,8 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   title: "TokenLens — AI Usage Intelligence",
-  description: "Track AI token usage, costs, and team productivity for Claude.",
-  keywords: ["AI", "Claude", "token", "cost", "analytics", "dashboard"],
+  description: "Track AI token usage, costs, and team productivity across Claude, OpenAI, GitHub Copilot, Cursor, and Microsoft Copilot — all in one dashboard.",
+  keywords: ["AI", "Claude", "OpenAI", "GitHub Copilot", "Cursor", "Microsoft Copilot", "token", "cost", "analytics", "dashboard", "LLM spend"],
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

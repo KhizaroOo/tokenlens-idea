@@ -59,6 +59,7 @@ export interface ProviderDefinition {
   capabilities: ProviderCapability[];
   dataCoverage: DataCoverage;
   comingSoon: boolean;
+  limited?: boolean;          // true = no admin API, routes to /limitations
   defaultSyncFrequencyHours: number;
   accentColor: string;
 }
@@ -100,30 +101,32 @@ export const PROVIDERS: ProviderDefinition[] = [
     displayName: "Gemini",
     shortName: "Gemini",
     category: "api_spend",
-    description: "Google Gemini API usage via API key or Google Cloud Billing Export.",
-    authType: "google_cloud",
-    credentialLabel: "API Key or Cloud Billing Export",
+    description: "No admin API available. Google does not provide a programmatic endpoint to query aggregate Gemini usage or cost across an organisation. See Provider Limitations for details.",
+    authType: "api_key",
+    credentialLabel: "No Admin API — see Provider Limitations",
     availability: "available",
-    capabilities: ["cost", "tokens", "models", "estimated_cost", "reports", "alerts"],
+    capabilities: ["estimated_cost"],
     dataCoverage: "estimated",
     comingSoon: false,
-    defaultSyncFrequencyHours: 24,
-    accentColor: "blue",
+    limited: true,
+    defaultSyncFrequencyHours: 0,
+    accentColor: "amber",
   },
   {
     key: "perplexity",
     displayName: "Perplexity",
     shortName: "Perplexity",
     category: "api_spend",
-    description: "Track Perplexity API spend via API key or API group key.",
+    description: "No admin API available. Perplexity does not expose a programmatic billing or usage REST API at any plan tier. See Provider Limitations for details.",
     authType: "api_key",
-    credentialLabel: "API Key / API Group Key",
+    credentialLabel: "No Admin API — see Provider Limitations",
     availability: "available",
-    capabilities: ["cost", "tokens", "models", "api_keys", "estimated_cost", "reports", "alerts"],
+    capabilities: ["estimated_cost"],
     dataCoverage: "estimated",
     comingSoon: false,
-    defaultSyncFrequencyHours: 24,
-    accentColor: "purple",
+    limited: true,
+    defaultSyncFrequencyHours: 0,
+    accentColor: "amber",
   },
   // Developer AI Tools
   {
