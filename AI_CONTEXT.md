@@ -4,7 +4,7 @@
 
 > **Read this file before making any changes to the TokenLens codebase.**
 > This document is the single source of truth for any AI assistant (Claude Code, ChatGPT, Cursor, Copilot) working on this project. It supersedes `CLAUDE.md`.
-> Last updated: May 2026 — Phase 2A complete.
+> Last updated: May 2026 — Phase 2A complete. Real API connectors live for all providers.
 
 ---
 
@@ -12,7 +12,7 @@
 
 TokenLens is a **multi-provider AI Usage, Token Cost & Productivity Intelligence Dashboard** built for organisations that deploy AI tools to their employees. It connects to the admin APIs of major AI platforms — Anthropic, OpenAI, GitHub Copilot, Cursor, and Microsoft 365 Copilot — and consolidates all usage data, costs, and productivity metrics into one unified dashboard.
 
-**Current state:** Phase 2A is complete. The full UI is live with demo data for all 8 providers. Only Anthropic (Claude API + Claude Code) syncs real live data. All other providers use seeded demo data until Phase 2B real connectors are built.
+**Current state:** Phase 2A is complete. The full UI is live for all 8 providers. Real API connectors are implemented for all providers — Anthropic, OpenAI, GitHub Copilot, Cursor, and Microsoft Copilot. Non-Anthropic providers show demo data from `seed.ts` by default; once you add credentials in Settings and click Sync, live data replaces the demo data automatically. Gemini and Perplexity have no admin API and remain limited.
 
 **Tech company it resembles:** Linear / Vercel / Stripe dashboard aesthetic — dark, premium, data-dense.
 
@@ -76,8 +76,8 @@ Do not import React Icons, Heroicons, Font Awesome, or any other icon set. Use L
 ### Rule 5 — Database Tables Are Additive
 Never ALTER or DROP Phase 1 tables. Never rename columns. New features add new tables only. Phase 1 tables: User, Organization, OrganizationMember, Team, TeamMember, ProviderConnection, UsageDaily, ModelUsageDaily, ClaudeCodeDaily, Budget, AlertRule, Alert, AuditLog.
 
-### Rule 6 — Phase 2A: No Real API Calls for Non-Anthropic Providers
-Do NOT call OpenAI, GitHub, Google, Microsoft, Perplexity, or Cursor APIs. All non-Anthropic data is demo data from `prisma/seed.ts`. This changes in Phase 2B when real connectors are built.
+### Rule 6 — Demo Data vs Live Data
+Non-Anthropic providers show demo data from `prisma/seed.ts` until the user connects real credentials in Settings. Once a provider is connected and synced, the sync worker purges all demo rows for that provider and writes live API data. Do NOT hardcode demo data into API routes — always query from the DB so live data flows through automatically.
 
 ### Rule 7 — Design Colors
 Primary accent: **emerald `#10b981`**. Secondary accent: **cyan `#06b6d4`**. Never use purple. Never use the Anthropic brand purple. Sidebar background is always `#050810` regardless of light/dark mode.
@@ -207,16 +207,16 @@ tokenlens/
 │       ├── capabilities.ts        # isTokenBased(), isSeatBased(), hasRealConnector(), categoryLabel()
 │       ├── connector.interface.ts # IProviderConnector interface
 │       └── [providerKey]/
-│           ├── connector.ts       # API connector (stub for Phase 2A, real in Phase 2B)
+│           ├── connector.ts       # API connector (real implementation for all providers)
 │           └── mapper.ts          # Maps API response to DB schema
 │
 ├── workers/
 │   ├── sync-claude-usage.worker.ts      # REAL — Anthropic API → UsageDaily + ModelUsageDaily
-│   ├── sync-claude-code.worker.ts       # REAL — Anthropic API → ClaudeCodeDaily
-│   ├── sync-openai.worker.ts            # STUB — Phase 2B
-│   ├── sync-github-copilot.worker.ts    # STUB — Phase 2B
-│   ├── sync-cursor.worker.ts            # STUB — Phase 2B
-│   ├── sync-microsoft-copilot.worker.ts # STUB — Phase 2B
+│   ├── sync-claude-code.worker.ts       # LIVE — Anthropic API → ClaudeCodeDaily
+│   ├── sync-openai.worker.ts            # LIVE — OpenAI Admin API → AiUsageDaily / AiModelUsageDaily
+│   ├── sync-github-copilot.worker.ts    # LIVE — GitHub Copilot API → DeveloperAiDaily / SeatUsageDaily
+│   ├── sync-cursor.worker.ts            # LIVE — Cursor Admin API → DeveloperAiDaily / SeatUsageDaily
+│   ├── sync-microsoft-copilot.worker.ts # LIVE — Microsoft Graph API → BusinessAiDaily / SeatUsageDaily
 │   └── alert-checker.worker.ts          # Evaluates AlertRules → creates Alert records
 │
 ├── contexts/
@@ -593,14 +593,14 @@ Defined in `modules/providers/registry.ts` as `PROVIDER_REGISTRY`:
 
 ```typescript
 type ProviderKey =
-  | "anthropic"        // LLM API Spend — REAL connector exists
-  | "openai"           // LLM API Spend — stub only (Phase 2B)
+  | "anthropic"        // LLM API Spend — LIVE connector
+  | "openai"           // LLM API Spend — LIVE connector
   | "gemini"           // LLM API Spend — NO admin API (Limited)
   | "perplexity"       // LLM API Spend — NO admin API (Limited)
-  | "claude_code"      // Developer AI  — REAL connector exists
-  | "github_copilot"   // Developer AI  — stub only (Phase 2B)
-  | "cursor"           // Developer AI  — stub only (Phase 2B)
-  | "microsoft_copilot" // Business AI  — stub only (Phase 2B)
+  | "claude_code"      // Developer AI  — LIVE connector (uses Anthropic)
+  | "github_copilot"   // Developer AI  — LIVE connector
+  | "cursor"           // Developer AI  — LIVE connector
+  | "microsoft_copilot" // Business AI  — LIVE connector
 
 type ProviderCategory = "api_spend" | "developer_ai" | "business_ai"
 ```
@@ -659,7 +659,7 @@ NODE_ENV="development"
 Anthropic MVP. Single org. Real data from Anthropic Admin API. All core infrastructure built: auth, encryption, users, teams, models, alert rules, audit logs, settings.
 
 ### Phase 2A ✅ Complete
-Multi-provider UI with demo data. All 8 provider pages are live. Sidebar restructured with new categories. Demo data seeded for all non-Anthropic providers. No real API calls to non-Anthropic providers.
+Multi-provider UI fully live. All 8 provider pages are live. Real API connectors implemented for Anthropic, OpenAI, GitHub Copilot, Cursor, and Microsoft Copilot. Sidebar restructured with accordion navigation. Demo data seeded for all providers — non-Anthropic providers auto-switch to live data on first successful sync.
 
 **Changes made in Phase 2A vs. legacy CLAUDE.md:**
 - URL renames: `api-spend` → `llm-spend`, `developer-ai` → `developer-ai-tools`, `business-ai` → `business-productivity-ai`, `users` → `ai-users`, `teams` → `ai-teams`, `models` → `ai-models`
@@ -668,8 +668,8 @@ Multi-provider UI with demo data. All 8 provider pages are live. Sidebar restruc
 - GitHub Activity and Jira Delivery pages removed entirely
 - Coming Soon pages added: /roi, /suggestions, /alerts, /notifications, /reports, /audit-logs
 
-### Phase 2B 🔜 Next — Real Connectors
-Build real API connectors for: OpenAI (Admin API), GitHub Copilot (Copilot Business API), Cursor (Admin API), Microsoft 365 Copilot (Microsoft Graph OAuth). Replaces demo data with live data when provider is configured.
+### Phase 2B 🔜 Next — Governance Features
+Build Alerts (threshold rules + anomaly detection), Reports (PDF/CSV export), Audit Logs (tamper-evident action history), and Notifications (email/Slack/webhook delivery). All governance pages currently show Coming Soon.
 
 ### Phase 3 🔜 Planned — AI ROI Intelligence
 AI adoption scoring, waste detection, team efficiency scoring, GitHub/Jira correlation, AI ROI metrics, Suggestions engine, full Alerts/Notifications/Reports/Audit Logs UI.
@@ -713,7 +713,8 @@ import { FaUser } from "react-icons/fa";
 // ✅ Correct
 import { User } from "lucide-react";
 
-// ❌ Never — calling real non-Anthropic APIs in Phase 2A
+// ❌ Never — calling provider APIs directly inside an API route
+// Always go through the worker pattern: getProviderCredential → fetch → upsert → markProviderSynced
 const openaiResponse = await fetch("https://api.openai.com/v1/...");
 
 // ❌ Never — creating a Gemini or Perplexity detail page
@@ -738,4 +739,4 @@ await prisma.someTable.create({ data: { promptText: req.body.prompt } });
 
 ---
 
-*TokenLens · AI_CONTEXT.md · Updated May 2026 · Phase 2A Complete*
+*TokenLens · AI_CONTEXT.md · Updated May 2026 · Phase 2A Complete · Real connectors live for all providers*
