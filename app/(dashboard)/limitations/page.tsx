@@ -1,8 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import { PageShell } from "@/components/dashboard/PageShell";
 import { SectionCard } from "@/components/dashboard/SectionCard";
-import { CheckCircle, XCircle, AlertTriangle, Info } from "lucide-react";
+import { CheckCircle, XCircle, AlertTriangle, Info, HelpCircle } from "lucide-react";
 import { PROVIDERS, CATEGORY_LABELS, CATEGORY_BADGE, type ProviderKey } from "@/modules/providers/registry";
 
 // ── Per-provider limitation data ──────────────────────────────────────────────
@@ -201,6 +202,138 @@ const LIMITATIONS: ProviderLimitation[] = [
   },
 ];
 
+// ── Coverage badge tooltip config ─────────────────────────────────────────────
+
+const COVERAGE_INFO: Record<string, { label: string; color: string; meaning: string; canGet: string; cannotGet: string }> = {
+  full: {
+    label: "Full",
+    color: "bg-emerald-500/15 text-emerald-400 border border-emerald-500/20",
+    meaning: "Complete API coverage — all data is retrieved directly from the provider's official admin API.",
+    canGet: "Token usage, cost per user, model breakdown, org aggregates, user list",
+    cannotGet: "Real-time sub-hour data, billing invoices (console only)",
+  },
+  partial: {
+    label: "Partial",
+    color: "bg-amber-500/15 text-amber-400 border border-amber-500/20",
+    meaning: "The provider API exists and works, but has gaps — not all data points are available programmatically.",
+    canGet: "Org-level costs, model usage, projects, seat counts",
+    cannotGet: "Per-user token detail (OpenAI) / granular per-developer metrics (Cursor) without CSV export",
+  },
+  estimated: {
+    label: "Estimated",
+    color: "bg-amber-500/15 text-amber-400 border border-amber-500/20",
+    meaning: "No admin API exists. Cost figures are estimated by TokenLens using published pricing rates × self-logged token counts from API responses.",
+    canGet: "Per-call token counts (in each API response)",
+    cannotGet: "Aggregate historical cost, historical usage query, org-wide spend — no admin endpoint exists",
+  },
+  seat_based: {
+    label: "Seat Based",
+    color: "bg-cyan-500/15 text-cyan-400 border border-cyan-500/20",
+    meaning: "This provider charges a flat licence per seat — there are no token counts or per-request costs to track. Data covers seat utilisation and activity only.",
+    canGet: "Seat count (total / active / inactive), last activity date, suggestion acceptance rates, editor used",
+    cannotGet: "Token usage, per-request cost, model-level breakdown — flat pricing model has none of these",
+  },
+  requires_enterprise: {
+    label: "Requires Enterprise",
+    color: "bg-indigo-500/15 text-indigo-400 border border-indigo-500/20",
+    meaning: "The Microsoft Graph API endpoints for Copilot usage are locked behind Microsoft 365 Enterprise licences (E3/E5 + Copilot add-on). Personal or Business Basic plans return no Copilot data.",
+    canGet: "Active users per app (Teams, Word, Excel, Outlook…), licensed seat count, last activity per user",
+    cannotGet: "Dollar spend (computed only), prompt counts per user, daily granularity, unlicensed Copilot Chat usage",
+  },
+};
+
+// ── Tooltip component ──────────────────────────────────────────────────────────
+
+function CoverageTooltip({ type }: { type: string }) {
+  const [open, setOpen] = useState(false);
+  const info = COVERAGE_INFO[type];
+  if (!info) return null;
+
+  return (
+    <span className="relative inline-flex items-center">
+      <button
+        onMouseEnter={() => setOpen(true)}
+        onMouseLeave={() => setOpen(false)}
+        onFocus={() => setOpen(true)}
+        onBlur={() => setOpen(false)}
+        className="ml-1 text-white/30 hover:text-white/60 transition-colors"
+        aria-label={`What does ${info.label} mean?`}
+      >
+        <HelpCircle className="h-3.5 w-3.5" />
+      </button>
+      {open && (
+        <span className="absolute left-6 top-0 z-50 w-72 rounded-xl border border-white/10 bg-[#0d1117] shadow-2xl p-3.5 text-left pointer-events-none">
+          <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mb-2 ${info.color}`}>
+            {info.label}
+          </span>
+          <p className="text-xs text-white/70 leading-relaxed mb-2">{info.meaning}</p>
+          <div className="space-y-1.5">
+            <div>
+              <p className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider mb-0.5">What we can show</p>
+              <p className="text-[11px] text-white/50 leading-relaxed">{info.canGet}</p>
+            </div>
+            <div>
+              <p className="text-[10px] font-bold text-red-400/70 uppercase tracking-wider mb-0.5">What we cannot show</p>
+              <p className="text-[11px] text-white/50 leading-relaxed">{info.cannotGet}</p>
+            </div>
+          </div>
+        </span>
+      )}
+    </span>
+  );
+}
+
+// ── Summary table ──────────────────────────────────────────────────────────────
+
+const SUMMARY_ROWS = [
+  { badge: "full",                label: "Full",               color: "bg-emerald-500/15 text-emerald-400", providers: "Claude / Anthropic, Claude Code",  meaning: "Complete data via admin API",                                  canGet: "Tokens, cost, users, models, org aggregates",                          cannotGet: "Real-time (<1 hr), billing invoices" },
+  { badge: "partial",             label: "Partial",            color: "bg-amber-500/15 text-amber-400",     providers: "OpenAI, Cursor",                   meaning: "API exists but has data gaps",                                 canGet: "Org costs, models, projects, seat counts",                             cannotGet: "Per-user token detail (OpenAI), granular dev metrics (Cursor)" },
+  { badge: "seat_based",          label: "Seat Based",         color: "bg-cyan-500/15 text-cyan-400",       providers: "GitHub Copilot",                   meaning: "Flat licence model — no token costs",                          canGet: "Seat count, active/inactive users, acceptance rate, editor used",      cannotGet: "Token usage, per-request cost, model breakdown" },
+  { badge: "estimated",           label: "Estimated",          color: "bg-amber-500/15 text-amber-400",     providers: "Gemini, Perplexity",               meaning: "No admin API — costs estimated from pricing × token counts",   canGet: "Per-call token counts only (in each API response)",                    cannotGet: "Aggregate history, org-wide spend — no admin endpoint exists" },
+  { badge: "requires_enterprise", label: "Requires Enterprise",color: "bg-indigo-500/15 text-indigo-400",  providers: "Microsoft Copilot",                meaning: "API gated behind M365 E3/E5 + Copilot licence",                canGet: "Active users per app, licensed seats, last activity",                  cannotGet: "Dollar spend (computed), prompt counts, daily granularity" },
+];
+
+function SummaryTable() {
+  return (
+    <SectionCard
+      title="Data Coverage — What Each Badge Means"
+      subtitle="Hover the ? icon on any badge for inline details"
+    >
+      <div className="overflow-x-auto">
+        <table className="w-full text-sm border-collapse">
+          <thead>
+            <tr className="border-b border-white/[0.06]">
+              {["Badge", "Applies To", "Meaning", "What TokenLens CAN Show", "What TokenLens CANNOT Show"].map(h => (
+                <th key={h} className="px-3 py-2.5 text-left text-[10px] font-bold uppercase tracking-wider text-white/35 whitespace-nowrap">{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {SUMMARY_ROWS.map((row, i) => (
+              <tr key={i} className="border-b border-white/[0.04] hover:bg-white/[0.02] transition-colors">
+                <td className="px-3 py-3 whitespace-nowrap">
+                  <span className={`inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full ${row.color}`}>
+                    {row.label}
+                    <CoverageTooltip type={row.badge} />
+                  </span>
+                </td>
+                <td className="px-3 py-3 text-xs text-white/60 whitespace-nowrap">{row.providers}</td>
+                <td className="px-3 py-3 text-xs text-white/70">{row.meaning}</td>
+                <td className="px-3 py-3">
+                  <span className="text-xs text-emerald-400/80">{row.canGet}</span>
+                </td>
+                <td className="px-3 py-3">
+                  <span className="text-xs text-red-400/60">{row.cannotGet}</span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </SectionCard>
+  );
+}
+
 // ── Components ─────────────────────────────────────────────────────────────────
 
 function DataPointRow({ point }: { point: DataPoint }) {
@@ -233,12 +366,29 @@ export default function LimitationsPage() {
         <div>
           <p className="text-sm font-semibold text-foreground">Built on official provider APIs only</p>
           <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
-            TokenLens only shows data that is programmatically accessible via each provider's official API.
+            TokenLens only shows data that is programmatically accessible via each provider&apos;s official API.
             Where data must be estimated (e.g. cost from token counts × pricing), it is clearly labelled.
             No web scraping, no unofficial endpoints.
           </p>
         </div>
       </div>
+
+      {/* Demo data notice */}
+      <div className="flex items-start gap-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4">
+        <AlertTriangle className="h-5 w-5 text-amber-400 flex-shrink-0 mt-0.5" />
+        <div>
+          <p className="text-sm font-semibold text-foreground">Non-Anthropic providers currently show demo data</p>
+          <p className="text-xs text-muted-foreground mt-1 leading-relaxed">
+            <strong className="text-foreground">Claude / Claude Code</strong> show live data via the Anthropic Admin API.
+            All other providers (OpenAI, GitHub Copilot, Cursor, Microsoft Copilot, Gemini, Perplexity)
+            display representative demo data until you connect your real API credentials in Settings.
+            Once connected and synced, live data replaces the demo figures automatically.
+          </p>
+        </div>
+      </div>
+
+      {/* Coverage summary table */}
+      <SummaryTable />
 
       {/* Per-provider cards */}
       {LIMITATIONS.map(lim => {
@@ -250,8 +400,14 @@ export default function LimitationsPage() {
             key={lim.key}
             title={prov.displayName}
             subtitle={
-              <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${CATEGORY_BADGE[prov.category]}`}>
-                {CATEGORY_LABELS[prov.category]}
+              <span className="flex items-center gap-2">
+                <span className={`text-xs px-2 py-0.5 rounded-full font-semibold ${CATEGORY_BADGE[prov.category]}`}>
+                  {CATEGORY_LABELS[prov.category]}
+                </span>
+                <span className={`inline-flex items-center text-[10px] font-bold px-2 py-0.5 rounded-full ${COVERAGE_INFO[prov.dataCoverage]?.color ?? "bg-white/5 text-white/40"}`}>
+                  {COVERAGE_INFO[prov.dataCoverage]?.label ?? prov.dataCoverage}
+                  <CoverageTooltip type={prov.dataCoverage} />
+                </span>
               </span>
             }
           >
