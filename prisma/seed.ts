@@ -268,6 +268,266 @@ async function main() {
   });
   console.log("Seeded empty provider connections (customers connect real keys via Settings)");
 
+  // ─── Phase 2 Demo Data ──────────────────────────────────────────────────────
+  // These rows are inserted unconditionally. When an admin connects real credentials
+  // and clicks Sync, the sync worker purges ALL rows for that provider+org before
+  // inserting live API data — so demo data is automatically replaced.
+
+  const openaiUsers = USERS_DATA.filter((_, i) => i % 5 !== 3); // ~20 users
+  const devUsers = USERS_DATA.filter((u) =>
+    ["Web", "Mobile", "DevOps", "AI R&D"].includes(u.team)
+  );
+  const cursorUsers = devUsers.slice(0, 15);
+
+  const OPENAI_MODELS = ["gpt-4o", "gpt-4o-mini", "gpt-4-turbo"];
+  const OPENAI_MODEL_COSTS: Record<string, { input: number; output: number }> = {
+    "gpt-4o":       { input: 0.0000025,  output: 0.00001  },
+    "gpt-4o-mini":  { input: 0.00000015, output: 0.0000006 },
+    "gpt-4-turbo":  { input: 0.00001,    output: 0.00003  },
+  };
+
+  // ── OpenAI AiUsageDaily ──────────────────────────────────────────────────────
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const aiUsageRows: any[] = [];
+  for (let d = 29; d >= 0; d--) {
+    const date = subDays(today, d);
+    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    for (const u of openaiUsers) {
+      if (Math.random() > 0.8) continue; // ~80% active per day
+      const { teamId } = userTeamMap[u.email];
+      const inputTokens = rand(3000, 60000);
+      const outputTokens = rand(500, 15000);
+      const cachedTokens = Math.floor(inputTokens * 0.2 * Math.random());
+      aiUsageRows.push({
+        organizationId: org.id,
+        provider: "openai",
+        date: dateOnly,
+        userEmail: u.email,
+        teamId,
+        inputTokens,
+        outputTokens,
+        cachedTokens,
+        totalTokens: inputTokens + outputTokens,
+        totalCostUsd: (inputTokens * 0.0000025 + outputTokens * 0.00001).toFixed(6),
+      });
+    }
+  }
+  for (let i = 0; i < aiUsageRows.length; i += CHUNK) {
+    await prisma.aiUsageDaily.createMany({ data: aiUsageRows.slice(i, i + CHUNK), skipDuplicates: true });
+  }
+  console.log(`Inserted ${aiUsageRows.length} OpenAI aiUsageDaily rows`);
+
+  // ── OpenAI AiModelUsageDaily ─────────────────────────────────────────────────
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const aiModelUsageRows: any[] = [];
+  for (let d = 29; d >= 0; d--) {
+    const date = subDays(today, d);
+    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    for (const model of OPENAI_MODELS) {
+      const costs = OPENAI_MODEL_COSTS[model];
+      const inputTokens = rand(30000, 400000);
+      const outputTokens = rand(8000, 80000);
+      aiModelUsageRows.push({
+        organizationId: org.id,
+        provider: "openai",
+        model,
+        date: dateOnly,
+        inputTokens,
+        outputTokens,
+        totalTokens: inputTokens + outputTokens,
+        totalCostUsd: (inputTokens * costs.input + outputTokens * costs.output).toFixed(6),
+      });
+    }
+  }
+  for (let i = 0; i < aiModelUsageRows.length; i += CHUNK) {
+    await prisma.aiModelUsageDaily.createMany({ data: aiModelUsageRows.slice(i, i + CHUNK), skipDuplicates: true });
+  }
+  console.log(`Inserted ${aiModelUsageRows.length} OpenAI aiModelUsageDaily rows`);
+
+  // ── GitHub Copilot DeveloperAiDaily ─────────────────────────────────────────
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const ghDevRows: any[] = [];
+  for (let d = 29; d >= 0; d--) {
+    const date = subDays(today, d);
+    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    for (const u of devUsers) {
+      if (Math.random() > 0.75) continue; // ~75% active per day
+      const { teamId } = userTeamMap[u.email];
+      const sessions = rand(1, 6);
+      const suggestions = rand(20, 200);
+      const acceptanceRate = 0.4 + Math.random() * 0.3; // 40-70%
+      const acceptances = Math.floor(suggestions * acceptanceRate);
+      ghDevRows.push({
+        organizationId: org.id,
+        provider: "github_copilot",
+        date: dateOnly,
+        userEmail: u.email,
+        teamId,
+        sessions,
+        linesAdded: rand(30, 500),
+        linesRemoved: rand(5, 150),
+        filesChanged: rand(1, 20),
+        commitsAssisted: rand(0, sessions * 2),
+        prsAssisted: Math.random() > 0.7 ? rand(0, 2) : 0,
+        suggestions,
+        acceptances,
+        completions: acceptances,
+        totalCostUsd: (22 * 19 / 30 / devUsers.length).toFixed(6),
+      });
+    }
+  }
+  for (let i = 0; i < ghDevRows.length; i += CHUNK) {
+    await prisma.developerAiDaily.createMany({ data: ghDevRows.slice(i, i + CHUNK), skipDuplicates: true });
+  }
+  console.log(`Inserted ${ghDevRows.length} GitHub Copilot developerAiDaily rows`);
+
+  // ── Cursor DeveloperAiDaily ──────────────────────────────────────────────────
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const cursorDevRows: any[] = [];
+  for (let d = 29; d >= 0; d--) {
+    const date = subDays(today, d);
+    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    for (const u of cursorUsers) {
+      if (Math.random() > 0.7) continue; // ~70% active per day
+      const { teamId } = userTeamMap[u.email];
+      const sessions = rand(1, 5);
+      const suggestions = rand(15, 150);
+      const acceptanceRate = 0.5 + Math.random() * 0.25; // 50-75%
+      const acceptances = Math.floor(suggestions * acceptanceRate);
+      cursorDevRows.push({
+        organizationId: org.id,
+        provider: "cursor",
+        date: dateOnly,
+        userEmail: u.email,
+        teamId,
+        sessions,
+        linesAdded: rand(20, 400),
+        linesRemoved: rand(5, 100),
+        filesChanged: rand(1, 15),
+        commitsAssisted: rand(0, sessions * 2),
+        prsAssisted: Math.random() > 0.75 ? rand(0, 2) : 0,
+        suggestions,
+        acceptances,
+        completions: acceptances,
+        totalCostUsd: (15 * 40 / 30 / cursorUsers.length).toFixed(6),
+      });
+    }
+  }
+  for (let i = 0; i < cursorDevRows.length; i += CHUNK) {
+    await prisma.developerAiDaily.createMany({ data: cursorDevRows.slice(i, i + CHUNK), skipDuplicates: true });
+  }
+  console.log(`Inserted ${cursorDevRows.length} Cursor developerAiDaily rows`);
+
+  // ── SeatUsageDaily — GitHub Copilot ─────────────────────────────────────────
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const seatRows: any[] = [];
+  for (let d = 29; d >= 0; d--) {
+    const date = subDays(today, d);
+    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    seatRows.push({
+      organizationId: org.id,
+      provider: "github_copilot",
+      date: dateOnly,
+      totalSeats: 22,
+      activeSeats: rand(16, 18),
+      costPerSeat: (19 / 30).toFixed(6),
+      totalCostUsd: (22 * 19 / 30).toFixed(6),
+    });
+  }
+
+  // ── SeatUsageDaily — Cursor ──────────────────────────────────────────────────
+  for (let d = 29; d >= 0; d--) {
+    const date = subDays(today, d);
+    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    seatRows.push({
+      organizationId: org.id,
+      provider: "cursor",
+      date: dateOnly,
+      totalSeats: 15,
+      activeSeats: rand(10, 13),
+      costPerSeat: (40 / 30).toFixed(6),
+      totalCostUsd: (15 * 40 / 30).toFixed(6),
+    });
+  }
+
+  // ── SeatUsageDaily — Microsoft Copilot ──────────────────────────────────────
+  for (let d = 29; d >= 0; d--) {
+    const date = subDays(today, d);
+    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    seatRows.push({
+      organizationId: org.id,
+      provider: "microsoft_copilot",
+      date: dateOnly,
+      totalSeats: 25,
+      activeSeats: rand(18, 22),
+      costPerSeat: (30 / 30).toFixed(6),
+      totalCostUsd: (25 * 30 / 30).toFixed(6),
+    });
+  }
+
+  for (let i = 0; i < seatRows.length; i += CHUNK) {
+    await prisma.seatUsageDaily.createMany({ data: seatRows.slice(i, i + CHUNK), skipDuplicates: true });
+  }
+  console.log(`Inserted ${seatRows.length} seatUsageDaily rows`);
+
+  // ── BusinessAiDaily — Microsoft Copilot ─────────────────────────────────────
+  const MS_APPS = ["teams", "word", "excel", "powerpoint", "outlook", "onenote", "loop", "copilot_chat"];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const bizRows: any[] = [];
+  for (let d = 29; d >= 0; d--) {
+    const date = subDays(today, d);
+    const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    for (const app of MS_APPS) {
+      const activeUsers = rand(5, 20);
+      const totalSessions = activeUsers * rand(2, 8);
+      bizRows.push({
+        organizationId: org.id,
+        provider: "microsoft_copilot",
+        app,
+        date: dateOnly,
+        activeUsers,
+        totalSessions,
+        totalCostUsd: (activeUsers * 30 / 30).toFixed(6),
+      });
+    }
+  }
+  for (let i = 0; i < bizRows.length; i += CHUNK) {
+    await prisma.businessAiDaily.createMany({ data: bizRows.slice(i, i + CHUNK), skipDuplicates: true });
+  }
+  console.log(`Inserted ${bizRows.length} Microsoft Copilot businessAiDaily rows`);
+
+  // ── ProviderUserMapping — GitHub Copilot ─────────────────────────────────────
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const providerUserMappingRows: any[] = [];
+  for (const u of devUsers) {
+    const login = u.email.split("@")[0];
+    providerUserMappingRows.push({
+      organizationId: org.id,
+      provider: "github_copilot",
+      providerUserId: login,
+      userEmail: u.email,
+      userId: emailToUserId[u.email] ?? null,
+    });
+  }
+
+  // ── ProviderUserMapping — Microsoft Copilot ──────────────────────────────────
+  for (const u of USERS_DATA) {
+    providerUserMappingRows.push({
+      organizationId: org.id,
+      provider: "microsoft_copilot",
+      providerUserId: u.email, // UPN
+      userEmail: u.email,
+      userId: emailToUserId[u.email] ?? null,
+    });
+  }
+
+  for (let i = 0; i < providerUserMappingRows.length; i += CHUNK) {
+    await prisma.providerUserMapping.createMany({ data: providerUserMappingRows.slice(i, i + CHUNK), skipDuplicates: true });
+  }
+  console.log(`Inserted ${providerUserMappingRows.length} providerUserMapping rows`);
+
+  // ─── End Phase 2 Demo Data ───────────────────────────────────────────────────
+
   // ─── Phase 3 Demo Data ─────────────────────────────────────────────────────
 
   // Phase 3 cleanup first (in case of re-seed)
