@@ -57,6 +57,15 @@ export async function syncOpenAI(
     const pages = await fetchOpenAIUsage(apiKey, startDate, endDate);
     let synced = 0;
 
+    // Pre-aggregate model totals in memory: key = "model|dateISO"
+    // The OpenAI API groups by user+model+project, so one sync run may have
+    // many rows for the same model on the same date. We must SUM them before
+    // upserting — writing row-by-row would overwrite with the last user's values.
+    const modelAgg = new Map<string, {
+      model: string; date: Date;
+      inputTokens: number; outputTokens: number; totalTokens: number; totalCostUsd: number;
+    }>();
+
     for (const page of pages) {
       const date = startOfDay(new Date(page.aggregation_timestamp * 1000));
 
@@ -69,6 +78,7 @@ export async function syncOpenAI(
         const costUsd   = estimateCost(model, r.input_tokens, r.output_tokens, cached);
         const total     = r.input_tokens + r.output_tokens;
 
+        // ── Per-user row ─────────────────────────────────────────────────────
         try {
           await prisma.aiUsageDaily.upsert({
             where: {
@@ -88,28 +98,46 @@ export async function syncOpenAI(
               totalCostUsd: costUsd.toFixed(6),
             },
           });
-
-          await prisma.aiModelUsageDaily.upsert({
-            where: {
-              organizationId_provider_model_date: {
-                organizationId, provider: "openai", model, date,
-              },
-            },
-            create: {
-              organizationId, provider: "openai", model, date,
-              inputTokens: r.input_tokens, outputTokens: r.output_tokens,
-              totalTokens: total, totalCostUsd: costUsd.toFixed(6),
-            },
-            update: {
-              inputTokens: r.input_tokens, outputTokens: r.output_tokens,
-              totalTokens: total, totalCostUsd: costUsd.toFixed(6),
-            },
-          });
-
           synced++;
         } catch (rowErr) {
           errors.push(`Row ${userEmail}/${date.toISOString()}: ${rowErr instanceof Error ? rowErr.message : rowErr}`);
         }
+
+        // ── Accumulate model totals (do NOT upsert yet — sum all users first) ─
+        const aggKey = `${model}|${date.toISOString()}`;
+        const existing = modelAgg.get(aggKey);
+        if (existing) {
+          existing.inputTokens  += r.input_tokens;
+          existing.outputTokens += r.output_tokens;
+          existing.totalTokens  += total;
+          existing.totalCostUsd += costUsd;
+        } else {
+          modelAgg.set(aggKey, { model, date, inputTokens: r.input_tokens, outputTokens: r.output_tokens, totalTokens: total, totalCostUsd: costUsd });
+        }
+      }
+    }
+
+    // ── Write aggregated model rows (one upsert per model+date) ─────────────
+    for (const agg of modelAgg.values()) {
+      try {
+        await prisma.aiModelUsageDaily.upsert({
+          where: {
+            organizationId_provider_model_date: {
+              organizationId, provider: "openai", model: agg.model, date: agg.date,
+            },
+          },
+          create: {
+            organizationId, provider: "openai", model: agg.model, date: agg.date,
+            inputTokens: agg.inputTokens, outputTokens: agg.outputTokens,
+            totalTokens: agg.totalTokens, totalCostUsd: agg.totalCostUsd.toFixed(6),
+          },
+          update: {
+            inputTokens: agg.inputTokens, outputTokens: agg.outputTokens,
+            totalTokens: agg.totalTokens, totalCostUsd: agg.totalCostUsd.toFixed(6),
+          },
+        });
+      } catch (rowErr) {
+        errors.push(`Model ${agg.model}/${agg.date.toISOString()}: ${rowErr instanceof Error ? rowErr.message : rowErr}`);
       }
     }
 

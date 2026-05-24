@@ -17,9 +17,14 @@ export function isActivityBased(key: ProviderKey): boolean {
   return PROVIDER_REGISTRY[key].capabilities.includes("developer_activity");
 }
 
-/** Returns true if a real API connector is ready */
+/**
+ * Returns true if a real API connector exists for this provider.
+ * Explicitly returns false for limited providers (Gemini, Perplexity)
+ * which have no admin API regardless of their availability value.
+ */
 export function hasRealConnector(key: ProviderKey): boolean {
-  return PROVIDER_REGISTRY[key].availability === "available";
+  const p = PROVIDER_REGISTRY[key];
+  return p.availability === "available" && !p.limited;
 }
 
 /** Returns category label for display */
