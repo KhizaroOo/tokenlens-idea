@@ -114,17 +114,42 @@ export interface M365CopilotUserRow {
   hasCopilotLicense: boolean;
 }
 
+/**
+ * Maps the literal CSV column names returned by Microsoft Graph to the
+ * camelCase field names used in M365CopilotUserRow.
+ * The Graph endpoint returns headers like "Last Activity Date (Teams)"
+ * which must be normalized before field access via dot notation.
+ */
+const CSV_HEADER_MAP: Record<string, keyof M365CopilotUserRow> = {
+  "User Principal Name":            "userPrincipalName",
+  "Display Name":                   "displayName",
+  "Last Activity Date (Teams)":     "lastActivityDateTeams",
+  "Last Activity Date (Word)":      "lastActivityDateWord",
+  "Last Activity Date (Excel)":     "lastActivityDateExcel",
+  "Last Activity Date (PowerPoint)":"lastActivityDatePowerPoint",
+  "Last Activity Date (Outlook)":   "lastActivityDateOutlook",
+  "Last Activity Date (OneNote)":   "lastActivityDateOneNote",
+  "Last Activity Date (Loop)":      "lastActivityDateLoop",
+  "Last Activity Date (Copilot Chat)": "lastActivityDateCopilotChat",
+  "Has Other Products License":     "hasOtherProductsLicense",
+  "Has Copilot License":            "hasCopilotLicense",
+};
+
 /** Parse the CSV response from the Graph user-detail endpoint. */
 function parseCopilotUserDetailCSV(csv: string): M365CopilotUserRow[] {
   const lines = csv.trim().split("\n");
   if (lines.length < 2) return [];
-  const headers = lines[0].split(",").map(h => h.replace(/^"|"$/g, "").trim());
+  const rawHeaders = lines[0].split(",").map(h => h.replace(/^"|"$/g, "").trim());
+  // Map raw CSV headers to M365CopilotUserRow field names
+  const mappedHeaders = rawHeaders.map(h => CSV_HEADER_MAP[h] ?? null);
+
   return lines.slice(1).map(line => {
     const values = line.split(",").map(v => v.replace(/^"|"$/g, "").trim());
     const row: Record<string, string | boolean> = {};
-    headers.forEach((h, i) => {
+    mappedHeaders.forEach((fieldName, i) => {
+      if (!fieldName) return; // skip unmapped columns (e.g. "Report Refresh Date")
       const val = values[i] ?? "";
-      row[h] = val === "True" ? true : val === "False" ? false : val;
+      row[fieldName] = val === "True" ? true : val === "False" ? false : val;
     });
     return row as unknown as M365CopilotUserRow;
   });
@@ -166,7 +191,9 @@ export async function fetchM365CopilotSeats(cred: MicrosoftCredential): Promise<
   };
 
   const copilotSku = (data.value ?? []).find(s =>
-    s.skuPartNumber?.includes("COPILOT") || s.skuPartNumber?.includes("M365_COPILOT")
+    s.skuPartNumber?.includes("COPILOT") ||
+    s.skuPartNumber?.includes("M365_COPILOT") ||
+    s.skuPartNumber?.toLowerCase().includes("copilot")
   );
 
   return {

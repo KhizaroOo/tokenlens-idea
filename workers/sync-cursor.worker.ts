@@ -40,6 +40,11 @@ export async function syncCursor(
     const spendRows = await fetchCursorSpending(apiKey);
     const spendMap  = new Map(spendRows.map(s => [s.user_email, s.spend_cents / 100]));
 
+    // Warn if all endpoints returned 404 (empty data)
+    if (members.length === 0 && dailyRows.length === 0) {
+      errors.push("Warning: Cursor API returned no members or usage data — all endpoint paths may have returned 404. Verify your Admin API key and ensure your Cursor plan supports the API.");
+    }
+
     // Seat utilization from members who had activity in last 7 days
     const activeEmails = new Set(dailyRows.map(r => r.user_email));
     const activeSeats  = [...activeEmails].filter(e =>

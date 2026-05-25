@@ -83,7 +83,7 @@ export async function fetchOpenAIUsage(
 
     const data = await oaiFetch(apiKey, `/organization/usage/completions?${qs}`);
     pages.push(...(data.data ?? []));
-    nextPage = data.has_more ? data.next_page : null;
+    nextPage = data.has_more ? (data.next_page ?? null) : null;
   } while (nextPage);
 
   return pages;
