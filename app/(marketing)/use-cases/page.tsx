@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Eye, Building2, Network, GitBranch, DollarSign, Briefcase, BellRing, TrendingUp, Users, Cpu, FileBarChart, Layers } from "lucide-react";
 import { SectionHeader, SectionContainer, CTASection, Pill } from "@/components/marketing/primitives";
 
@@ -101,7 +101,7 @@ export default function UseCasesPage() {
           <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]">
             Twelve concrete problems TokenLens solves.
           </h1>
-          <p className="mt-5 text-base lg:text-lg text-white/65 max-w-2xl leading-relaxed">
+          <p className="mt-5 text-base lg:text-lg text-slate-600 dark:text-white/65 max-w-2xl leading-relaxed">
             Each one was on a real customer-discovery whiteboard. None of them require a six-month implementation.
           </p>
         </div>
@@ -110,7 +110,7 @@ export default function UseCasesPage() {
       <SectionContainer className="py-12 lg:py-20">
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
           {USE_CASES.map(uc => (
-            <div key={uc.title} className="group relative rounded-2xl border border-white/10 bg-white/[0.02] p-5 hover:border-white/20 hover:bg-white/[0.04] transition-all overflow-hidden">
+            <div key={uc.title} className="group relative rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] p-5 hover:border-slate-300 dark:hover:border-white/20 hover:bg-white dark:bg-white/[0.04] transition-all overflow-hidden">
               <div className={`absolute inset-x-0 top-0 h-px ${
                 uc.tone === "emerald" ? "bg-gradient-to-r from-transparent via-emerald-400/40 to-transparent" :
                 uc.tone === "cyan"    ? "bg-gradient-to-r from-transparent via-cyan-400/40 to-transparent"     :
@@ -131,15 +131,15 @@ export default function UseCasesPage() {
               <div className="mt-3 space-y-2.5">
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-red-400/70">Problem</p>
-                  <p className="text-xs text-white/55 leading-relaxed mt-0.5">{uc.problem}</p>
+                  <p className="text-xs text-slate-500 dark:text-white/55 leading-relaxed mt-0.5">{uc.problem}</p>
                 </div>
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-cyan-400/80">Solution</p>
-                  <p className="text-xs text-white/65 leading-relaxed mt-0.5">{uc.solution}</p>
+                  <p className="text-xs text-slate-600 dark:text-white/65 leading-relaxed mt-0.5">{uc.solution}</p>
                 </div>
                 <div>
                   <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-400/80">Outcome</p>
-                  <p className="text-xs text-white/80 leading-relaxed mt-0.5">{uc.outcome}</p>
+                  <p className="text-xs text-slate-700 dark:text-white/80 leading-relaxed mt-0.5">{uc.outcome}</p>
                 </div>
               </div>
             </div>

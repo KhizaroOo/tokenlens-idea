@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import Link from "next/link";
@@ -16,8 +16,8 @@ export default function ContactPage() {
     setSubmitted(true);
   }
 
-  const INPUT  = "w-full rounded-xl border border-white/10 bg-white/[0.03] px-3.5 py-2.5 text-sm text-white placeholder-white/30 focus:border-emerald-400/50 focus:outline-none focus:ring-1 focus:ring-emerald-400/30 transition-colors";
-  const LABEL  = "block text-[11px] font-bold uppercase tracking-wider text-white/55 mb-1.5";
+  const INPUT  = "w-full rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] px-3.5 py-2.5 text-sm text-slate-900 dark:text-white placeholder-white/30 focus:border-emerald-400/50 focus:outline-none focus:ring-1 focus:ring-emerald-400/30 transition-colors";
+  const LABEL  = "block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-white/55 mb-1.5";
 
   return (
     <>
@@ -27,7 +27,7 @@ export default function ContactPage() {
           <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]">
             Talk to the TokenLens team.
           </h1>
-          <p className="mt-5 text-base lg:text-lg text-white/65 max-w-2xl leading-relaxed">
+          <p className="mt-5 text-base lg:text-lg text-slate-600 dark:text-white/65 max-w-2xl leading-relaxed">
             Sales, support, partnerships, or just a question about your provider stack — we read every message.
           </p>
         </div>
@@ -40,7 +40,7 @@ export default function ContactPage() {
             { icon: LifeBuoy,  tone: "cyan"    as const, title: "Support",            desc: "Existing customer? We respond fast.",                  cta: "support@tokenlens.io" },
             { icon: Handshake, tone: "violet"  as const, title: "Partnerships",       desc: "Integrations, resellers, consulting partnerships.",    cta: "partners@tokenlens.io" },
           ].map(c => (
-            <div key={c.title} className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+            <div key={c.title} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.025] p-6">
               <div className={`h-10 w-10 rounded-xl grid place-items-center ring-1 ${
                 c.tone === "emerald" ? "bg-emerald-500/10 text-emerald-400 ring-emerald-400/20" :
                 c.tone === "cyan"    ? "bg-cyan-500/10 text-cyan-400 ring-cyan-400/20"           :
@@ -49,8 +49,8 @@ export default function ContactPage() {
                 <c.icon className="h-5 w-5" />
               </div>
               <p className="mt-4 text-base font-semibold">{c.title}</p>
-              <p className="mt-1.5 text-sm text-white/55 leading-relaxed">{c.desc}</p>
-              <p className="mt-4 text-sm font-mono text-emerald-300">{c.cta}</p>
+              <p className="mt-1.5 text-sm text-slate-500 dark:text-white/55 leading-relaxed">{c.desc}</p>
+              <p className="mt-4 text-sm font-mono text-emerald-700 dark:text-emerald-300">{c.cta}</p>
             </div>
           ))}
         </div>
@@ -59,10 +59,10 @@ export default function ContactPage() {
         <div className="grid lg:grid-cols-5 gap-10">
           <div className="lg:col-span-2">
             <h3 className="text-2xl font-bold tracking-tight">Send a message</h3>
-            <p className="mt-3 text-sm text-white/55 leading-relaxed">
+            <p className="mt-3 text-sm text-slate-500 dark:text-white/55 leading-relaxed">
               Tell us about your provider mix and what you&apos;re trying to solve. A real human will reply within one business day.
             </p>
-            <Link href="/demo" className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-300 hover:text-emerald-200">
+            <Link href="/demo" className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-700 dark:text-emerald-300 hover:text-emerald-200">
               Or jump straight to booking a demo <ArrowRight className="h-3.5 w-3.5" />
             </Link>
           </div>
@@ -72,10 +72,10 @@ export default function ContactPage() {
               <div className="rounded-2xl border border-emerald-400/30 bg-emerald-500/[0.06] p-8 text-center">
                 <CheckCircle2 className="mx-auto h-10 w-10 text-emerald-400" />
                 <p className="mt-4 text-lg font-semibold">Thanks — we got it.</p>
-                <p className="mt-2 text-sm text-white/65">A team member will be in touch within one business day.</p>
+                <p className="mt-2 text-sm text-slate-600 dark:text-white/65">A team member will be in touch within one business day.</p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 lg:p-8 space-y-4">
+              <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] p-6 lg:p-8 space-y-4">
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="name" className={LABEL}>Name</label>

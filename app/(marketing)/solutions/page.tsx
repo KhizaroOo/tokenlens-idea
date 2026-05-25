@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Cpu, DollarSign, PieChart, GitBranch, Network, ShieldCheck, Check } from "lucide-react";
 import {
   SectionHeader, SectionContainer, PersonaCard, CTASection, Pill,
@@ -83,7 +83,7 @@ export default function SolutionsPage() {
           <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]">
             Built for the people accountable for AI ROI.
           </h1>
-          <p className="mt-5 text-base lg:text-lg text-white/65 max-w-2xl leading-relaxed">
+          <p className="mt-5 text-base lg:text-lg text-slate-600 dark:text-white/65 max-w-2xl leading-relaxed">
             TokenLens speaks the language of every stakeholder — from boardroom cost reviews to per-team enablement metrics.
           </p>
         </div>
@@ -112,14 +112,14 @@ export default function SolutionsPage() {
           title="What each role uses TokenLens for."
         />
         <div className="mt-12 overflow-x-auto">
-          <div className="min-w-[800px] rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden">
+          <div className="min-w-[800px] rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] overflow-hidden">
             <table className="w-full text-sm">
-              <thead className="bg-white/[0.04]">
-                <tr className="border-b border-white/10">
-                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-white/55">Role</th>
-                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-white/55">Top question</th>
-                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-white/55">Key module</th>
-                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-white/55">Reporting cadence</th>
+              <thead className="bg-white dark:bg-white/[0.04]">
+                <tr className="border-b border-slate-200 dark:border-white/10">
+                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-white/55">Role</th>
+                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-white/55">Top question</th>
+                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-white/55">Key module</th>
+                  <th className="px-5 py-3 text-left text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-white/55">Reporting cadence</th>
                 </tr>
               </thead>
               <tbody>
@@ -131,11 +131,11 @@ export default function SolutionsPage() {
                   { role: "Platform", q: "Are credentials secure and rotating on schedule?", module: "Settings + Audit",      cadence: "Continuous" },
                   { role: "IT/Sec",   q: "Can I prove compliance to auditors?",              module: "Audit Logs + Governance", cadence: "Quarterly" },
                 ].map(row => (
-                  <tr key={row.role} className="border-b border-white/5 last:border-0 hover:bg-white/[0.02] transition-colors">
-                    <td className="px-5 py-4 font-semibold text-white">{row.role}</td>
-                    <td className="px-5 py-4 text-white/70 italic">&ldquo;{row.q}&rdquo;</td>
-                    <td className="px-5 py-4 text-emerald-300">{row.module}</td>
-                    <td className="px-5 py-4 text-white/55 font-mono text-xs">{row.cadence}</td>
+                  <tr key={row.role} className="border-b border-slate-100 dark:border-white/5 last:border-0 hover:bg-slate-50 dark:hover:bg-white/[0.02] transition-colors">
+                    <td className="px-5 py-4 font-semibold text-slate-900 dark:text-white">{row.role}</td>
+                    <td className="px-5 py-4 text-slate-600 dark:text-white/70 italic">&ldquo;{row.q}&rdquo;</td>
+                    <td className="px-5 py-4 text-emerald-700 dark:text-emerald-300">{row.module}</td>
+                    <td className="px-5 py-4 text-slate-500 dark:text-white/55 font-mono text-xs">{row.cadence}</td>
                   </tr>
                 ))}
               </tbody>
@@ -159,7 +159,7 @@ export default function SolutionsPage() {
             "PDF & CSV exports for any view",
             "Audit log of every admin action",
           ].map(b => (
-            <div key={b} className="rounded-xl border border-white/10 bg-white/[0.02] p-4 flex items-center gap-2 text-sm text-white/75">
+            <div key={b} className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] p-4 flex items-center gap-2 text-sm text-slate-700 dark:text-white/75">
               <Check className="h-4 w-4 text-emerald-400 flex-shrink-0" />
               {b}
             </div>

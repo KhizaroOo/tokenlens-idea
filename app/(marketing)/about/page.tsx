@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Compass, Layers, Users, ShieldCheck, BarChart3, Target } from "lucide-react";
 import { SectionHeader, SectionContainer, CTASection, FeatureCard, Pill } from "@/components/marketing/primitives";
 
@@ -18,7 +18,7 @@ export default function AboutPage() {
           <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]">
             AI moved faster than the dashboards built for it.
           </h1>
-          <p className="mt-5 text-base lg:text-lg text-white/65 max-w-2xl leading-relaxed">
+          <p className="mt-5 text-base lg:text-lg text-slate-600 dark:text-white/65 max-w-2xl leading-relaxed">
             TokenLens exists because AI adoption moved faster than internal reporting, finance workflows, and governance processes.
             We&apos;re building the operating dashboard the AI era needs.
           </p>
@@ -33,7 +33,7 @@ export default function AboutPage() {
             <h2 className="mt-5 text-3xl font-bold tracking-tight">
               Give every company one operating dashboard for their AI.
             </h2>
-            <p className="mt-4 text-base text-white/65 leading-relaxed">
+            <p className="mt-4 text-base text-slate-600 dark:text-white/65 leading-relaxed">
               Cost, adoption, productivity, governance — across every provider. So leadership can move fast on AI without flying blind on spend.
             </p>
           </div>
@@ -42,7 +42,7 @@ export default function AboutPage() {
             <h2 className="mt-5 text-3xl font-bold tracking-tight">
               The AI invoice is the new cloud invoice.
             </h2>
-            <p className="mt-4 text-base text-white/65 leading-relaxed">
+            <p className="mt-4 text-base text-slate-600 dark:text-white/65 leading-relaxed">
               In 2018, AWS spend caught CFOs off-guard. In 2025, AI is doing the same — only faster, and with less observability built into provider consoles. The category that emerged for cloud needs to exist for AI.
             </p>
           </div>
@@ -64,12 +64,12 @@ export default function AboutPage() {
 
       {/* Who it's for */}
       <SectionContainer className="py-12 lg:py-20">
-        <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-emerald-500/[0.04] via-transparent to-cyan-500/[0.04] p-8 lg:p-12">
+        <div className="rounded-3xl border border-slate-200 dark:border-white/10 bg-gradient-to-br from-emerald-500/[0.04] via-transparent to-cyan-500/[0.04] p-8 lg:p-12">
           <Pill tone="emerald">Who it&apos;s for</Pill>
           <h3 className="mt-5 text-3xl font-bold tracking-tight">
             Companies past the AI experimentation phase.
           </h3>
-          <p className="mt-4 text-base text-white/65 max-w-3xl leading-relaxed">
+          <p className="mt-4 text-base text-slate-600 dark:text-white/65 max-w-3xl leading-relaxed">
             If your AI spend is measured in thousands or millions per month — and lives across 5+ providers — TokenLens is for you.
             If you&apos;re still on $200/month of API credits, you don&apos;t need us yet. Bookmark this page and come back.
           </p>

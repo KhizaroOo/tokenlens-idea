@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { BookOpen, FileText, Calculator, GitCompare, ListChecks, Wallet, GitBranch, ArrowRight, Mic } from "lucide-react";
 import { SectionHeader, SectionContainer, CTASection, Pill } from "@/components/marketing/primitives";
@@ -66,7 +66,7 @@ export default function ResourcesPage() {
           <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]">
             The AI spend & governance reading list.
           </h1>
-          <p className="mt-5 text-base lg:text-lg text-white/65 max-w-2xl leading-relaxed">
+          <p className="mt-5 text-base lg:text-lg text-slate-600 dark:text-white/65 max-w-2xl leading-relaxed">
             Practical guides, calculators, and comparisons for the people responsible for AI cost, adoption, and policy.
           </p>
         </div>
@@ -76,7 +76,7 @@ export default function ResourcesPage() {
       <SectionContainer className="py-12 lg:py-16">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {FORMATS.map(f => (
-            <div key={f.label} className="rounded-2xl border border-white/10 bg-white/[0.025] p-4 text-center">
+            <div key={f.label} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.025] p-4 text-center">
               <div className={`mx-auto h-9 w-9 rounded-xl grid place-items-center ring-1 ${
                 f.tone === "emerald" ? "bg-emerald-500/10 text-emerald-400 ring-emerald-400/20" :
                 f.tone === "cyan"    ? "bg-cyan-500/10 text-cyan-400 ring-cyan-400/20"          :
@@ -87,7 +87,7 @@ export default function ResourcesPage() {
                 <f.icon className="h-4 w-4" />
               </div>
               <p className="mt-2 text-xs font-semibold">{f.label}</p>
-              <p className="mt-0.5 text-[10px] text-white/40 leading-tight">{f.desc}</p>
+              <p className="mt-0.5 text-[10px] text-slate-400 dark:text-white/40 leading-tight">{f.desc}</p>
             </div>
           ))}
         </div>
@@ -99,21 +99,21 @@ export default function ResourcesPage() {
         <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {ARTICLES.map(a => (
             <Link key={a.title} href="#" className="group">
-              <article className={`h-full rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition-all hover:border-white/20 hover:bg-white/[0.04]`}>
+              <article className={`h-full rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] p-6 transition-all hover:border-slate-300 dark:hover:border-white/20 hover:bg-white dark:bg-white/[0.04]`}>
                 <div className="flex items-center justify-between gap-2">
                   <span className={`text-[10px] font-bold uppercase tracking-wider rounded-full px-2 py-0.5 ${
-                    a.tone === "emerald" ? "bg-emerald-500/15 text-emerald-300" :
-                    a.tone === "cyan"    ? "bg-cyan-500/15 text-cyan-300"        :
-                    a.tone === "violet"  ? "bg-violet-500/15 text-violet-300"    :
-                    a.tone === "amber"   ? "bg-amber-500/15 text-amber-300"      :
-                                           "bg-indigo-500/15 text-indigo-300"
+                    a.tone === "emerald" ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" :
+                    a.tone === "cyan"    ? "bg-cyan-500/15 text-cyan-700 dark:text-cyan-300"        :
+                    a.tone === "violet"  ? "bg-violet-500/15 text-violet-700 dark:text-violet-300"    :
+                    a.tone === "amber"   ? "bg-amber-500/15 text-amber-700 dark:text-amber-300"      :
+                                           "bg-indigo-500/15 text-indigo-700 dark:text-indigo-300"
                   }`}>{a.kind}</span>
-                  <span className="text-[10px] font-mono text-white/35">{a.minutes} min read</span>
+                  <span className="text-[10px] font-mono text-slate-400 dark:text-white/35">{a.minutes} min read</span>
                 </div>
-                <a.icon className="mt-4 h-5 w-5 text-white/40" />
+                <a.icon className="mt-4 h-5 w-5 text-slate-400 dark:text-white/40" />
                 <h3 className="mt-3 text-base font-bold leading-tight">{a.title}</h3>
-                <p className="mt-2 text-sm text-white/55 leading-relaxed">{a.excerpt}</p>
-                <p className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-emerald-300 group-hover:text-emerald-200">
+                <p className="mt-2 text-sm text-slate-500 dark:text-white/55 leading-relaxed">{a.excerpt}</p>
+                <p className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300 group-hover:text-emerald-200">
                   Read post <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
                 </p>
               </article>

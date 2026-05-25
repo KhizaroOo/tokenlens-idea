@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { ShieldCheck, Lock, Building2, UserCheck, FileSearch, Eye, KeyRound, ServerCog } from "lucide-react";
 import { SectionHeader, SectionContainer, CTASection, FeatureCard, Pill } from "@/components/marketing/primitives";
 import { FAQAccordion } from "@/components/marketing/FAQAccordion";
@@ -45,7 +45,7 @@ export default function SecurityPage() {
           <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]">
             Built with enterprise security principles.
           </h1>
-          <p className="mt-5 text-base lg:text-lg text-white/65 max-w-2xl leading-relaxed">
+          <p className="mt-5 text-base lg:text-lg text-slate-600 dark:text-white/65 max-w-2xl leading-relaxed">
             Encrypted credentials, organization-level scoping, role-based access, audit-ready architecture.
             The application portal is login-protected; only the public marketing site is unauthenticated.
           </p>
@@ -69,7 +69,7 @@ export default function SecurityPage() {
 
       {/* What we never do */}
       <SectionContainer className="py-12 lg:py-20">
-        <div className="rounded-3xl border border-white/10 bg-gradient-to-br from-white/[0.04] to-transparent p-8 lg:p-12">
+        <div className="rounded-3xl border border-slate-200 dark:border-white/10 bg-gradient-to-br from-white/[0.04] to-transparent p-8 lg:p-12">
           <Pill tone="emerald">Privacy by design</Pill>
           <h3 className="mt-5 text-2xl lg:text-3xl font-bold tracking-tight">What TokenLens never stores.</h3>
           <ul className="mt-6 grid md:grid-cols-2 gap-3">
@@ -83,13 +83,13 @@ export default function SecurityPage() {
               "Personal access tokens in plaintext",
               "OAuth refresh tokens",
             ].map(t => (
-              <li key={t} className="flex items-start gap-2 text-sm text-white/70">
+              <li key={t} className="flex items-start gap-2 text-sm text-slate-600 dark:text-white/70">
                 <span className="h-1.5 w-1.5 rounded-full bg-red-400/70 mt-2 flex-shrink-0" />
                 <span className="line-through decoration-red-400/30">{t}</span>
               </li>
             ))}
           </ul>
-          <p className="mt-6 text-xs text-white/45 leading-relaxed">
+          <p className="mt-6 text-xs text-slate-500 dark:text-white/45 leading-relaxed">
             Metadata only: token counts, costs, model names, dates, user emails, team names, seat status. That&apos;s it.
           </p>
         </div>

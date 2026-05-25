@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import {
   BarChart3, Users, Building2, Cpu, GitBranch, DollarSign,
   Briefcase, ShieldCheck, AlertTriangle, FileBarChart, Settings2,
@@ -116,7 +116,7 @@ export default function PlatformPage() {
           <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]">
             The complete AI operating dashboard.
           </h1>
-          <p className="mt-5 text-base lg:text-lg text-white/65 max-w-2xl leading-relaxed">
+          <p className="mt-5 text-base lg:text-lg text-slate-600 dark:text-white/65 max-w-2xl leading-relaxed">
             Twelve modules covering every angle of AI usage in your company — from per-user adoption to per-model cost to per-provider governance.
           </p>
         </div>
@@ -153,14 +153,14 @@ export default function PlatformPage() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h3 className="text-base font-semibold">{m.title}</h3>
-                  <p className="mt-2 text-sm text-white/55 leading-relaxed">{m.description}</p>
-                  <div className="mt-4 rounded-lg bg-white/[0.03] p-3 border border-white/5">
+                  <p className="mt-2 text-sm text-slate-500 dark:text-white/55 leading-relaxed">{m.description}</p>
+                  <div className="mt-4 rounded-lg bg-slate-50 dark:bg-white/[0.03] p-3 border border-slate-100 dark:border-white/5">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-400/70 mb-1">Buyer can answer</p>
-                    <p className="text-xs text-white/70 italic">&ldquo;{m.buyerCan}&rdquo;</p>
+                    <p className="text-xs text-slate-600 dark:text-white/70 italic">&ldquo;{m.buyerCan}&rdquo;</p>
                   </div>
                   <div className="mt-3 flex flex-wrap gap-1.5">
                     {m.metrics.map(metric => (
-                      <span key={metric} className="text-[10px] font-mono rounded-full px-2 py-0.5 bg-white/5 text-white/55 border border-white/5">
+                      <span key={metric} className="text-[10px] font-mono rounded-full px-2 py-0.5 bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-white/55 border border-slate-100 dark:border-white/5">
                         {metric}
                       </span>
                     ))}
@@ -187,29 +187,29 @@ export default function PlatformPage() {
       {/* See also */}
       <SectionContainer className="py-12 lg:py-20">
         <div className="grid sm:grid-cols-3 gap-3">
-          <Link href="/integrations" className="rounded-2xl border border-white/10 bg-white/[0.025] p-5 hover:bg-white/[0.04] transition-colors flex items-start gap-3 group">
+          <Link href="/integrations" className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.025] p-5 hover:bg-white dark:bg-white/[0.04] transition-colors flex items-start gap-3 group">
             <Network className="h-5 w-5 text-emerald-400 mt-0.5" />
             <div>
               <p className="font-semibold text-sm">Integrations</p>
-              <p className="text-xs text-white/55 mt-0.5">8 providers covered</p>
+              <p className="text-xs text-slate-500 dark:text-white/55 mt-0.5">8 providers covered</p>
             </div>
-            <ArrowRight className="ml-auto h-4 w-4 text-white/40 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
+            <ArrowRight className="ml-auto h-4 w-4 text-slate-400 dark:text-white/40 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
           </Link>
-          <Link href="/solutions" className="rounded-2xl border border-white/10 bg-white/[0.025] p-5 hover:bg-white/[0.04] transition-colors flex items-start gap-3 group">
+          <Link href="/solutions" className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.025] p-5 hover:bg-white dark:bg-white/[0.04] transition-colors flex items-start gap-3 group">
             <Users className="h-5 w-5 text-cyan-400 mt-0.5" />
             <div>
               <p className="font-semibold text-sm">Solutions by role</p>
-              <p className="text-xs text-white/55 mt-0.5">CTO · CFO · FinOps · Eng</p>
+              <p className="text-xs text-slate-500 dark:text-white/55 mt-0.5">CTO · CFO · FinOps · Eng</p>
             </div>
-            <ArrowRight className="ml-auto h-4 w-4 text-white/40 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all" />
+            <ArrowRight className="ml-auto h-4 w-4 text-slate-400 dark:text-white/40 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all" />
           </Link>
-          <Link href="/security" className="rounded-2xl border border-white/10 bg-white/[0.025] p-5 hover:bg-white/[0.04] transition-colors flex items-start gap-3 group">
+          <Link href="/security" className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.025] p-5 hover:bg-white dark:bg-white/[0.04] transition-colors flex items-start gap-3 group">
             <ShieldCheck className="h-5 w-5 text-violet-400 mt-0.5" />
             <div>
               <p className="font-semibold text-sm">Security</p>
-              <p className="text-xs text-white/55 mt-0.5">Built with enterprise principles</p>
+              <p className="text-xs text-slate-500 dark:text-white/55 mt-0.5">Built with enterprise principles</p>
             </div>
-            <ArrowRight className="ml-auto h-4 w-4 text-white/40 group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all" />
+            <ArrowRight className="ml-auto h-4 w-4 text-slate-400 dark:text-white/40 group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all" />
           </Link>
         </div>
       </SectionContainer>

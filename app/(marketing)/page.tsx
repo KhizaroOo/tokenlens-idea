@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import {
   ArrowRight, Sparkles,
@@ -47,7 +47,7 @@ export default function Home() {
               </span>
               before it becomes your next cloud bill.
             </h1>
-            <p className="mt-6 text-base lg:text-lg text-white/65 max-w-xl leading-relaxed">
+            <p className="mt-6 text-base lg:text-lg text-slate-600 dark:text-white/65 max-w-xl leading-relaxed">
               TokenLens helps teams monitor AI costs, adoption, provider usage, team productivity, and governance across
               Claude, OpenAI, GitHub Copilot, Cursor, Microsoft Copilot, and more.
             </p>
@@ -60,7 +60,7 @@ export default function Home() {
               </Link>
               <Link
                 href="/platform"
-                className="inline-flex items-center gap-1.5 text-sm font-semibold rounded-full px-5 py-3 border border-white/15 text-white hover:bg-white/5 transition-colors"
+                className="inline-flex items-center gap-1.5 text-sm font-semibold rounded-full px-5 py-3 border border-slate-200 dark:border-white/15 text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
               >
                 Explore Platform
               </Link>
@@ -97,7 +97,7 @@ export default function Home() {
             { icon: Wallet,       title: "Surprise invoices",       desc: "AI budgets blow past targets because spend isn't visible until billing day.",                       tone: "red"    as const },
             { icon: Eye,          title: "Zero governance",         desc: "No alerts, no per-team budgets, no audit log of who connected which provider when.",                tone: "violet" as const },
           ].map(p => (
-            <div key={p.title} className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+            <div key={p.title} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.025] p-6">
               <div className={`h-10 w-10 rounded-xl grid place-items-center ring-1 ${
                 p.tone === "amber"  ? "bg-amber-500/10 text-amber-400 ring-amber-400/20"   :
                 p.tone === "red"    ? "bg-red-500/10 text-red-400 ring-red-400/20"         :
@@ -106,7 +106,7 @@ export default function Home() {
                 <p.icon className="h-5 w-5" />
               </div>
               <h3 className="mt-4 text-base font-semibold">{p.title}</h3>
-              <p className="mt-2 text-sm text-white/55 leading-relaxed">{p.desc}</p>
+              <p className="mt-2 text-sm text-slate-500 dark:text-white/55 leading-relaxed">{p.desc}</p>
             </div>
           ))}
         </div>
@@ -123,7 +123,7 @@ export default function Home() {
             <h2 className="mt-5 text-3xl sm:text-4xl font-bold tracking-tight">
               One control plane for every AI provider in your stack.
             </h2>
-            <p className="mt-4 text-base text-white/65 leading-relaxed">
+            <p className="mt-4 text-base text-slate-600 dark:text-white/65 leading-relaxed">
               TokenLens connects to admin APIs across LLMs, developer AI tools, and business productivity AI — pulling usage, cost, and seat data into a single normalized model.
             </p>
             <ul className="mt-6 space-y-2.5">
@@ -135,14 +135,14 @@ export default function Home() {
                 "Microsoft 365 Copilot",
                 "Gemini & Perplexity (where APIs allow)",
               ].map(c => (
-                <li key={c} className="flex items-center gap-2 text-sm text-white/70">
+                <li key={c} className="flex items-center gap-2 text-sm text-slate-600 dark:text-white/70">
                   <CheckCircle2 className="h-4 w-4 text-emerald-400 flex-shrink-0" />
                   {c}
                 </li>
               ))}
             </ul>
-            <p className="mt-6 text-xs text-white/40 italic leading-relaxed">
-              Provider coverage may vary by plan, API access, and customer environment. See <Link href="/integrations" className="text-emerald-300 hover:text-emerald-200 underline">Integrations</Link> for details.
+            <p className="mt-6 text-xs text-slate-400 dark:text-white/40 italic leading-relaxed">
+              Provider coverage may vary by plan, API access, and customer environment. See <Link href="/integrations" className="text-emerald-700 dark:text-emerald-300 hover:text-emerald-200 underline">Integrations</Link> for details.
             </p>
           </div>
         </div>
@@ -173,9 +173,9 @@ export default function Home() {
         />
         <div className="mt-12 grid md:grid-cols-2 gap-6">
           {/* Before */}
-          <div className="rounded-2xl border border-white/10 bg-white/[0.015] p-7">
+          <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.015] p-7">
             <Pill tone="amber" className="mb-4">Before TokenLens</Pill>
-            <ul className="space-y-3 text-sm text-white/65">
+            <ul className="space-y-3 text-sm text-slate-600 dark:text-white/65">
               {[
                 "Pulling 6 CSVs every month from 6 different consoles",
                 "No idea which teams or users are driving spend",
@@ -195,7 +195,7 @@ export default function Home() {
           <div className="relative rounded-2xl border border-emerald-400/20 bg-gradient-to-br from-emerald-500/[0.06] to-cyan-500/[0.04] p-7 overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(16,185,129,0.15),transparent_60%)] pointer-events-none" />
             <Pill tone="emerald" className="mb-4 relative">With TokenLens</Pill>
-            <ul className="relative space-y-3 text-sm text-white/85">
+            <ul className="relative space-y-3 text-sm text-slate-800 dark:text-white/85">
               {[
                 "One live dashboard across every provider",
                 "Per-team, per-user, per-model cost attribution",
@@ -249,7 +249,7 @@ export default function Home() {
             { role: "Platform",    icon: Network,       tone: "indigo"  as const, headline: "Provider governance + integration",        bullet: "One enablement console for every internal AI capability." },
             { role: "IT/Sec",      icon: ShieldCheck,   tone: "emerald" as const, headline: "Audit, access, policies, compliance",      bullet: "Tamper-evident audit log + role-based access ready for SOC 2." },
           ].map(p => (
-            <div key={p.role} className="rounded-2xl border border-white/10 bg-white/[0.025] p-6">
+            <div key={p.role} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.025] p-6">
               <div className="flex items-center gap-3">
                 <div className={`h-10 w-10 rounded-xl grid place-items-center ring-1 ${
                   p.tone === "emerald" ? "bg-emerald-500/10 text-emerald-400 ring-emerald-400/20" :
@@ -263,12 +263,12 @@ export default function Home() {
                 <p className="text-xs font-bold uppercase tracking-[0.16em] text-emerald-400">{p.role}</p>
               </div>
               <p className="mt-4 text-base font-semibold">{p.headline}</p>
-              <p className="mt-2 text-sm text-white/55 leading-relaxed">{p.bullet}</p>
+              <p className="mt-2 text-sm text-slate-500 dark:text-white/55 leading-relaxed">{p.bullet}</p>
             </div>
           ))}
         </div>
         <div className="mt-8 text-center">
-          <Link href="/solutions" className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-300 hover:text-emerald-200">
+          <Link href="/solutions" className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-700 dark:text-emerald-300 hover:text-emerald-200">
             See all solutions by role <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
@@ -300,7 +300,7 @@ export default function Home() {
             <h2 className="mt-5 text-3xl sm:text-4xl font-bold tracking-tight">
               Catch runaway AI spend the same day it happens.
             </h2>
-            <p className="mt-4 text-base text-white/65 leading-relaxed">
+            <p className="mt-4 text-base text-slate-600 dark:text-white/65 leading-relaxed">
               Set hard budgets per provider and per team. Add anomaly detection rules.
               Get notified the moment usage breaks normal pattern — and route alerts to Slack, Teams, email, or PagerDuty.
             </p>
@@ -311,7 +311,7 @@ export default function Home() {
                 "Inactive-seat alerts to reclaim license waste",
                 "Tamper-evident audit log for SOC 2 evidence",
               ].map(f => (
-                <li key={f} className="flex items-center gap-2 text-sm text-white/70">
+                <li key={f} className="flex items-center gap-2 text-sm text-slate-600 dark:text-white/70">
                   <CheckCircle2 className="h-4 w-4 text-emerald-400" />
                   {f}
                 </li>
@@ -325,7 +325,7 @@ export default function Home() {
               { icon: Users,          tone: "cyan"   as const, label: "Idle Seats",     text: "12 inactive Copilot seats — $228/mo reclaim available.", when: "today" },
               { icon: ShieldCheck,    tone: "emerald" as const,label: "Audit Event",    text: "Anthropic credential rotated by admin@acme.com.",        when: "4d ago" },
             ].map((a, i) => (
-              <div key={i} className="rounded-xl border border-white/10 bg-white/[0.03] p-4 flex items-start gap-3">
+              <div key={i} className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] p-4 flex items-start gap-3">
                 <div className={`h-9 w-9 rounded-lg grid place-items-center ring-1 ${
                   a.tone === "amber"   ? "bg-amber-500/10 text-amber-400 ring-amber-400/20"     :
                   a.tone === "red"     ? "bg-red-500/10 text-red-400 ring-red-400/20"           :
@@ -335,9 +335,9 @@ export default function Home() {
                   <a.icon className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-[11px] font-bold uppercase tracking-wider text-white/55">{a.label}</p>
+                  <p className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-white/55">{a.label}</p>
                   <p className="mt-0.5 text-sm text-white/90">{a.text}</p>
-                  <p className="mt-1 text-[11px] text-white/35">{a.when}</p>
+                  <p className="mt-1 text-[11px] text-slate-400 dark:text-white/35">{a.when}</p>
                 </div>
               </div>
             ))}
@@ -362,7 +362,7 @@ export default function Home() {
             { name: "Gemini",        tone: "amber"   },
             { name: "Perplexity",    tone: "amber"   },
           ].map(p => (
-            <div key={p.name} className="rounded-xl border border-white/10 bg-white/[0.02] p-4 text-center transition-colors hover:bg-white/[0.04]">
+            <div key={p.name} className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] p-4 text-center transition-colors hover:bg-white dark:bg-white/[0.04]">
               <div className={`mx-auto h-2 w-2 rounded-full ${
                 p.tone === "emerald" ? "bg-emerald-400" :
                 p.tone === "cyan"    ? "bg-cyan-400"    :
@@ -370,12 +370,12 @@ export default function Home() {
                 p.tone === "amber"   ? "bg-amber-400"   :
                                        "bg-indigo-400"
               }`} />
-              <p className="mt-2 text-xs font-semibold text-white/80">{p.name}</p>
+              <p className="mt-2 text-xs font-semibold text-slate-700 dark:text-white/80">{p.name}</p>
             </div>
           ))}
         </div>
         <div className="mt-8 text-center">
-          <Link href="/integrations" className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-300 hover:text-emerald-200">
+          <Link href="/integrations" className="inline-flex items-center gap-1.5 text-sm font-semibold text-emerald-700 dark:text-emerald-300 hover:text-emerald-200">
             See full integration matrix <ArrowRight className="h-3.5 w-3.5" />
           </Link>
         </div>
@@ -383,7 +383,7 @@ export default function Home() {
 
       {/* ── Differentiation block ──────────────────────────────────────── */}
       <SectionContainer className="py-20 lg:py-28">
-        <div className="relative rounded-3xl border border-white/10 p-10 lg:p-14 bg-gradient-to-br from-white/[0.04] to-transparent">
+        <div className="relative rounded-3xl border border-slate-200 dark:border-white/10 p-10 lg:p-14 bg-gradient-to-br from-white/[0.04] to-transparent">
           <div className="absolute inset-0 rounded-3xl bg-[radial-gradient(ellipse_at_top_left,rgba(139,92,246,0.10),transparent_60%)] pointer-events-none" />
           <div className="relative grid lg:grid-cols-3 gap-8 items-center">
             <div className="lg:col-span-2">
@@ -391,8 +391,8 @@ export default function Home() {
               <h2 className="mt-5 text-3xl sm:text-4xl font-bold tracking-tight leading-tight">
                 Provider dashboards are useful — but they only show one piece of the story.
               </h2>
-              <p className="mt-4 text-base text-white/65 max-w-2xl leading-relaxed">
-                TokenLens gives leadership one operating view across providers, users, teams, tools, models, budgets, and governance. Not LLM observability. Not cloud cost management. Not seat management. The <em className="text-emerald-300 not-italic">AI operating dashboard</em>.
+              <p className="mt-4 text-base text-slate-600 dark:text-white/65 max-w-2xl leading-relaxed">
+                TokenLens gives leadership one operating view across providers, users, teams, tools, models, budgets, and governance. Not LLM observability. Not cloud cost management. Not seat management. The <em className="text-emerald-700 dark:text-emerald-300 not-italic">AI operating dashboard</em>.
               </p>
             </div>
             <div className="grid grid-cols-2 gap-3 text-center">

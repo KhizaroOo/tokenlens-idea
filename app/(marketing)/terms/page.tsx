@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { SectionContainer, Pill } from "@/components/marketing/primitives";
 
 export const metadata: Metadata = {
@@ -65,22 +65,22 @@ export default function TermsPage() {
         <div className="max-w-3xl">
           <Pill tone="emerald">Legal</Pill>
           <h1 className="mt-5 text-4xl lg:text-5xl font-bold tracking-tight">Terms of Service</h1>
-          <p className="mt-3 text-sm text-white/45">Last updated: {LAST_UPDATED}</p>
+          <p className="mt-3 text-sm text-slate-500 dark:text-white/45">Last updated: {LAST_UPDATED}</p>
         </div>
       </SectionContainer>
 
       <SectionContainer className="py-8 lg:py-12">
         <article className="max-w-3xl">
-          <p className="text-base text-white/65 leading-relaxed">
+          <p className="text-base text-slate-600 dark:text-white/65 leading-relaxed">
             These Terms of Service govern access to and use of TokenLens. By using the service, you agree to these terms.
             For specific contractual questions, contact legal@tokenlens.io.
           </p>
 
           {SECTIONS.map(s => (
             <section key={s.h} className="mt-10">
-              <h2 className="text-xl font-bold tracking-tight text-white">{s.h}</h2>
+              <h2 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">{s.h}</h2>
               {s.p.map((para, i) => (
-                <p key={i} className="mt-3 text-sm text-white/65 leading-relaxed">{para}</p>
+                <p key={i} className="mt-3 text-sm text-slate-600 dark:text-white/65 leading-relaxed">{para}</p>
               ))}
             </section>
           ))}

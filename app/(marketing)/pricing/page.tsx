@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import Link from "next/link";
 import { Check, ArrowRight, Sparkles } from "lucide-react";
 import { SectionHeader, SectionContainer, CTASection, Pill } from "@/components/marketing/primitives";
@@ -100,7 +100,7 @@ export default function PricingPage() {
           <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]">
             Predictable pricing for predictable AI spend.
           </h1>
-          <p className="mt-5 text-base lg:text-lg text-white/65 leading-relaxed">
+          <p className="mt-5 text-base lg:text-lg text-slate-600 dark:text-white/65 leading-relaxed">
             Three plans, scaled to your AI maturity. Talk to sales for custom pricing on your provider mix and seat count.
           </p>
         </div>
@@ -117,7 +117,7 @@ export default function PricingPage() {
                 className={`relative rounded-2xl border p-7 ${
                   featured
                     ? "border-emerald-400/40 bg-gradient-to-br from-emerald-500/[0.08] to-cyan-500/[0.04] shadow-2xl shadow-emerald-500/10 lg:scale-[1.02]"
-                    : "border-white/10 bg-white/[0.02]"
+                    : "border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02]"
                 }`}
               >
                 {featured && (
@@ -129,12 +129,12 @@ export default function PricingPage() {
                   </div>
                 )}
                 <h3 className="text-2xl font-bold tracking-tight">{plan.name}</h3>
-                <p className="mt-1.5 text-sm text-white/55">{plan.blurb}</p>
+                <p className="mt-1.5 text-sm text-slate-500 dark:text-white/55">{plan.blurb}</p>
                 <div className="mt-6 mb-6">
                   <div className="flex items-baseline gap-1">
                     <span className="text-4xl font-bold tracking-tight">Talk to sales</span>
                   </div>
-                  <p className="mt-1.5 text-xs text-white/40">
+                  <p className="mt-1.5 text-xs text-slate-400 dark:text-white/40">
                     Pricing scales with provider count + seats
                   </p>
                 </div>
@@ -144,7 +144,7 @@ export default function PricingPage() {
                     className={`flex-1 inline-flex items-center justify-center gap-1.5 text-sm font-semibold rounded-full px-4 py-2.5 transition ${
                       featured
                         ? "bg-gradient-to-r from-emerald-400 to-cyan-400 text-[#050810] hover:opacity-90"
-                        : "border border-white/15 text-white hover:bg-white/5"
+                        : "border border-slate-200 dark:border-white/15 text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-white/5"
                     }`}
                   >
                     {plan.cta.label} <ArrowRight className="h-3.5 w-3.5" />
@@ -152,7 +152,7 @@ export default function PricingPage() {
                 </div>
                 <ul className="mt-7 space-y-2.5">
                   {plan.features.map(f => (
-                    <li key={f} className="flex items-start gap-2 text-sm text-white/70">
+                    <li key={f} className="flex items-start gap-2 text-sm text-slate-600 dark:text-white/70">
                       <Check className="h-4 w-4 text-emerald-400 flex-shrink-0 mt-0.5" />
                       {f}
                     </li>

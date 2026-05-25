@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Network, AlertTriangle } from "lucide-react";
 import {
   SectionHeader, SectionContainer, CTASection, ProviderLogoCard, Pill,
@@ -69,7 +69,7 @@ export default function IntegrationsPage() {
           <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]">
             Bring your AI stack into one view.
           </h1>
-          <p className="mt-5 text-base lg:text-lg text-white/65 max-w-2xl leading-relaxed">
+          <p className="mt-5 text-base lg:text-lg text-slate-600 dark:text-white/65 max-w-2xl leading-relaxed">
             TokenLens connects to the admin APIs of your AI providers — pulling usage, cost, and seat data into a normalized dashboard.
           </p>
         </div>
@@ -108,9 +108,9 @@ export default function IntegrationsPage() {
         />
         <div className="mt-10 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {BIZ.map(p => <ProviderLogoCard key={p.providerKey} {...p} />)}
-          <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.015] p-5 flex flex-col items-center justify-center text-center min-h-[180px]">
-            <p className="text-sm font-semibold text-white/55">More providers</p>
-            <p className="text-xs text-white/35 mt-1">Connector framework absorbs new APIs as they ship</p>
+          <div className="rounded-2xl border border-dashed border-slate-200 dark:border-white/15 bg-slate-50 dark:bg-white/[0.015] p-5 flex flex-col items-center justify-center text-center min-h-[180px]">
+            <p className="text-sm font-semibold text-slate-500 dark:text-white/55">More providers</p>
+            <p className="text-xs text-slate-400 dark:text-white/35 mt-1">Connector framework absorbs new APIs as they ship</p>
           </div>
         </div>
       </SectionContainer>
@@ -120,11 +120,11 @@ export default function IntegrationsPage() {
         <div className="rounded-2xl border border-amber-400/20 bg-amber-500/[0.04] p-5 flex items-start gap-3">
           <AlertTriangle className="h-5 w-5 text-amber-400 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-semibold text-white">Coverage varies by plan and API access</p>
-            <p className="mt-1 text-sm text-white/55 leading-relaxed">
+            <p className="text-sm font-semibold text-slate-900 dark:text-white">Coverage varies by plan and API access</p>
+            <p className="mt-1 text-sm text-slate-500 dark:text-white/55 leading-relaxed">
               Provider integrations depend on each vendor&apos;s admin API capabilities, your subscription tier, and your tenant configuration.
               Gemini and Perplexity are marked Limited because neither exposes an aggregate admin usage API at this time.
-              We&apos;ll add real integrations as those APIs become available — see our <a className="text-emerald-300 underline" href="/security">Security</a> page for credential-handling details.
+              We&apos;ll add real integrations as those APIs become available — see our <a className="text-emerald-700 dark:text-emerald-300 underline" href="/security">Security</a> page for credential-handling details.
             </p>
           </div>
         </div>

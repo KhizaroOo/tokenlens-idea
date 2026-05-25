@@ -1,4 +1,4 @@
-/**
+﻿/**
  * Shared marketing primitives — server components by default.
  * Visual identity: "AI Intelligence Lens" — dark navy, emerald + cyan + soft violet accents,
  * abstract lens/orbit/signal language, glassmorphism, gradient borders.
@@ -35,7 +35,7 @@ export function SectionHeader({
         {title}
       </h2>
       {subtitle && (
-        <p className="mt-4 text-base text-white/60 leading-relaxed">{subtitle}</p>
+        <p className="mt-4 text-base text-slate-600 dark:text-white/60 leading-relaxed">{subtitle}</p>
       )}
     </div>
   );
@@ -64,8 +64,8 @@ export function GlassCard({
 }: { children: ReactNode; className?: string; padded?: boolean; hover?: boolean }) {
   return (
     <div
-      className={`relative rounded-2xl border border-white/10 bg-white/[0.025] ${
-        hover ? "transition-all hover:border-emerald-400/30 hover:bg-white/[0.04]" : ""
+      className={`relative rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.025] ${
+        hover ? "transition-all hover:border-emerald-400/30 hover:bg-white dark:bg-white/[0.04]" : ""
       } ${padded ? "p-6" : ""} ${className}`}
     >
       {children}
@@ -104,12 +104,12 @@ export function FeatureCard({ icon: Icon, title, description, accent = "emerald"
           <div className="flex items-center gap-2">
             <h3 className="text-base font-semibold">{title}</h3>
             {badge && (
-              <span className="rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase bg-emerald-500/15 text-emerald-300">
+              <span className="rounded-full px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase bg-emerald-500/15 text-emerald-700 dark:text-emerald-300">
                 {badge}
               </span>
             )}
           </div>
-          <p className="mt-2 text-sm text-white/55 leading-relaxed">{description}</p>
+          <p className="mt-2 text-sm text-slate-500 dark:text-white/55 leading-relaxed">{description}</p>
         </div>
       </div>
     </GlassCard>
@@ -141,9 +141,9 @@ export function VisualMetricCard({
     indigo:  "bg-indigo-400",
   }[accent];
   return (
-    <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+    <div className="rounded-xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] p-4">
       <div className="flex items-center justify-between gap-2 mb-2">
-        <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-white/45">
+        <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-white/45">
           <span className={`h-1.5 w-1.5 rounded-full ${dot}`} />
           {label}
         </p>
@@ -154,7 +154,7 @@ export function VisualMetricCard({
         )}
       </div>
       <p className="text-2xl font-bold font-mono tracking-tight tabular-nums">{value}</p>
-      {hint && <p className="mt-1 text-[11px] text-white/40">{hint}</p>}
+      {hint && <p className="mt-1 text-[11px] text-slate-400 dark:text-white/40">{hint}</p>}
     </div>
   );
 }
@@ -178,7 +178,7 @@ export function CTASection({
 }) {
   return (
     <SectionContainer className="py-20 lg:py-28">
-      <div className="relative overflow-hidden rounded-3xl border border-white/10 p-10 lg:p-16 text-center">
+      <div className="relative overflow-hidden rounded-3xl border border-slate-200 dark:border-white/10 p-10 lg:p-16 text-center">
         <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/[0.08] via-transparent to-cyan-500/[0.10]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(16,185,129,0.18),transparent_70%)]" />
         <div className="relative">
@@ -186,7 +186,7 @@ export function CTASection({
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mx-auto max-w-3xl">
             {title}
           </h2>
-          <p className="mt-4 text-base text-white/60 max-w-2xl mx-auto">{subtitle}</p>
+          <p className="mt-4 text-base text-slate-600 dark:text-white/60 max-w-2xl mx-auto">{subtitle}</p>
           <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
             <Link
               href={primary.href}
@@ -196,7 +196,7 @@ export function CTASection({
             </Link>
             <Link
               href={secondary.href}
-              className="inline-flex items-center gap-1.5 text-sm font-semibold rounded-full px-5 py-2.5 border border-white/15 text-white hover:bg-white/5 transition-colors"
+              className="inline-flex items-center gap-1.5 text-sm font-semibold rounded-full px-5 py-2.5 border border-slate-200 dark:border-white/15 text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
             >
               {secondary.label}
             </Link>
@@ -233,14 +233,14 @@ export function ProviderLogoCard({
 }) {
   const tone = PROVIDER_TONE[providerKey] ?? PROVIDER_TONE.anthropic;
   const statusStyle = {
-    "available":   { cls: "bg-emerald-500/15 text-emerald-300", label: "Available" },
-    "in-progress": { cls: "bg-cyan-500/15 text-cyan-300",       label: "In progress" },
-    "planned":     { cls: "bg-white/10 text-white/55",          label: "Planned" },
-    "limited":     { cls: "bg-amber-500/15 text-amber-300",     label: "Limited" },
+    "available":   { cls: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300", label: "Available" },
+    "in-progress": { cls: "bg-cyan-500/15 text-cyan-700 dark:text-cyan-300",       label: "In progress" },
+    "planned":     { cls: "bg-slate-100 dark:bg-white/10 text-slate-500 dark:text-white/55",          label: "Planned" },
+    "limited":     { cls: "bg-amber-500/15 text-amber-700 dark:text-amber-300",     label: "Limited" },
   }[status];
   return (
-    <div className={`group relative rounded-2xl border border-white/10 bg-white/[0.02] p-5 transition-all hover:border-white/20 hover:bg-white/[0.04]`}>
-      <div className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-50`} />
+    <div className={`group relative rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] p-5 transition-all hover:border-slate-300 dark:hover:border-white/20 hover:bg-white dark:bg-white/[0.04]`}>
+      <div className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-slate-300 dark:via-white/20 to-transparent opacity-50`} />
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className={`h-11 w-11 rounded-xl grid place-items-center ring-1 ${tone.ring} bg-gradient-to-br ${tone.glow} to-transparent`}>
           <span className={`h-2 w-2 rounded-full ${tone.dot}`} />
@@ -250,11 +250,11 @@ export function ProviderLogoCard({
         </span>
       </div>
       <p className="text-base font-semibold">{label}</p>
-      <p className="text-[11px] text-white/40 mt-0.5 uppercase tracking-wider">{category}</p>
+      <p className="text-[11px] text-slate-400 dark:text-white/40 mt-0.5 uppercase tracking-wider">{category}</p>
       {examples && examples.length > 0 && (
         <ul className="mt-4 space-y-1.5">
           {examples.map(e => (
-            <li key={e} className="flex items-start gap-1.5 text-xs text-white/55">
+            <li key={e} className="flex items-start gap-1.5 text-xs text-slate-500 dark:text-white/55">
               <Check className="h-3 w-3 text-emerald-400 flex-shrink-0 mt-0.5" />
               <span>{e}</span>
             </li>
@@ -279,15 +279,15 @@ export function WorkflowStep({
       {!last && (
         <div className="hidden lg:block absolute top-7 left-[calc(100%-1rem)] w-full h-px bg-gradient-to-r from-emerald-400/30 to-transparent" />
       )}
-      <div className="relative rounded-2xl border border-white/10 bg-white/[0.03] p-5 h-full">
+      <div className="relative rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.03] p-5 h-full">
         <div className="flex items-center gap-3 mb-3">
           <div className="h-9 w-9 rounded-lg bg-gradient-to-br from-emerald-400 to-cyan-400 text-[#050810] grid place-items-center font-bold text-sm">
             {step}
           </div>
-          <Icon className="h-4 w-4 text-white/40" />
+          <Icon className="h-4 w-4 text-slate-400 dark:text-white/40" />
         </div>
         <p className="font-semibold text-sm">{title}</p>
-        <p className="mt-1.5 text-xs text-white/55 leading-relaxed">{description}</p>
+        <p className="mt-1.5 text-xs text-slate-500 dark:text-white/55 leading-relaxed">{description}</p>
       </div>
     </div>
   );
@@ -307,7 +307,7 @@ export function PersonaCard({
   anchor?: string;
 }) {
   return (
-    <div id={anchor} className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent p-6 lg:p-7">
+    <div id={anchor} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-gradient-to-br from-white/[0.04] via-white/[0.02] to-transparent p-6 lg:p-7">
       <div className="flex items-center gap-3">
         <div className="h-10 w-10 rounded-xl grid place-items-center bg-emerald-500/10 ring-1 ring-emerald-400/20 text-emerald-400">
           <Icon className="h-5 w-5" />
@@ -317,7 +317,7 @@ export function PersonaCard({
       <h3 className="mt-4 text-xl font-bold tracking-tight">{headline}</h3>
       <ul className="mt-4 space-y-2">
         {needs.map(n => (
-          <li key={n} className="flex items-start gap-2 text-sm text-white/65 leading-relaxed">
+          <li key={n} className="flex items-start gap-2 text-sm text-slate-600 dark:text-white/65 leading-relaxed">
             <Check className="h-4 w-4 text-emerald-400 flex-shrink-0 mt-0.5" />
             <span>{n}</span>
           </li>
@@ -339,12 +339,12 @@ export function Pill({
   className?: string;
 }) {
   const cls = {
-    emerald: "bg-emerald-500/15 text-emerald-300 ring-emerald-400/20",
-    cyan:    "bg-cyan-500/15 text-cyan-300 ring-cyan-400/20",
-    violet:  "bg-violet-500/15 text-violet-300 ring-violet-400/20",
-    amber:   "bg-amber-500/15 text-amber-300 ring-amber-400/20",
-    indigo:  "bg-indigo-500/15 text-indigo-300 ring-indigo-400/20",
-    white:   "bg-white/10 text-white/70 ring-white/15",
+    emerald: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 ring-emerald-400/20",
+    cyan:    "bg-cyan-500/15 text-cyan-700 dark:text-cyan-300 ring-cyan-400/20",
+    violet:  "bg-violet-500/15 text-violet-700 dark:text-violet-300 ring-violet-400/20",
+    amber:   "bg-amber-500/15 text-amber-700 dark:text-amber-300 ring-amber-400/20",
+    indigo:  "bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 ring-indigo-400/20",
+    white:   "bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-white/70 ring-white/15",
   }[tone];
   return (
     <span className={`inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-[0.14em] rounded-full px-2.5 py-1 ring-1 ${cls} ${className}`}>
