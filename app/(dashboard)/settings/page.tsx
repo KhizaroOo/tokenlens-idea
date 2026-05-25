@@ -736,12 +736,25 @@ export default function SettingsPage() {
         title="Provider Integrations"
         subtitle={
           <span className="flex items-center gap-2 flex-wrap">
-            Connect and configure AI provider data sources
+            <span className="rounded-full px-2 py-0.5 text-[10px] font-bold tracking-widest uppercase bg-emerald-500/15 text-emerald-400">
+              Live
+            </span>
+            <span>Anthropic + Claude Code</span>
+            <span className="text-muted-foreground/40">·</span>
+            <span className="rounded-full px-2 py-0.5 text-[10px] font-bold tracking-widest uppercase bg-cyan-500/15 text-cyan-400">
+              Demo
+            </span>
+            <span>OpenAI, Copilot, Cursor, M365</span>
+            <span className="text-muted-foreground/40">·</span>
+            <span className="rounded-full px-2 py-0.5 text-[10px] font-bold tracking-widest uppercase bg-amber-500/15 text-amber-400">
+              Limited
+            </span>
+            <span>Gemini, Perplexity</span>
             <a
               href="https://github.com/KhizaroOo/tokenlens-idea/blob/main/docs/PROVIDER_SETUP_GUIDE.md"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 transition-colors text-xs"
+              className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 transition-colors text-xs ml-auto"
             >
               <Settings2 className="h-3 w-3" />
               Setup Guide

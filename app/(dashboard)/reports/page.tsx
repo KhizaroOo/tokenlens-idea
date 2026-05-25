@@ -1,25 +1,33 @@
-﻿"use client";
+"use client";
 
 import { FileBarChart } from "lucide-react";
-import { PageShell } from "@/components/dashboard/PageShell";
+import { ComingSoonShell } from "@/components/dashboard/ComingSoonShell";
 
 export default function ReportsPage() {
   return (
-    <PageShell title="Reports" subtitle="Scheduled and on-demand usage reports">
-      <div className="flex flex-col items-center justify-center py-24 gap-5">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-cyan-500/10">
-          <FileBarChart className="h-8 w-8 text-cyan-400" />
-        </div>
-        <div className="text-center">
-          <span className="inline-block mb-3 rounded-full px-3 py-1 text-xs font-bold tracking-widest bg-amber-500/15 text-amber-400 uppercase">
-            Coming Soon
-          </span>
-          <h2 className="text-xl font-bold text-foreground mb-2">Reports</h2>
-          <p className="text-sm text-muted-foreground max-w-sm">
-            Generate detailed cost and usage reports by team, model, or time period. Export to PDF or CSV on a schedule.
-          </p>
-        </div>
-      </div>
-    </PageShell>
+    <ComingSoonShell
+      title="Reports"
+      subtitle="Scheduled and on-demand executive reports"
+      icon={FileBarChart}
+      iconAccent="cyan"
+      tagline="Board-ready PDF and CSV reports for every stakeholder. Weekly digest for engineering managers, monthly cost roll-up for finance, quarterly ROI review for the executive team — all generated, emailed, and archived automatically."
+      valueBullets={[
+        "Scheduled delivery: weekly, monthly, or quarterly",
+        "Per-team, per-provider, and per-model breakdowns in one PDF",
+        "CSV exports for ingestion into Snowflake / BigQuery / your data warehouse",
+        "Branded with your organization logo for stakeholder distribution",
+      ]}
+      sampleInsights={[
+        { label: "Templates",        value: "8",       hint: "Exec, FinOps, Eng Mgr, Audit, …", accent: "emerald" },
+        { label: "Scheduled",        value: "Weekly",  hint: "Monday 9am to leadership",        accent: "cyan"    },
+        { label: "Last report",      value: "—",       hint: "Generates on next schedule",      accent: "amber"   },
+        { label: "Export formats",   value: "PDF/CSV", hint: "Plus signed S3 links",            accent: "indigo"  },
+      ]}
+      audience={[
+        { role: "CFO",      benefit: "Replace ad-hoc spreadsheet pulls with consistent monthly AI cost statements." },
+        { role: "CTO",      benefit: "Show the board exactly where the AI budget went and what it delivered." },
+        { role: "Compliance", benefit: "Maintain an archive of every reported figure for audit defensibility." },
+      ]}
+    />
   );
 }

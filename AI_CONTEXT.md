@@ -12,7 +12,23 @@
 
 TokenLens is a **multi-provider AI Usage, Token Cost & Productivity Intelligence Dashboard** built for organisations that deploy AI tools to their employees. It connects to the admin APIs of major AI platforms — Anthropic, OpenAI, GitHub Copilot, Cursor, and Microsoft 365 Copilot — and consolidates all usage data, costs, and productivity metrics into one unified dashboard.
 
-**Current state:** Phase 2A is complete. The full UI is live for all 8 providers. Real API connectors are implemented for all providers — Anthropic, OpenAI, GitHub Copilot, Cursor, and Microsoft Copilot. Non-Anthropic providers show demo data from `seed.ts` by default; once you add credentials in Settings and click Sync, live data replaces the demo data automatically. Gemini and Perplexity have no admin API and remain limited.
+**Current state:** Phase 2A is complete. Phase 2B connector code is implemented and unit-validated (94/94 validation tests pass, 0 TypeScript errors). The full UI is live for all 8 providers.
+
+**Production-certified (real keys, real data flowing):**
+- Anthropic / Claude
+- Claude Code *(uses Anthropic credential)*
+
+**Phase 2B — connector implemented, real-key testing pending (currently showing demo data):**
+- OpenAI
+- GitHub Copilot
+- Cursor *(endpoint paths undocumented — connector tries multiple fallbacks)*
+- Microsoft 365 Copilot
+
+**Limited (no admin API exists provider-side):**
+- Gemini
+- Perplexity
+
+Non-production providers show demo data from `seed.ts` by default; once real credentials are added in Settings and Sync is clicked, live data replaces the demo data automatically. The boundary is enforced inside each sync worker via `deleteMany` before insert — there is no demo/live toggle to flip.
 
 **Tech company it resembles:** Linear / Vercel / Stripe dashboard aesthetic — dark, premium, data-dense.
 

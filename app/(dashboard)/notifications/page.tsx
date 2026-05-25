@@ -1,25 +1,33 @@
-﻿"use client";
+"use client";
 
 import { BellRing } from "lucide-react";
-import { PageShell } from "@/components/dashboard/PageShell";
+import { ComingSoonShell } from "@/components/dashboard/ComingSoonShell";
 
 export default function NotificationsPage() {
   return (
-    <PageShell title="Notifications" subtitle="Manage your notification preferences">
-      <div className="flex flex-col items-center justify-center py-24 gap-5">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10">
-          <BellRing className="h-8 w-8 text-emerald-400" />
-        </div>
-        <div className="text-center">
-          <span className="inline-block mb-3 rounded-full px-3 py-1 text-xs font-bold tracking-widest bg-amber-500/15 text-amber-400 uppercase">
-            Coming Soon
-          </span>
-          <h2 className="text-xl font-bold text-foreground mb-2">Notifications</h2>
-          <p className="text-sm text-muted-foreground max-w-sm">
-            Configure email, Slack, and webhook notifications for alerts, sync completions, and weekly digests.
-          </p>
-        </div>
-      </div>
-    </PageShell>
+    <ComingSoonShell
+      title="Notifications"
+      subtitle="Multi-channel delivery for alerts, digests, and sync events"
+      icon={BellRing}
+      iconAccent="emerald"
+      tagline="Pipe TokenLens events to where your team already lives. Configure Slack, Microsoft Teams, email, or generic webhooks per alert severity so the right people are notified — and only the right people."
+      valueBullets={[
+        "Channels: Slack, Microsoft Teams, email, PagerDuty, generic webhook",
+        "Per-rule routing: critical → PagerDuty, warning → Slack #ai-spend, info → digest email",
+        "Daily and weekly digest emails for engineering managers",
+        "Delivery audit log — confirm every notification reached its channel",
+      ]}
+      sampleInsights={[
+        { label: "Channels",          value: "0 configured", hint: "Connect Slack to start",   accent: "amber"   },
+        { label: "Notifications (7d)", value: "—",            hint: "After first channel set", accent: "cyan"    },
+        { label: "Digest cadence",     value: "Weekly",       hint: "Monday 9am default",      accent: "emerald" },
+        { label: "Delivery success",   value: "—",            hint: "Tracked per channel",     accent: "indigo"  },
+      ]}
+      audience={[
+        { role: "Eng Mgr",  benefit: "Spot a runaway sprint cost in Slack instead of in the next month's invoice." },
+        { role: "FinOps",   benefit: "Weekly cost digest with anomalies pre-flagged — no manual chasing." },
+        { role: "On-call",  benefit: "Route critical AI-spend incidents straight to PagerDuty alongside infra alerts." },
+      ]}
+    />
   );
 }

@@ -1,25 +1,33 @@
-﻿"use client";
+"use client";
 
 import { Bell } from "lucide-react";
-import { PageShell } from "@/components/dashboard/PageShell";
+import { ComingSoonShell } from "@/components/dashboard/ComingSoonShell";
 
 export default function AlertsPage() {
   return (
-    <PageShell title="Alerts" subtitle="Threshold alerts and anomaly detection">
-      <div className="flex flex-col items-center justify-center py-24 gap-5">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-amber-500/10">
-          <Bell className="h-8 w-8 text-amber-400" />
-        </div>
-        <div className="text-center">
-          <span className="inline-block mb-3 rounded-full px-3 py-1 text-xs font-bold tracking-widest bg-amber-500/15 text-amber-400 uppercase">
-            Coming Soon
-          </span>
-          <h2 className="text-xl font-bold text-foreground mb-2">Alerts</h2>
-          <p className="text-sm text-muted-foreground max-w-sm">
-            Set spend thresholds, token limits, and anomaly detection rules. Get notified when usage spikes or budgets are exceeded.
-          </p>
-        </div>
-      </div>
-    </PageShell>
+    <ComingSoonShell
+      title="Alerts"
+      subtitle="Threshold rules and anomaly detection across providers"
+      icon={Bell}
+      iconAccent="amber"
+      tagline="Catch runaway AI spend before it shows up in next month's invoice. Set hard budgets, soft thresholds, and anomaly rules per provider, team, or user — and get notified the moment something is off-pattern."
+      valueBullets={[
+        "Per-provider monthly budget alerts (hard cap and 80% soft warning)",
+        "Sudden-spike anomaly detection — 3× day-over-day token bursts flagged automatically",
+        "Per-team budget enforcement with per-user fairness rules",
+        "Inactive-seat alerts so you stop paying for licences nobody uses",
+      ]}
+      sampleInsights={[
+        { label: "Active rules",       value: "14",     hint: "Across 6 providers",             accent: "emerald" },
+        { label: "Triggered (7d)",     value: "3",      hint: "1 critical, 2 warning",          accent: "amber" },
+        { label: "Spend overrun",      value: "$612",   hint: "OpenAI vs. monthly cap",         accent: "red"   },
+        { label: "Anomalies detected", value: "2",      hint: "Cursor team-A: 4× normal usage", accent: "cyan"  },
+      ]}
+      audience={[
+        { role: "CFO", benefit: "Sleep at night knowing AI overruns are caught the same day, not the same quarter." },
+        { role: "CTO", benefit: "Protect production budgets from rogue scripts, misconfigured eval jobs, or runaway agents." },
+        { role: "Security", benefit: "Detect compromised API keys via anomaly spikes well before the invoice arrives." },
+      ]}
+    />
   );
 }

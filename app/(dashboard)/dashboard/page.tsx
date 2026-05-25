@@ -53,10 +53,16 @@ function ProviderCard({ p }: { p: ProviderSummary }) {
               Limited
             </span>
           </Link>
-        ) : (
-          <span className={`text-xs px-2 py-1 rounded-full font-medium ${p.status === "connected" ? "bg-emerald-500/20 text-emerald-400" : "bg-slate-500/20 text-slate-400"}`}>
-            {p.status === "connected" ? "Live" : "Not connected"}
+        ) : p.status === "connected" ? (
+          <span className="text-xs px-2 py-1 rounded-full font-medium bg-emerald-500/20 text-emerald-400" title="Live data from provider API">
+            Live
           </span>
+        ) : (
+          <Link href="/settings" title="Showing demo data — connect provider in Settings to switch to live data">
+            <span className="text-xs px-2 py-1 rounded-full font-medium bg-cyan-500/15 text-cyan-400 cursor-pointer hover:bg-cyan-500/25 transition-colors">
+              Demo Data
+            </span>
+          </Link>
         )}
       </div>
 
@@ -133,7 +139,7 @@ export default function DashboardPage() {
   }));
 
   return (
-    <PageShell title="Dashboard" subtitle="Multi-provider AI intelligence hub — all your AI spend in one place">
+    <PageShell title="Dashboard" subtitle="AI spend, token usage, and seat utilization across every connected provider">
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         {loading ? Array.from({ length: 4 }).map((_, i) => <StatCardSkeleton key={i} />) : (
           <>

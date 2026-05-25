@@ -3,6 +3,14 @@
 > Static analysis of all Phase 2B provider integrations. No real API calls are made here.
 > Run: `npm run validate:providers`
 
+**Current readiness (May 2026):**
+- **Live / Production:** Anthropic, Claude Code — real keys connected, data flowing in customer environments
+- **Demo · Ready for real-key testing:** OpenAI, GitHub Copilot, Microsoft 365 Copilot — connectors implemented, validated via static analysis + fixtures, awaiting real-key smoke test
+- **Demo · Endpoint verification pending:** Cursor — connector implements multi-path fallback because Cursor's API is undocumented; real-key sync needed to confirm which endpoints actually respond
+- **Limited:** Gemini, Perplexity — no admin API exists provider-side; not connectable
+
+All non-production providers currently display demo data from `seed.ts`. Sync workers purge demo rows before inserting live data on the first successful sync.
+
 ---
 
 ## 1. Provider Function Matrix

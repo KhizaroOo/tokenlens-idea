@@ -12,14 +12,16 @@
 
 | Provider | Category | Status |
 |---|---|---|
-| [Anthropic / Claude](#1-anthropic--claude) | LLM / API Spend | ✅ Production |
-| [Claude Code](#2-claude-code) | Developer AI Tools | ✅ Production |
-| [OpenAI](#3-openai) | LLM / API Spend | 🔬 Phase 2B — real-key testing pending |
-| [GitHub Copilot](#4-github-copilot) | Developer AI Tools | 🔬 Phase 2B — real-key testing pending |
-| [Cursor](#5-cursor) | Developer AI Tools | 🔬 Phase 2B — real-key testing pending |
-| [Microsoft 365 Copilot](#6-microsoft-365-copilot) | Business Productivity AI | 🔬 Phase 2B — real-key testing pending |
-| [Gemini](#7-gemini) | LLM / API Spend | ⚠️ Limited — no admin API |
-| [Perplexity](#8-perplexity) | LLM / API Spend | ⚠️ Limited — no admin API |
+| [Anthropic / Claude](#1-anthropic--claude) | LLM / API Spend | ✅ Live / Production |
+| [Claude Code](#2-claude-code) | Developer AI Tools | ✅ Live / Production |
+| [OpenAI](#3-openai) | LLM / API Spend | 🔬 Demo · Ready for real-key testing |
+| [GitHub Copilot](#4-github-copilot) | Developer AI Tools | 🔬 Demo · Ready for real-key testing |
+| [Cursor](#5-cursor) | Developer AI Tools | 🔬 Demo · Endpoint verification pending |
+| [Microsoft 365 Copilot](#6-microsoft-365-copilot) | Business Productivity AI | 🔬 Demo · Ready for real-key testing |
+| [Gemini](#7-gemini) | LLM / API Spend | ⚠️ Limited — no admin API exists |
+| [Perplexity](#8-perplexity) | LLM / API Spend | ⚠️ Limited — no admin API exists |
+
+> **What "Demo" means:** Connector code is implemented and unit-tested. The provider currently displays demo data from `seed.ts`. Adding a real credential in Settings and clicking Sync will purge the demo rows and replace them with live API data on the first successful sync.
 
 ---
 

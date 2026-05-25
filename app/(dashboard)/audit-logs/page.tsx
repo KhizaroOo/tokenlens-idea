@@ -1,25 +1,33 @@
-﻿"use client";
+"use client";
 
 import { ClipboardList } from "lucide-react";
-import { PageShell } from "@/components/dashboard/PageShell";
+import { ComingSoonShell } from "@/components/dashboard/ComingSoonShell";
 
 export default function AuditLogsPage() {
   return (
-    <PageShell title="Audit Logs" subtitle="Full audit trail of all platform activity">
-      <div className="flex flex-col items-center justify-center py-24 gap-5">
-        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-indigo-500/10">
-          <ClipboardList className="h-8 w-8 text-indigo-400" />
-        </div>
-        <div className="text-center">
-          <span className="inline-block mb-3 rounded-full px-3 py-1 text-xs font-bold tracking-widest bg-amber-500/15 text-amber-400 uppercase">
-            Coming Soon
-          </span>
-          <h2 className="text-xl font-bold text-foreground mb-2">Audit Logs</h2>
-          <p className="text-sm text-muted-foreground max-w-sm">
-            Track every configuration change, sync run, and user action. Full compliance-ready audit trail with search and filters.
-          </p>
-        </div>
-      </div>
-    </PageShell>
+    <ComingSoonShell
+      title="Audit Logs"
+      subtitle="Tamper-evident audit trail for SOC 2 and internal compliance"
+      icon={ClipboardList}
+      iconAccent="indigo"
+      tagline="Every configuration change, credential rotation, sync run, and admin action is logged with actor, timestamp, IP, and resource. Searchable, filterable, exportable — and immutable enough to satisfy your SOC 2 / ISO 27001 auditor."
+      valueBullets={[
+        "Records every provider connect / disconnect, sync, and budget change",
+        "Cryptographic hash-chain so log tampering is detectable",
+        "Filter by actor, action type, provider, date range, or resource ID",
+        "CSV export ready for SOC 2 evidence collection",
+      ]}
+      sampleInsights={[
+        { label: "Events (30d)",      value: "1,284",   hint: "Across all admins",        accent: "indigo"  },
+        { label: "Credential rotations", value: "3",     hint: "Last: 4 days ago",        accent: "emerald" },
+        { label: "Failed logins",     value: "0",        hint: "Clean for last 7 days",   accent: "emerald" },
+        { label: "Retention",         value: "365d",     hint: "Configurable per policy", accent: "cyan"    },
+      ]}
+      audience={[
+        { role: "Compliance", benefit: "Hand auditors a complete, tamper-evident change log without manual reconstruction." },
+        { role: "Security",   benefit: "Investigate incidents with attacker timeline and admin-action context." },
+        { role: "CTO",        benefit: "Demonstrate governance maturity to enterprise customers and procurement teams." },
+      ]}
+    />
   );
 }
