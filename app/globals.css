@@ -298,3 +298,137 @@
 /* RTL support for Arabic */
 [dir="rtl"] .sidebar-nav-item { flex-direction: row-reverse; }
 [dir="rtl"] .stat-card        { direction: rtl; }
+
+/* ════════════════════════════════════════════════════════════════════════
+   SIGNAL GALLERY — marketing-site-only design tokens
+   Scoped under .signal-gallery to keep portal untouched.
+════════════════════════════════════════════════════════════════════════ */
+.signal-gallery {
+  /* Light mode (default — warm museum off-white) */
+  --sg-bg:          #F7F2E8;
+  --sg-panel:       #FFF9EE;
+  --sg-card:        #FFFFFF;
+  --sg-ink:         #10120E;
+  --sg-text:        #10120E;
+  --sg-text-soft:   rgba(16,18,14,0.7);
+  --sg-text-mute:   rgba(16,18,14,0.48);
+  --sg-line:        rgba(16,18,14,0.12);
+  --sg-line-soft:   rgba(16,18,14,0.06);
+
+  /* Signal palette (same in both themes) */
+  --sg-signal:      #10A56F;     /* emerald — darker for AA on cream */
+  --sg-signal-glow: #38F8A1;
+  --sg-lens:        #0891B2;
+  --sg-lens-glow:   #52E5FF;
+  --sg-anomaly:     #7C3AED;
+  --sg-anomaly-glow:#A78BFA;
+  --sg-budget:      #D97706;
+  --sg-budget-glow: #F8C471;
+  --sg-risk:        #DC2643;
+  --sg-risk-glow:   #FF5C7A;
+}
+
+.dark .signal-gallery {
+  /* Dark mode — museum black with warm undertone */
+  --sg-bg:          #050505;
+  --sg-panel:       #0D0F0C;
+  --sg-card:        #11140F;
+  --sg-ink:         #F4F1E8;
+  --sg-text:        #F4F1E8;
+  --sg-text-soft:   rgba(244,241,232,0.68);
+  --sg-text-mute:   rgba(244,241,232,0.42);
+  --sg-line:        rgba(236,255,220,0.12);
+  --sg-line-soft:   rgba(236,255,220,0.06);
+
+  --sg-signal:      #38F8A1;
+  --sg-signal-glow: #38F8A1;
+  --sg-lens:        #52E5FF;
+  --sg-lens-glow:   #52E5FF;
+  --sg-anomaly:     #A78BFA;
+  --sg-anomaly-glow:#A78BFA;
+  --sg-budget:      #F8C471;
+  --sg-budget-glow: #F8C471;
+  --sg-risk:        #FF5C7A;
+  --sg-risk-glow:   #FF5C7A;
+}
+
+.signal-gallery {
+  background: var(--sg-bg);
+  color: var(--sg-text);
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-feature-settings: "cv02","cv03","cv11","ss01";
+}
+
+/* Editorial typography utilities */
+.sg-display    { font-weight: 900; letter-spacing: -0.045em; line-height: 0.95; }
+.sg-display-italic { font-weight: 900; letter-spacing: -0.035em; line-height: 0.95; font-style: italic; }
+.sg-title      { font-weight: 700; letter-spacing: -0.03em; line-height: 1.05; }
+.sg-eyebrow    { font-family: 'JetBrains Mono', monospace; font-weight: 500; text-transform: uppercase; letter-spacing: 0.22em; font-size: 11px; }
+.sg-caption    { font-family: 'JetBrains Mono', monospace; font-weight: 400; text-transform: uppercase; letter-spacing: 0.16em; font-size: 10px; }
+.sg-number     { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; font-feature-settings: "tnum","zero"; }
+
+/* Hairline borders */
+.sg-line       { border-color: var(--sg-line); }
+.sg-line-soft  { border-color: var(--sg-line-soft); }
+
+/* Lens glow effect — subtle radial */
+.sg-lens-aura {
+  background: radial-gradient(circle at center, var(--sg-signal-glow) 0%, transparent 70%);
+  opacity: 0.18;
+}
+.dark .sg-lens-aura { opacity: 0.35; }
+
+/* Signal line — animated horizontal scan */
+@keyframes sg-signal-scan {
+  0%   { transform: translateX(-100%); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateX(100%); opacity: 0; }
+}
+.sg-signal-scan { animation: sg-signal-scan 6s ease-in-out infinite; }
+
+/* Slow orbit */
+@keyframes sg-orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.sg-orbit-slow { animation: sg-orbit 80s linear infinite; }
+.sg-orbit-med  { animation: sg-orbit 48s linear infinite; }
+
+/* Gentle pulse */
+@keyframes sg-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50%      { opacity: 1.0; transform: scale(1.06); }
+}
+.sg-pulse { animation: sg-pulse 3.6s ease-in-out infinite; }
+
+/* Grain texture (museum print feel) */
+.sg-grain::before {
+  content: "";
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    radial-gradient(rgba(16,18,14,0.5) 0.5px, transparent 0.5px),
+    radial-gradient(rgba(16,18,14,0.3) 0.5px, transparent 0.5px);
+  background-size: 3px 3px, 7px 7px;
+  background-position: 0 0, 1px 1px;
+  opacity: 0.06;
+  mix-blend-mode: multiply;
+  z-index: 1;
+}
+.dark .sg-grain::before {
+  background-image:
+    radial-gradient(rgba(244,241,232,0.5) 0.5px, transparent 0.5px),
+    radial-gradient(rgba(244,241,232,0.3) 0.5px, transparent 0.5px);
+  mix-blend-mode: screen;
+  opacity: 0.04;
+}
+
+/* Diagonal divider — used between sections */
+.sg-divider-diagonal {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--sg-line) 20%, var(--sg-line) 80%, transparent);
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .sg-orbit-slow, .sg-orbit-med, .sg-pulse, .sg-signal-scan {
+    animation: none !important;
+  }
+}

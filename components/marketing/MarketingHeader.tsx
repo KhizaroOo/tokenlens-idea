@@ -4,7 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
-import { Menu, X, ArrowRight, Sun, Moon } from "lucide-react";
+import { Menu, X, ArrowUpRight, Sun, Moon } from "lucide-react";
+import { LensGlyph } from "./gallery";
 
 const NAV = [
   { label: "Product",      href: "/platform" },
@@ -16,7 +17,6 @@ const NAV = [
   { label: "Security",     href: "/security" },
 ];
 
-/** Match `/platform`, `/platform/x`, etc. — but not `/` matching everything. */
 function isActive(pathname: string, href: string): boolean {
   if (href === "/") return pathname === "/";
   return pathname === href || pathname.startsWith(href + "/");
@@ -27,14 +27,13 @@ function ThemeSwitch() {
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   if (!mounted) return <div className="h-8 w-8" aria-hidden />;
-
   const isDark = theme === "dark";
   return (
     <button
       onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
       title={isDark ? "Switch to light mode" : "Switch to dark mode"}
-      className="h-9 w-9 grid place-items-center rounded-full border border-slate-200 dark:border-white/10 bg-white dark:bg-white/5 text-slate-700 dark:text-white/80 hover:bg-slate-50 dark:hover:bg-white/10 transition-colors"
+      className="h-9 w-9 grid place-items-center border sg-line text-[var(--sg-text)] hover:border-[var(--sg-ink)]/40 transition-colors"
     >
       {isDark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
     </button>
@@ -53,33 +52,41 @@ export function MarketingHeader() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Close mobile menu when path changes
   useEffect(() => { setOpen(false); }, [pathname]);
 
   return (
     <header
       className={`fixed top-0 inset-x-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "bg-white/80 dark:bg-[#050810]/85 backdrop-blur-xl border-b border-slate-200/70 dark:border-white/5"
+          ? "bg-[var(--sg-bg)]/85 backdrop-blur-xl border-b sg-line"
           : "bg-transparent"
       }`}
     >
-      <div className="mx-auto max-w-7xl px-5 lg:px-8 h-16 flex items-center justify-between gap-6">
+      {/* Top operating-layer status strip (museum gallery feel) */}
+      <div className="hidden md:flex items-center justify-between mx-auto max-w-7xl px-5 lg:px-10 pt-2 pb-1 text-[10px] tracking-widest">
+        <div className="flex items-center gap-3 text-[var(--sg-text-mute)] sg-eyebrow">
+          <span className="inline-flex h-1.5 w-1.5 rounded-full bg-[var(--sg-signal)] animate-pulse" />
+          AI OPERATING LAYER · TOKENLENS
+          <span className="opacity-60">· EXHIBIT IN ROTATION</span>
+        </div>
+        <div className="flex items-center gap-3 text-[var(--sg-text-mute)] sg-caption">
+          <span>LENS v2.1</span>
+          <span className="opacity-40">/</span>
+          <span>{new Date().getFullYear()}</span>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-7xl px-5 lg:px-10 h-14 flex items-center justify-between gap-6">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="relative">
-            <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-emerald-400 to-cyan-400 grid place-items-center shadow-lg shadow-emerald-500/20 group-hover:shadow-emerald-500/40 transition-shadow">
-              <div className="h-2 w-2 rounded-full bg-white dark:bg-[#050810]" />
-            </div>
-            <div className="absolute inset-0 rounded-lg bg-emerald-400/30 blur-md -z-10" />
-          </div>
-          <span className="text-base font-bold tracking-tight text-slate-900 dark:text-white">
-            Token<span className="bg-gradient-to-r from-emerald-500 to-cyan-500 dark:from-emerald-300 dark:to-cyan-300 bg-clip-text text-transparent">Lens</span>
+        <Link href="/" className="flex items-center gap-2.5 group flex-shrink-0">
+          <LensGlyph size={26} className="transition-transform group-hover:rotate-180 duration-700" />
+          <span className="text-base font-black tracking-tight text-[var(--sg-text)] sg-display">
+            TokenLens
           </span>
         </Link>
 
-        {/* Desktop nav */}
-        <nav className="hidden lg:flex items-center gap-1">
+        {/* Desktop nav — pill row */}
+        <nav className="hidden lg:flex items-center gap-1 border sg-line rounded-full px-1 py-0.5 bg-[var(--sg-panel)]/40 backdrop-blur-sm">
           {NAV.map(item => {
             const active = isActive(pathname, item.href);
             return (
@@ -87,57 +94,54 @@ export function MarketingHeader() {
                 key={item.href}
                 href={item.href}
                 aria-current={active ? "page" : undefined}
-                className={`relative px-3 py-1.5 text-sm rounded-md transition-colors ${
+                className={`relative px-3 py-1 text-[13px] rounded-full transition-colors ${
                   active
-                    ? "text-emerald-600 dark:text-emerald-300 bg-emerald-500/10 dark:bg-emerald-400/10"
-                    : "text-slate-600 dark:text-white/70 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5"
+                    ? "bg-[var(--sg-ink)] text-[var(--sg-bg)] font-semibold"
+                    : "text-[var(--sg-text-soft)] hover:text-[var(--sg-text)]"
                 }`}
               >
                 {item.label}
-                {active && (
-                  <span className="absolute left-1/2 -translate-x-1/2 -bottom-1 h-0.5 w-6 rounded-full bg-gradient-to-r from-emerald-400 to-cyan-400" />
-                )}
               </Link>
             );
           })}
         </nav>
 
-        {/* Right CTAs */}
-        <div className="hidden lg:flex items-center gap-3">
+        {/* Right side */}
+        <div className="hidden lg:flex items-center gap-2">
           <ThemeSwitch />
           <Link
             href="/login"
-            className="text-sm text-slate-600 dark:text-white/70 hover:text-slate-900 dark:hover:text-white px-3 py-1.5 transition-colors"
+            className="text-sm text-[var(--sg-text-soft)] hover:text-[var(--sg-text)] px-3 py-1.5 transition-colors"
           >
             Login
           </Link>
           <Link
             href="/demo"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold rounded-full px-4 py-1.5 bg-gradient-to-r from-emerald-400 to-cyan-400 text-[#050810] hover:opacity-90 transition-opacity shadow-lg shadow-emerald-500/20"
+            className="group inline-flex items-center gap-1.5 text-sm font-semibold px-4 py-2 bg-[var(--sg-ink)] text-[var(--sg-bg)] hover:bg-[var(--sg-signal)] hover:text-[#050505] transition-colors"
           >
             Book Demo
-            <ArrowRight className="h-3.5 w-3.5" />
+            <ArrowUpRight className="h-3.5 w-3.5 group-hover:rotate-12 transition-transform" />
           </Link>
         </div>
 
-        {/* Mobile toggle row */}
+        {/* Mobile */}
         <div className="lg:hidden flex items-center gap-2">
           <ThemeSwitch />
           <button
             aria-label="Toggle menu"
             aria-expanded={open}
             onClick={() => setOpen(o => !o)}
-            className="h-9 w-9 grid place-items-center text-slate-700 dark:text-white rounded-md hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+            className="h-9 w-9 grid place-items-center border sg-line text-[var(--sg-text)]"
           >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+            {open ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile sheet */}
       {open && (
-        <div className="lg:hidden bg-white dark:bg-[#050810]/95 backdrop-blur-xl border-t border-slate-200 dark:border-white/5">
-          <nav className="px-5 py-4 flex flex-col gap-1">
+        <div className="lg:hidden bg-[var(--sg-bg)] border-t sg-line">
+          <nav className="px-5 py-5 flex flex-col gap-1">
             {NAV.map(item => {
               const active = isActive(pathname, item.href);
               return (
@@ -145,29 +149,28 @@ export function MarketingHeader() {
                   key={item.href}
                   href={item.href}
                   aria-current={active ? "page" : undefined}
-                  className={`px-3 py-2.5 text-sm rounded-lg transition-colors ${
+                  className={`flex items-center justify-between px-3 py-3 border-b sg-line-soft transition-colors ${
                     active
-                      ? "text-emerald-700 dark:text-emerald-300 bg-emerald-500/10 dark:bg-emerald-400/10 font-semibold"
-                      : "text-slate-700 dark:text-white/80 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5"
+                      ? "text-[var(--sg-signal)] font-bold"
+                      : "text-[var(--sg-text)]"
                   }`}
                 >
-                  {item.label}
+                  <span>{item.label}</span>
+                  <ArrowUpRight className="h-3.5 w-3.5 opacity-50" />
                 </Link>
               );
             })}
-            <div className="h-px bg-slate-200 dark:bg-white/5 my-2" />
             <Link
               href="/login"
-              className="px-3 py-2.5 text-sm text-slate-700 dark:text-white/80 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-white/5 rounded-lg transition-colors"
+              className="mt-4 px-3 py-3 border sg-line text-sm text-[var(--sg-text)] text-center"
             >
               Login
             </Link>
             <Link
               href="/demo"
-              className="mt-2 inline-flex items-center justify-center gap-1.5 text-sm font-semibold rounded-full px-4 py-2.5 bg-gradient-to-r from-emerald-400 to-cyan-400 text-[#050810]"
+              className="mt-2 px-3 py-3 bg-[var(--sg-ink)] text-[var(--sg-bg)] text-sm font-semibold text-center"
             >
-              Book Demo
-              <ArrowRight className="h-3.5 w-3.5" />
+              Book Demo →
             </Link>
           </nav>
         </div>

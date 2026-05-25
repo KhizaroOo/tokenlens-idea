@@ -1,130 +1,96 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import Link from "next/link";
-import { BookOpen, FileText, Calculator, GitCompare, ListChecks, Wallet, GitBranch, ArrowRight, Mic } from "lucide-react";
-import { SectionHeader, SectionContainer, CTASection, Pill } from "@/components/marketing/primitives";
+import { ArrowUpRight, BookOpen, FileText, Calculator, GitCompare, ListChecks, Wallet, GitBranch, Mic } from "lucide-react";
+import { EditorialPageHero, ExhibitLabel, CreativeCTA } from "@/components/marketing/gallery";
 
 export const metadata: Metadata = {
-  title: "Resources — AI cost & governance guides",
+  title: "Library — TokenLens Resources",
   description:
-    "Guides, calculators, comparisons, and reports on AI spend management, governance, FinOps for AI, and developer AI adoption.",
+    "Guides, calculators, reports, and comparisons for AI spend, governance, FinOps, and developer AI adoption.",
 };
 
 const FORMATS = [
-  { icon: BookOpen,   label: "Blog",        tone: "emerald" as const, desc: "Short-form posts and product updates."          },
-  { icon: FileText,   label: "Guides",      tone: "cyan"    as const, desc: "Long-form how-tos for buyers and operators."    },
-  { icon: Mic,        label: "Reports",     tone: "violet"  as const, desc: "Annual AI spend trends and adoption research."  },
-  { icon: Calculator, label: "Calculator",  tone: "amber"   as const, desc: "Estimate your AI spend in 60 seconds."          },
-  { icon: GitCompare, label: "Comparisons", tone: "indigo"  as const, desc: "Side-by-side provider analysis."                },
-  { icon: ListChecks, label: "Checklists",  tone: "emerald" as const, desc: "One-page checklists for AI governance rollout." },
+  { icon: BookOpen,   label: "BLOG",        desc: "Short posts + product updates" },
+  { icon: FileText,   label: "GUIDES",      desc: "Long-form how-tos" },
+  { icon: Mic,        label: "REPORTS",     desc: "Annual research" },
+  { icon: Calculator, label: "CALCULATOR",  desc: "AI spend estimator" },
+  { icon: GitCompare, label: "COMPARISONS", desc: "Provider analysis" },
+  { icon: ListChecks, label: "CHECKLISTS",  desc: "One-page playbooks" },
 ];
 
 const ARTICLES = [
-  {
-    tone: "emerald" as const, kind: "Blog",
-    title: "AI Spend Is Becoming the Next Cloud Bill",
-    excerpt: "Five years ago AWS spend caught most CFOs off-guard. AI is on the same trajectory — only faster, with less observability.",
-    minutes: 8, icon: Wallet,
-  },
-  {
-    tone: "cyan" as const, kind: "Guide",
-    title: "How to Build an AI Usage Governance Program",
-    excerpt: "A 30-60-90 day playbook for setting AI policies, budgets, and audit trails across providers.",
-    minutes: 14, icon: ListChecks,
-  },
-  {
-    tone: "violet" as const, kind: "Comparison",
-    title: "Claude vs OpenAI Spend Visibility: What Teams Should Track",
-    excerpt: "What each admin API actually exposes — and where you have to compute cost yourself.",
-    minutes: 11, icon: GitCompare,
-  },
-  {
-    tone: "indigo" as const, kind: "Guide",
-    title: "Developer AI Tools: Adoption Metrics Engineering Leaders Need",
-    excerpt: "Beyond Copilot seat count — acceptance rates, per-team adoption, and the metrics that actually predict ROI.",
-    minutes: 12, icon: GitBranch,
-  },
-  {
-    tone: "amber" as const, kind: "Checklist",
-    title: "AI FinOps Checklist for CFOs and CTOs",
-    excerpt: "Twelve items to review every quarter to keep AI spend under control.",
-    minutes: 6, icon: ListChecks,
-  },
-  {
-    tone: "emerald" as const, kind: "Report",
-    title: "How to Measure AI ROI Without Guesswork",
-    excerpt: "Concrete formulas: cost per PR, cost per resolved ticket, cost per active developer. With templates.",
-    minutes: 15, icon: Calculator,
-  },
+  { kind: "BLOG",       tone: "var(--sg-signal)",  title: "AI Spend Is Becoming the Next Cloud Bill",                   excerpt: "Five years ago AWS spend caught most CFOs off-guard. AI is on the same trajectory — only faster, with less observability.",  minutes: 8,  icon: Wallet      },
+  { kind: "GUIDE",      tone: "var(--sg-lens)",    title: "How to Build an AI Usage Governance Program",                excerpt: "A 30-60-90 day playbook for setting AI policies, budgets, and audit trails across providers.",                              minutes: 14, icon: ListChecks  },
+  { kind: "COMPARISON", tone: "var(--sg-anomaly)", title: "Claude vs OpenAI Spend Visibility",                          excerpt: "What each admin API actually exposes — and where you have to compute cost yourself.",                                       minutes: 11, icon: GitCompare  },
+  { kind: "GUIDE",      tone: "#6366F1",           title: "Developer AI Tools: Adoption Metrics Eng Leaders Need",      excerpt: "Beyond Copilot seat count — acceptance rates, per-team adoption, and the metrics that predict ROI.",                       minutes: 12, icon: GitBranch   },
+  { kind: "CHECKLIST",  tone: "var(--sg-budget)",  title: "AI FinOps Checklist for CFOs and CTOs",                      excerpt: "Twelve items to review every quarter to keep AI spend under control.",                                                       minutes: 6,  icon: ListChecks  },
+  { kind: "REPORT",     tone: "var(--sg-signal)",  title: "How to Measure AI ROI Without Guesswork",                    excerpt: "Concrete formulas: cost per PR, cost per resolved ticket, cost per active developer. With templates.",                     minutes: 15, icon: Calculator  },
 ];
 
 export default function ResourcesPage() {
   return (
     <>
-      <SectionContainer className="pt-16 lg:pt-24 pb-12">
-        <div className="max-w-3xl">
-          <Pill tone="cyan">Resources</Pill>
-          <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]">
-            The AI spend & governance reading list.
-          </h1>
-          <p className="mt-5 text-base lg:text-lg text-slate-600 dark:text-white/65 max-w-2xl leading-relaxed">
-            Practical guides, calculators, and comparisons for the people responsible for AI cost, adoption, and policy.
-          </p>
-        </div>
-      </SectionContainer>
+      <EditorialPageHero
+        exhibit="EXHIBIT 08"
+        label="OPERATING LIBRARY"
+        title={
+          <>
+            The AI spend &<br />
+            <span className="italic font-light">governance</span> reading list.
+          </>
+        }
+        lead="Practical guides, calculators, and comparisons for the people responsible for AI cost, adoption, and policy."
+        kicker={"LIBRARY\n6 FORMATS\n" + new Date().getFullYear()}
+      />
 
-      {/* Format tiles */}
-      <SectionContainer className="py-12 lg:py-16">
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+      {/* Format strip */}
+      <section className="py-8 border-y sg-line bg-[var(--sg-panel)]">
+        <div className="mx-auto max-w-7xl px-5 lg:px-10 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {FORMATS.map(f => (
-            <div key={f.label} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.025] p-4 text-center">
-              <div className={`mx-auto h-9 w-9 rounded-xl grid place-items-center ring-1 ${
-                f.tone === "emerald" ? "bg-emerald-500/10 text-emerald-400 ring-emerald-400/20" :
-                f.tone === "cyan"    ? "bg-cyan-500/10 text-cyan-400 ring-cyan-400/20"          :
-                f.tone === "violet"  ? "bg-violet-500/10 text-violet-400 ring-violet-400/20"    :
-                f.tone === "amber"   ? "bg-amber-500/10 text-amber-400 ring-amber-400/20"       :
-                                       "bg-indigo-500/10 text-indigo-400 ring-indigo-400/20"
-              }`}>
-                <f.icon className="h-4 w-4" />
+            <div key={f.label} className="flex items-center gap-3 p-3 hover:bg-[var(--sg-bg)] transition-colors">
+              <f.icon className="h-4 w-4 text-[var(--sg-signal)]" />
+              <div className="min-w-0">
+                <p className="sg-caption text-[var(--sg-text)]">{f.label}</p>
+                <p className="text-[10px] text-[var(--sg-text-mute)] leading-tight">{f.desc}</p>
               </div>
-              <p className="mt-2 text-xs font-semibold">{f.label}</p>
-              <p className="mt-0.5 text-[10px] text-slate-400 dark:text-white/40 leading-tight">{f.desc}</p>
             </div>
           ))}
         </div>
-      </SectionContainer>
+      </section>
 
       {/* Featured */}
-      <SectionContainer className="py-12 lg:py-16">
-        <SectionHeader eyebrow="Featured" title="What to read first." align="left" />
-        <div className="mt-12 grid md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {ARTICLES.map(a => (
-            <Link key={a.title} href="#" className="group">
-              <article className={`h-full rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02] p-6 transition-all hover:border-slate-300 dark:hover:border-white/20 hover:bg-white dark:bg-white/[0.04]`}>
-                <div className="flex items-center justify-between gap-2">
-                  <span className={`text-[10px] font-bold uppercase tracking-wider rounded-full px-2 py-0.5 ${
-                    a.tone === "emerald" ? "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300" :
-                    a.tone === "cyan"    ? "bg-cyan-500/15 text-cyan-700 dark:text-cyan-300"        :
-                    a.tone === "violet"  ? "bg-violet-500/15 text-violet-700 dark:text-violet-300"    :
-                    a.tone === "amber"   ? "bg-amber-500/15 text-amber-700 dark:text-amber-300"      :
-                                           "bg-indigo-500/15 text-indigo-700 dark:text-indigo-300"
-                  }`}>{a.kind}</span>
-                  <span className="text-[10px] font-mono text-slate-400 dark:text-white/35">{a.minutes} min read</span>
-                </div>
-                <a.icon className="mt-4 h-5 w-5 text-slate-400 dark:text-white/40" />
-                <h3 className="mt-3 text-base font-bold leading-tight">{a.title}</h3>
-                <p className="mt-2 text-sm text-slate-500 dark:text-white/55 leading-relaxed">{a.excerpt}</p>
-                <p className="mt-4 inline-flex items-center gap-1 text-xs font-semibold text-emerald-700 dark:text-emerald-300 group-hover:text-emerald-200">
-                  Read post <ArrowRight className="h-3 w-3 group-hover:translate-x-0.5 transition-transform" />
-                </p>
-              </article>
-            </Link>
-          ))}
-        </div>
-      </SectionContainer>
+      <section className="py-12 lg:py-20">
+        <div className="mx-auto max-w-7xl px-5 lg:px-10">
+          <ExhibitLabel label="FEATURED ARTIFACTS" tone="lens" />
+          <h2 className="mt-4 sg-display text-3xl lg:text-5xl text-[var(--sg-text)]">
+            What to <span className="italic font-light">read first.</span>
+          </h2>
 
-      <CTASection
+          <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-[var(--sg-line)] border sg-line">
+            {ARTICLES.map((a, i) => (
+              <Link key={a.title} href="#" className="group">
+                <article className="bg-[var(--sg-bg)] p-6 h-full hover:bg-[var(--sg-panel)] transition-colors relative">
+                  <span aria-hidden className="absolute -top-px -left-px h-1.5 w-12" style={{ background: a.tone }} />
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="sg-caption" style={{ color: a.tone }}>{a.kind}</span>
+                    <span className="sg-caption text-[var(--sg-text-mute)] text-[9px]">№ {String(i + 1).padStart(3, "0")} · {a.minutes} MIN</span>
+                  </div>
+                  <a.icon className="h-5 w-5 text-[var(--sg-text)] mb-3 group-hover:translate-x-1 transition-transform" />
+                  <h3 className="sg-title text-lg text-[var(--sg-text)] leading-snug">{a.title}</h3>
+                  <p className="mt-3 text-sm text-[var(--sg-text-soft)] leading-relaxed">{a.excerpt}</p>
+                  <p className="mt-5 inline-flex items-center gap-1 sg-caption text-[var(--sg-signal)]">
+                    READ <ArrowUpRight className="h-3 w-3" />
+                  </p>
+                </article>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <CreativeCTA
         title="Get the AI spend digest in your inbox."
-        subtitle="One email per month with the most useful piece we published. Unsubscribe anytime."
+        subtitle="One email per month. The most useful piece we published. Unsubscribe anytime."
         primary={{ label: "Contact us", href: "/contact" }}
         secondary={{ label: "Book Demo", href: "/demo" }}
       />

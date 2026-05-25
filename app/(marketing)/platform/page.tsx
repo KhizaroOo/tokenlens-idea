@@ -1,220 +1,99 @@
-﻿import type { Metadata } from "next";
+import type { Metadata } from "next";
 import {
   BarChart3, Users, Building2, Cpu, GitBranch, DollarSign,
   Briefcase, ShieldCheck, AlertTriangle, FileBarChart, Settings2,
-  Layers, ArrowRight, Network,
+  Layers,
 } from "lucide-react";
-import Link from "next/link";
 import {
-  SectionHeader, SectionContainer, GlassCard,
-  VisualMetricCard, CTASection, Pill,
-} from "@/components/marketing/primitives";
-import { DataFlowDiagram } from "@/components/marketing/DataFlowDiagram";
+  EditorialPageHero, ExhibitLabel, AsymmetricFeaturePanel,
+  CreativeCTA, SignalLine,
+} from "@/components/marketing/gallery";
+import { SignalFlowDiagram } from "@/components/marketing/SignalFlowDiagram";
 
 export const metadata: Metadata = {
-  title: "Platform — TokenLens AI Operating Dashboard",
+  title: "Platform — TokenLens",
   description:
-    "Twelve modules covering AI users, teams, models, developer AI tools, LLM spend, business productivity AI, governance, alerts, reports, and integrations.",
+    "An atlas of twelve operating modules — covering AI users, teams, models, developer AI tools, LLM spend, business productivity AI, governance, alerts, and reports.",
 };
 
-interface Module {
-  icon: typeof BarChart3;
-  tone: "emerald" | "cyan" | "violet" | "amber" | "indigo";
-  title: string;
-  description: string;
-  buyerCan: string;
-  metrics: string[];
-}
-
-const MODULES: Module[] = [
-  {
-    icon: BarChart3, tone: "emerald",
-    title: "Unified Dashboard",
-    description: "Track total AI spend, active users, provider mix, budget usage, and usage trends from one executive view.",
-    buyerCan: "How much is our company spending on AI this month, across every provider?",
-    metrics: ["MTD AI spend", "Active users", "Provider mix", "Budget burn-down", "Token volume trends"],
-  },
-  {
-    icon: Users, tone: "cyan",
-    title: "AI Users",
-    description: "Understand who is actively using AI tools, who is inactive, who is over-consuming, and where adoption is growing.",
-    buyerCan: "Which users actually use AI — and which seats are we paying for but nobody touches?",
-    metrics: ["Active vs inactive users", "Top consumers", "Adoption growth", "Per-user cost"],
-  },
-  {
-    icon: Building2, tone: "violet",
-    title: "AI Teams",
-    description: "Compare AI usage and spend across engineering, product, support, operations, and business teams.",
-    buyerCan: "Which teams drive the most AI value — and which need enablement?",
-    metrics: ["Per-team cost", "Per-team adoption rate", "Team velocity correlation", "Cross-team comparison"],
-  },
-  {
-    icon: Cpu, tone: "indigo",
-    title: "AI Models",
-    description: "Analyze model-level cost, usage volume, provider concentration, and optimization opportunities.",
-    buyerCan: "Are we using the right model for each workload — or paying GPT-4o for what GPT-4o-mini could do?",
-    metrics: ["Cost per model", "Token volume per model", "Provider concentration", "Optimization opportunities"],
-  },
-  {
-    icon: GitBranch, tone: "violet",
-    title: "Developer AI Tools",
-    description: "Track Claude Code, GitHub Copilot, Cursor, and other engineering AI assistant usage.",
-    buyerCan: "What's the adoption + acceptance rate per engineering team for coding assistants?",
-    metrics: ["Seats licensed vs active", "Acceptance rate", "Suggestions per day", "Lines added/removed"],
-  },
-  {
-    icon: DollarSign, tone: "amber",
-    title: "LLM / API Spend",
-    description: "Monitor Claude, OpenAI, Gemini, Perplexity, and other API-based AI spend.",
-    buyerCan: "Where's the token spend concentrated — model, project, or user?",
-    metrics: ["Cost per provider", "Tokens by model", "Project-level breakdown", "Cached vs fresh tokens"],
-  },
-  {
-    icon: Briefcase, tone: "indigo",
-    title: "Business Productivity AI",
-    description: "Understand Microsoft Copilot and productivity AI adoption across business users.",
-    buyerCan: "Are our M365 Copilot licenses being used by Teams, Word, Excel, Outlook?",
-    metrics: ["Licensed seat count", "Active users per app", "Last activity date", "Per-app utilization"],
-  },
-  {
-    icon: ShieldCheck, tone: "emerald",
-    title: "Governance",
-    description: "Create budgets, alerts, limits, audit trails, provider policies, and AI usage reports.",
-    buyerCan: "Can I prove to my auditor every AI credential change, budget edit, and admin action?",
-    metrics: ["Active budgets", "Audit events", "Policy rules", "Role-based access"],
-  },
-  {
-    icon: AlertTriangle, tone: "amber",
-    title: "Provider Limits",
-    description: "Honest documentation of what each provider API can and cannot provide. No vendor-style overpromising.",
-    buyerCan: "Why can't I see daily granularity for Microsoft Copilot? Why is Gemini limited?",
-    metrics: ["Coverage by provider", "API capabilities", "Computed vs measured fields"],
-  },
-  {
-    icon: FileBarChart, tone: "cyan",
-    title: "Reports & Alerts",
-    description: "Scheduled executive reports, threshold alerts, anomaly detection — delivered to Slack, email, or PDF.",
-    buyerCan: "Can I get a weekly CFO digest and same-day anomaly alerts?",
-    metrics: ["Scheduled reports", "Triggered alerts", "Delivery channels", "Alert response rate"],
-  },
-  {
-    icon: Settings2, tone: "emerald",
-    title: "Settings & Integrations",
-    description: "Encrypted credential storage, per-provider sync controls, role-based access, organization scoping.",
-    buyerCan: "How are our provider keys stored, and can I rotate them safely?",
-    metrics: ["Encrypted credentials", "Sync history", "User roles", "Organization isolation"],
-  },
+const MODULES = [
+  { num: "01", icon: BarChart3,   eyebrow: "EXECUTIVE LENS",       title: "Unified Dashboard",      tone: "signal"  as const, body: "Total AI spend, active users, provider mix, budget burn, usage trends — one executive view. Designed for the people who only have ten minutes between meetings." },
+  { num: "02", icon: Users,       eyebrow: "IDENTITY MAP",         title: "AI Users",               tone: "lens"    as const, body: "Who is actually using AI. Who is dormant. Who is over-consuming. Who needs enablement. Mapped per user, per tool, per week." },
+  { num: "03", icon: Building2,   eyebrow: "HEATMAP WALL",         title: "AI Teams",               tone: "anomaly" as const, body: "Per-team adoption, per-team cost, per-team velocity correlation. Compare engineering vs. product vs. support vs. operations." },
+  { num: "04", icon: Cpu,         eyebrow: "COST SPECTRUM",        title: "AI Models",              tone: "budget"  as const, body: "Model-level cost, volume, provider concentration. Where you're paying GPT-4o for jobs that GPT-4o-mini could do at 17× cheaper." },
+  { num: "05", icon: GitBranch,   eyebrow: "CODE SIGNAL RAIL",     title: "Developer AI Tools",     tone: "anomaly" as const, body: "Claude Code, GitHub Copilot, Cursor — seats vs. activity, acceptance rates, per-team productivity signals." },
+  { num: "06", icon: DollarSign,  eyebrow: "CONSUMPTION WAVEFORM", title: "LLM / API Spend",        tone: "budget"  as const, body: "Claude, OpenAI, Gemini, Perplexity — token spend normalized into one waveform. By user, model, project, day." },
+  { num: "07", icon: Briefcase,   eyebrow: "ADOPTION CONSTELLATION",title:"Business Productivity AI",tone: "lens"   as const, body: "Microsoft 365 Copilot — licensed seat count, per-app activity (Teams, Word, Excel, Outlook), last-activity date per user." },
+  { num: "08", icon: ShieldCheck, eyebrow: "CONTROL GRID",         title: "Governance",             tone: "signal"  as const, body: "Budgets, alert rules, audit trails, provider policies. The compliance layer that doesn't slow engineering down." },
+  { num: "09", icon: AlertTriangle,eyebrow: "HONEST LIMITS",       title: "Provider Limits",        tone: "budget"  as const, body: "An exhibit of what each provider API can and cannot expose. Honest about Gemini and Perplexity. No vendor-style overpromising." },
+  { num: "10", icon: FileBarChart,eyebrow: "REPORTING ROOM",       title: "Reports & Alerts",       tone: "lens"    as const, body: "Scheduled executive reports. Threshold alerts. Anomaly detection. Delivered to Slack, Teams, email, PagerDuty, or PDF." },
+  { num: "11", icon: Settings2,   eyebrow: "INSTRUMENT PANEL",     title: "Settings & Integrations",tone: "signal"  as const, body: "Encrypted credential storage. Per-provider sync controls. Role-based access. Organization-level scoping. Every knob, one place." },
+  { num: "12", icon: Layers,      eyebrow: "NEW EXHIBITS",         title: "Connector Framework",    tone: "anomaly" as const, body: "Drop-in connector pattern absorbs new providers as their admin APIs ship. Designed for the AI tooling explosion, not against it." },
 ];
 
 export default function PlatformPage() {
   return (
     <>
-      {/* Hero */}
-      <SectionContainer className="pt-16 lg:pt-24 pb-12">
-        <div className="max-w-3xl">
-          <Pill tone="emerald"><Layers className="h-3 w-3" /> Platform</Pill>
-          <h1 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]">
-            The complete AI operating dashboard.
-          </h1>
-          <p className="mt-5 text-base lg:text-lg text-slate-600 dark:text-white/65 max-w-2xl leading-relaxed">
-            Twelve modules covering every angle of AI usage in your company — from per-user adoption to per-model cost to per-provider governance.
+      <EditorialPageHero
+        exhibit="EXHIBIT 02"
+        label="PLATFORM ATLAS"
+        title={
+          <>
+            The complete <span className="italic font-light">operating lens</span> for
+            company-wide AI.
+          </>
+        }
+        lead="Twelve modules covering every angle of AI usage in your company — from per-user adoption to per-model cost to per-provider governance."
+        kicker={"PLATFORM\n12 ARTIFACTS\n" + new Date().getFullYear()}
+      />
+
+      {/* Module grid */}
+      <section className="py-12 lg:py-20">
+        <div className="mx-auto max-w-7xl px-5 lg:px-10">
+          <div className="mb-10">
+            <ExhibitLabel label="OPERATING MODULES" tone="signal" />
+            <h2 className="mt-4 sg-display text-3xl lg:text-4xl text-[var(--sg-text)] max-w-3xl">
+              Each module is a different artifact. <span className="italic font-light text-[var(--sg-text-mute)]">A different way to see AI inside your company.</span>
+            </h2>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-x-px gap-y-px bg-[var(--sg-line)] border sg-line">
+            {MODULES.map(m => (
+              <article key={m.num} className="bg-[var(--sg-bg)] p-7 lg:p-9 relative group hover:bg-[var(--sg-panel)] transition-colors">
+                <div className="flex items-baseline justify-between mb-5">
+                  <span className="sg-number text-4xl font-black text-[var(--sg-text)]">{m.num}</span>
+                  <ExhibitLabel label={m.eyebrow} tone={m.tone} />
+                </div>
+                <m.icon className="h-6 w-6 text-[var(--sg-text)] mb-4 group-hover:translate-x-1 transition-transform" />
+                <h3 className="sg-title text-2xl text-[var(--sg-text)]">{m.title}</h3>
+                <p className="mt-3 text-[var(--sg-text-soft)] leading-relaxed">{m.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Architecture */}
+      <section className="py-12 lg:py-20 bg-[var(--sg-panel)] border-y sg-line">
+        <div className="mx-auto max-w-7xl px-5 lg:px-10">
+          <ExhibitLabel label="ARCHITECTURE" tone="lens" />
+          <h2 className="mt-4 sg-display text-3xl lg:text-5xl text-[var(--sg-text)] max-w-3xl leading-[0.95]">
+            Providers in. <span className="italic font-light">Intelligence out.</span>
+          </h2>
+          <p className="mt-4 text-base text-[var(--sg-text-soft)] leading-relaxed max-w-2xl">
+            A single pipeline normalizes every provider API into a unified data model — so the dashboard works the same whether you have 2 providers or 20.
           </p>
+          <div className="mt-10">
+            <SignalFlowDiagram />
+          </div>
         </div>
-      </SectionContainer>
+      </section>
 
-      {/* Quick metric strip */}
-      <SectionContainer className="pb-12">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          <VisualMetricCard label="Modules"    value="12"     accent="emerald" hint="Out of the box" />
-          <VisualMetricCard label="Providers"  value="8"      accent="cyan"    hint="LLM + Dev + Business" />
-          <VisualMetricCard label="Personas"   value="6+"     accent="violet"  hint="CTO/CFO/FinOps/Eng/Platform/IT" />
-          <VisualMetricCard label="Sync workers" value="Daily" accent="amber"  hint="Background ingestion" />
-        </div>
-      </SectionContainer>
-
-      {/* Modules grid */}
-      <SectionContainer className="py-12 lg:py-16">
-        <SectionHeader
-          eyebrow="Modules"
-          title="Built around real questions leadership asks."
-        />
-        <div className="mt-12 grid md:grid-cols-2 gap-4">
-          {MODULES.map(m => (
-            <GlassCard key={m.title}>
-              <div className="flex items-start gap-4">
-                <div className={`h-11 w-11 rounded-xl grid place-items-center ring-1 ${
-                  m.tone === "emerald" ? "bg-emerald-500/10 text-emerald-400 ring-emerald-400/20" :
-                  m.tone === "cyan"    ? "bg-cyan-500/10 text-cyan-400 ring-cyan-400/20"           :
-                  m.tone === "violet"  ? "bg-violet-500/10 text-violet-400 ring-violet-400/20"     :
-                  m.tone === "amber"   ? "bg-amber-500/10 text-amber-400 ring-amber-400/20"        :
-                                         "bg-indigo-500/10 text-indigo-400 ring-indigo-400/20"
-                }`}>
-                  <m.icon className="h-5 w-5" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="text-base font-semibold">{m.title}</h3>
-                  <p className="mt-2 text-sm text-slate-500 dark:text-white/55 leading-relaxed">{m.description}</p>
-                  <div className="mt-4 rounded-lg bg-slate-50 dark:bg-white/[0.03] p-3 border border-slate-100 dark:border-white/5">
-                    <p className="text-[10px] font-bold uppercase tracking-wider text-emerald-400/70 mb-1">Buyer can answer</p>
-                    <p className="text-xs text-slate-600 dark:text-white/70 italic">&ldquo;{m.buyerCan}&rdquo;</p>
-                  </div>
-                  <div className="mt-3 flex flex-wrap gap-1.5">
-                    {m.metrics.map(metric => (
-                      <span key={metric} className="text-[10px] font-mono rounded-full px-2 py-0.5 bg-slate-100 dark:bg-white/5 text-slate-500 dark:text-white/55 border border-slate-100 dark:border-white/5">
-                        {metric}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </GlassCard>
-          ))}
-        </div>
-      </SectionContainer>
-
-      {/* Architecture flow */}
-      <SectionContainer className="py-12 lg:py-20">
-        <SectionHeader
-          eyebrow="Architecture"
-          title="Providers in. Intelligence out."
-          subtitle="A single pipeline normalizes every provider API into a unified data model — so the dashboard works the same whether you have 2 providers or 20."
-        />
-        <div className="mt-12">
-          <DataFlowDiagram />
-        </div>
-      </SectionContainer>
-
-      {/* See also */}
-      <SectionContainer className="py-12 lg:py-20">
-        <div className="grid sm:grid-cols-3 gap-3">
-          <Link href="/integrations" className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.025] p-5 hover:bg-white dark:bg-white/[0.04] transition-colors flex items-start gap-3 group">
-            <Network className="h-5 w-5 text-emerald-400 mt-0.5" />
-            <div>
-              <p className="font-semibold text-sm">Integrations</p>
-              <p className="text-xs text-slate-500 dark:text-white/55 mt-0.5">8 providers covered</p>
-            </div>
-            <ArrowRight className="ml-auto h-4 w-4 text-slate-400 dark:text-white/40 group-hover:text-emerald-400 group-hover:translate-x-0.5 transition-all" />
-          </Link>
-          <Link href="/solutions" className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.025] p-5 hover:bg-white dark:bg-white/[0.04] transition-colors flex items-start gap-3 group">
-            <Users className="h-5 w-5 text-cyan-400 mt-0.5" />
-            <div>
-              <p className="font-semibold text-sm">Solutions by role</p>
-              <p className="text-xs text-slate-500 dark:text-white/55 mt-0.5">CTO · CFO · FinOps · Eng</p>
-            </div>
-            <ArrowRight className="ml-auto h-4 w-4 text-slate-400 dark:text-white/40 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all" />
-          </Link>
-          <Link href="/security" className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-white/[0.025] p-5 hover:bg-white dark:bg-white/[0.04] transition-colors flex items-start gap-3 group">
-            <ShieldCheck className="h-5 w-5 text-violet-400 mt-0.5" />
-            <div>
-              <p className="font-semibold text-sm">Security</p>
-              <p className="text-xs text-slate-500 dark:text-white/55 mt-0.5">Built with enterprise principles</p>
-            </div>
-            <ArrowRight className="ml-auto h-4 w-4 text-slate-400 dark:text-white/40 group-hover:text-violet-400 group-hover:translate-x-0.5 transition-all" />
-          </Link>
-        </div>
-      </SectionContainer>
-
-      <CTASection title="See the full platform in 20 minutes." />
+      <CreativeCTA
+        eyebrow="INSTALLATION 09 — PLATFORM"
+        title="See the full atlas in twenty minutes."
+        subtitle="Bring your provider mix. We'll show you exactly how each module would render against your real stack."
+      />
     </>
   );
 }

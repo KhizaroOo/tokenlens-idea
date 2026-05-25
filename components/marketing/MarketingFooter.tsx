@@ -1,5 +1,6 @@
-﻿import Link from "next/link";
-import { ArrowRight } from "lucide-react";
+import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
+import { LensGlyph } from "./gallery";
 
 const COLUMNS = [
   {
@@ -25,7 +26,7 @@ const COLUMNS = [
   {
     label: "Resources",
     links: [
-      { label: "Resource Hub",         href: "/resources" },
+      { label: "Library",              href: "/resources" },
       { label: "About",                href: "/about" },
       { label: "Contact",              href: "/contact" },
       { label: "Book Demo",            href: "/demo" },
@@ -41,81 +42,115 @@ const COLUMNS = [
   },
 ];
 
+const PROVIDER_DOTS = [
+  { name: "Claude",        color: "var(--sg-signal)" },
+  { name: "OpenAI",        color: "var(--sg-lens)" },
+  { name: "Copilot",       color: "var(--sg-anomaly)" },
+  { name: "Cursor",        color: "var(--sg-budget)" },
+  { name: "M365 Copilot",  color: "#6366F1" },
+  { name: "Gemini",        color: "var(--sg-budget)" },
+  { name: "Perplexity",    color: "var(--sg-budget)" },
+];
+
 export function MarketingFooter() {
   return (
-    <footer className="relative bg-white dark:bg-[#050810] text-slate-900 dark:text-white border-t border-slate-100 dark:border-white/5">
-      {/* CTA block */}
-      <div className="mx-auto max-w-7xl px-5 lg:px-8 pt-20 pb-14">
-        <div className="relative overflow-hidden rounded-3xl border border-slate-200 dark:border-white/10 bg-gradient-to-br from-emerald-500/[0.08] via-transparent to-cyan-500/[0.08] p-10 lg:p-14">
-          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(16,185,129,0.18),transparent_60%)]" />
-          <div className="relative flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-            <div className="max-w-xl">
-              <h3 className="text-2xl lg:text-3xl font-bold tracking-tight">
-                One operating dashboard for your company&apos;s AI.
-              </h3>
-              <p className="mt-2 text-sm text-slate-600 dark:text-white/60">
-                See AI spend, adoption, productivity, and governance across every provider — before the invoice arrives.
-              </p>
+    <footer className="relative mt-20 border-t-2 border-[var(--sg-ink)]">
+      <div className="mx-auto max-w-7xl px-5 lg:px-10 py-16 lg:py-24">
+
+        {/* End-wall wordmark */}
+        <div className="relative">
+          <div className="flex items-end justify-between flex-wrap gap-6">
+            <h2 className="sg-display text-[18vw] lg:text-[14rem] xl:text-[18rem] leading-[0.8] tracking-tighter text-[var(--sg-text)] -mb-4">
+              TokenLens
+            </h2>
+            <div className="ml-auto sg-caption text-[var(--sg-text-mute)] mb-4">
+              END OF EXHIBIT
+              <br />
+              <span className="text-[var(--sg-text-soft)]">scroll up to revisit</span>
             </div>
-            <div className="flex gap-3">
+          </div>
+          {/* Signal line beneath wordmark */}
+          <div className="mt-6 h-px bg-[var(--sg-line)]" />
+        </div>
+
+        {/* Provider dots strip */}
+        <div className="mt-8 flex items-center gap-5 flex-wrap">
+          <span className="sg-caption text-[var(--sg-text-mute)]">PROVIDERS COVERED ·</span>
+          {PROVIDER_DOTS.map(p => (
+            <span key={p.name} className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full" style={{ background: p.color }} />
+              <span className="sg-caption text-[var(--sg-text-soft)]">{p.name}</span>
+            </span>
+          ))}
+        </div>
+
+        {/* CTA panel */}
+        <div className="mt-14 lg:mt-20 grid lg:grid-cols-12 gap-6 lg:gap-10">
+          <div className="lg:col-span-7 border-2 border-[var(--sg-ink)] p-8 lg:p-12 relative">
+            <span aria-hidden className="absolute -top-px -left-px h-2 w-12 bg-[var(--sg-signal)]" />
+            <p className="sg-caption text-[var(--sg-text-mute)]">INSTALLATION 09 — FINAL CTA</p>
+            <h3 className="mt-3 sg-display text-3xl lg:text-5xl text-[var(--sg-text)] max-w-lg">
+              The operating lens for company-wide AI.
+            </h3>
+            <p className="mt-4 text-[var(--sg-text-soft)] max-w-md leading-relaxed">
+              See AI spend, adoption, and governance across every provider — before the invoice arrives.
+            </p>
+            <div className="mt-6 flex gap-3">
               <Link
                 href="/demo"
-                className="inline-flex items-center gap-1.5 text-sm font-semibold rounded-full px-5 py-2.5 bg-gradient-to-r from-emerald-400 to-cyan-400 text-[#050810] shadow-lg shadow-emerald-500/20 hover:opacity-90 transition-opacity"
+                className="group inline-flex items-center gap-2 px-5 py-3 bg-[var(--sg-ink)] text-[var(--sg-bg)] font-semibold text-sm hover:bg-[var(--sg-signal)] hover:text-[#050505] transition-colors"
               >
                 Book Demo
-                <ArrowRight className="h-4 w-4" />
+                <ArrowUpRight className="h-4 w-4 group-hover:rotate-12 transition-transform" />
               </Link>
               <Link
                 href="/platform"
-                className="inline-flex items-center gap-1.5 text-sm font-semibold rounded-full px-5 py-2.5 border border-slate-200 dark:border-white/15 text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-white/5 transition-colors"
+                className="inline-flex items-center gap-2 px-5 py-3 border sg-line text-[var(--sg-text)] font-semibold text-sm hover:border-[var(--sg-ink)]/40 transition-colors"
               >
                 Explore Platform
               </Link>
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* Columns */}
-      <div className="mx-auto max-w-7xl px-5 lg:px-8 grid grid-cols-2 lg:grid-cols-6 gap-8 pb-14">
-        <div className="col-span-2">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-emerald-400 to-cyan-400 grid place-items-center">
-              <div className="h-2 w-2 rounded-full bg-white dark:bg-[#050810]" />
+          {/* Logo + description column */}
+          <div className="lg:col-span-5 flex flex-col justify-end">
+            <div className="flex items-center gap-2.5 mb-3">
+              <LensGlyph size={28} />
+              <span className="sg-display text-xl text-[var(--sg-text)]">TokenLens</span>
             </div>
-            <span className="text-base font-bold tracking-tight">
-              Token<span className="bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent">Lens</span>
-            </span>
-          </Link>
-          <p className="mt-3 text-sm text-slate-500 dark:text-white/55 max-w-xs leading-relaxed">
-            The control lens for company-wide AI usage. Monitor spend, govern adoption, and prove ROI across every AI provider — from one dashboard.
-          </p>
+            <p className="text-sm text-[var(--sg-text-soft)] max-w-sm leading-relaxed">
+              The operating lens for company-wide AI usage. Cost, adoption, productivity, and governance — across every provider — in one editorial dashboard.
+            </p>
+          </div>
         </div>
 
-        {COLUMNS.map(col => (
-          <div key={col.label}>
-            <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 dark:text-white/40 mb-3">{col.label}</p>
-            <ul className="space-y-2">
-              {col.links.map(l => (
-                <li key={l.href}>
-                  <Link href={l.href} className="text-sm text-slate-600 dark:text-white/65 hover:text-slate-900 dark:hover:text-white transition-colors">
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
-      </div>
+        {/* Link columns */}
+        <div className="mt-16 grid grid-cols-2 lg:grid-cols-4 gap-8">
+          {COLUMNS.map(col => (
+            <div key={col.label}>
+              <p className="sg-caption text-[var(--sg-text-mute)] mb-4">{col.label}</p>
+              <ul className="space-y-2">
+                {col.links.map(l => (
+                  <li key={l.href}>
+                    <Link href={l.href} className="text-sm text-[var(--sg-text-soft)] hover:text-[var(--sg-text)] transition-colors">
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
 
-      {/* Copyright */}
-      <div className="border-t border-slate-100 dark:border-white/5">
-        <div className="mx-auto max-w-7xl px-5 lg:px-8 py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-slate-400 dark:text-white/40">
-          <p>© {new Date().getFullYear()} TokenLens. All rights reserved.</p>
-          <div className="flex items-center gap-4">
-            <Link href="/privacy" className="hover:text-slate-600 dark:hover:text-white/70">Privacy</Link>
-            <Link href="/terms" className="hover:text-slate-600 dark:hover:text-white/70">Terms</Link>
-            <Link href="/security" className="hover:text-slate-600 dark:hover:text-white/70">Security</Link>
+        {/* Bottom strip */}
+        <div className="mt-16 pt-6 border-t sg-line flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <p className="sg-caption text-[var(--sg-text-mute)]">
+            © {new Date().getFullYear()} TOKENLENS · ALL RIGHTS RESERVED · GALLERY EDITION
+          </p>
+          <div className="flex items-center gap-5 sg-caption">
+            <Link href="/privacy"  className="text-[var(--sg-text-mute)] hover:text-[var(--sg-text)]">PRIVACY</Link>
+            <Link href="/terms"    className="text-[var(--sg-text-mute)] hover:text-[var(--sg-text)]">TERMS</Link>
+            <Link href="/security" className="text-[var(--sg-text-mute)] hover:text-[var(--sg-text)]">SECURITY</Link>
           </div>
         </div>
       </div>

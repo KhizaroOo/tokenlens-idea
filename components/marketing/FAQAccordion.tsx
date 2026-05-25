@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { Plus, Minus } from "lucide-react";
@@ -11,14 +11,16 @@ export interface FAQ {
 export function FAQAccordion({ items }: { items: FAQ[] }) {
   const [open, setOpen] = useState<number | null>(0);
   return (
-    <div className="space-y-3">
+    <div className="space-y-2">
       {items.map((item, i) => {
         const isOpen = open === i;
         return (
           <div
             key={item.q}
-            className={`rounded-2xl border transition-colors ${
-              isOpen ? "border-emerald-400/30 bg-emerald-500/[0.04]" : "border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-white/[0.02]"
+            className={`border transition-colors ${
+              isOpen
+                ? "border-[var(--sg-ink)] bg-[var(--sg-panel)]"
+                : "sg-line bg-[var(--sg-bg)]"
             }`}
           >
             <button
@@ -26,17 +28,22 @@ export function FAQAccordion({ items }: { items: FAQ[] }) {
               className="w-full flex items-center justify-between gap-4 p-5 text-left"
               aria-expanded={isOpen}
             >
-              <span className="text-sm lg:text-base font-semibold text-slate-900 dark:text-white">{item.q}</span>
-              <span
-                className={`flex-shrink-0 h-7 w-7 rounded-full grid place-items-center ring-1 transition-colors ${
-                  isOpen ? "bg-emerald-400/20 ring-emerald-400/40 text-emerald-700 dark:text-emerald-300" : "bg-slate-100 dark:bg-white/5 ring-white/10 text-slate-600 dark:text-white/60"
-                }`}
-              >
+              <span className="flex items-center gap-3">
+                <span className="sg-caption text-[var(--sg-text-mute)] text-[10px]">
+                  Q{String(i + 1).padStart(2, "0")}
+                </span>
+                <span className="text-sm lg:text-base font-semibold text-[var(--sg-text)]">{item.q}</span>
+              </span>
+              <span className={`flex-shrink-0 h-7 w-7 grid place-items-center border ${
+                isOpen
+                  ? "border-[var(--sg-ink)] bg-[var(--sg-ink)] text-[var(--sg-bg)]"
+                  : "sg-line text-[var(--sg-text-soft)]"
+              }`}>
                 {isOpen ? <Minus className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
               </span>
             </button>
             {isOpen && (
-              <div className="px-5 pb-5 pt-0 text-sm text-slate-600 dark:text-white/65 leading-relaxed">
+              <div className="px-5 pb-5 pt-0 text-sm text-[var(--sg-text-soft)] leading-relaxed pl-14">
                 {item.a}
               </div>
             )}
