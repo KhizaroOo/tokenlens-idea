@@ -732,7 +732,23 @@ export default function SettingsPage() {
       </SectionCard>
 
       {/* 4 — Provider Integrations */}
-      <SectionCard title="Provider Integrations" subtitle="Connect and configure AI provider data sources">
+      <SectionCard
+        title="Provider Integrations"
+        subtitle={
+          <span className="flex items-center gap-2 flex-wrap">
+            Connect and configure AI provider data sources
+            <a
+              href="https://github.com/KhizaroOo/tokenlens-idea/blob/main/docs/PROVIDER_SETUP_GUIDE.md"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 transition-colors text-xs"
+            >
+              <Settings2 className="h-3 w-3" />
+              Setup Guide
+            </a>
+          </span>
+        }
+      >
         <div className="space-y-6">
           {(["api_spend", "developer_ai", "business_ai"] as ProviderCategory[]).map(cat => (
             <div key={cat}>
