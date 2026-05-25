@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import {
-  ArrowUpRight, AlertTriangle, Wallet, Eye, Layers, Users, Briefcase,
+  ArrowUpRight, AlertTriangle, Wallet, Eye, Layers, Users,
   Cpu, GitBranch, DollarSign, ShieldCheck, BarChart3, Activity,
 } from "lucide-react";
 import {

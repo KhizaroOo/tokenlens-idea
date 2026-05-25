@@ -5,8 +5,7 @@ import {
   Layers,
 } from "lucide-react";
 import {
-  EditorialPageHero, ExhibitLabel, AsymmetricFeaturePanel,
-  CreativeCTA, SignalLine,
+  EditorialPageHero, ExhibitLabel, CreativeCTA,
 } from "@/components/marketing/gallery";
 import { SignalFlowDiagram } from "@/components/marketing/SignalFlowDiagram";
 

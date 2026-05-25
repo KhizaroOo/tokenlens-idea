@@ -25,7 +25,8 @@ function isActive(pathname: string, href: string): boolean {
 function ThemeSwitch() {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- standard hydration-safe mount flag for theme toggle
+  useEffect(() => { setMounted(true); }, []);
   if (!mounted) return <div className="h-8 w-8" aria-hidden />;
   const isDark = theme === "dark";
   return (
@@ -52,6 +53,7 @@ export function MarketingHeader() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- close mobile menu on navigation; pathname is the external system here
   useEffect(() => { setOpen(false); }, [pathname]);
 
   return (

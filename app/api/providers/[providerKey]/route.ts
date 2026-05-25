@@ -6,7 +6,7 @@
  */
 
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/auth";
+import { requireSession } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { encrypt } from "@/lib/encryption";
 import { z } from "zod";
@@ -25,7 +25,7 @@ const connectSchema = z.object({ credential: z.string().min(1) });
 type Ctx = { params: Promise<{ providerKey: string }> };
 
 export async function GET(_req: Request, { params }: Ctx) {
-  const session = await getSession();
+  const session = await requireSession().catch(() => null);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { providerKey } = await params;
@@ -48,7 +48,7 @@ export async function GET(_req: Request, { params }: Ctx) {
 }
 
 export async function POST(req: Request, { params }: Ctx) {
-  const session = await getSession();
+  const session = await requireSession().catch(() => null);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { providerKey } = await params;
@@ -110,7 +110,7 @@ export async function POST(req: Request, { params }: Ctx) {
 }
 
 export async function DELETE(_req: Request, { params }: Ctx) {
-  const session = await getSession();
+  const session = await requireSession().catch(() => null);
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { providerKey } = await params;

@@ -67,6 +67,8 @@ export default function ResourcesPage() {
           </h2>
 
           <div className="mt-10 grid md:grid-cols-2 lg:grid-cols-3 gap-px bg-[var(--sg-line)] border sg-line">
+            {/* TODO: Articles currently link to "#" placeholder. Wire to a real blog/MDX
+                 collection (e.g. /resources/[slug]) when the content collection is ready. */}
             {ARTICLES.map((a, i) => (
               <Link key={a.title} href="#" className="group">
                 <article className="bg-[var(--sg-bg)] p-6 h-full hover:bg-[var(--sg-panel)] transition-colors relative">
