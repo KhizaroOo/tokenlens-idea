@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { decrypt } from "@/lib/encryption";
 import { subDays, startOfDay, eachDayOfInterval, getDay } from "date-fns";
+import { startSyncRun, completeSyncRun, failSyncRun } from "./sync-run-logger";
 
 interface ClaudeCodeEntry {
   user_email: string;
@@ -30,6 +31,7 @@ export async function syncClaudeCodeAnalytics(
 
   const endDate = new Date();
   const startDate = subDays(endDate, 7);
+  const run = await startSyncRun(organizationId, "claude_code");
 
   try {
     const url = new URL("https://api.anthropic.com/v1/claude-code/usage");
@@ -103,9 +105,11 @@ export async function syncClaudeCodeAnalytics(
       data: { lastClaudeCodeSyncedAt: new Date() } as any,
     }).catch(() => null); // non-fatal
 
+    await completeSyncRun(run.id, synced);
     return { synced };
   } catch (err) {
     const error = err instanceof Error ? err.message : "Unknown error";
+    await failSyncRun(run.id, err);
     return { synced: 0, error };
   }
 }

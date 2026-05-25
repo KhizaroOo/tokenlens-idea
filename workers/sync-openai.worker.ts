@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { startOfDay, subDays } from "date-fns";
 import { getProviderCredential, markProviderFailed, markProviderSynced } from "@/modules/providers/connector.interface";
 import { fetchOpenAIUsage } from "@/modules/providers/openai/connector";
+import { startSyncRun, completeSyncRun, failSyncRun } from "./sync-run-logger";
 
 // OpenAI published pricing (USD per 1M tokens) as of mid-2026
 // Used as fallback when the cost API is unavailable.
@@ -49,6 +50,7 @@ export async function syncOpenAI(
   const endDate   = new Date();
   const startDate = subDays(endDate, 7);
   const errors: string[] = [];
+  const run = await startSyncRun(organizationId, "openai");
 
   try {
     // Clear demo/seed data before writing real API data
@@ -142,10 +144,12 @@ export async function syncOpenAI(
     }
 
     await markProviderSynced(organizationId, "openai");
+    await completeSyncRun(run.id, synced);
     return { synced, errors };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
     await markProviderFailed(organizationId, "openai", msg);
+    await failSyncRun(run.id, err);
     return { synced: 0, errors: [msg] };
   }
 }

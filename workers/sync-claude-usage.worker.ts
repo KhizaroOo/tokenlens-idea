@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import { decrypt } from "@/lib/encryption";
 import { ClaudeAdminClient } from "@/modules/claude/client";
 import { subDays, startOfDay } from "date-fns";
+import { startSyncRun, completeSyncRun, failSyncRun } from "./sync-run-logger";
 
 /**
  * Auto-discover users seen in Anthropic usage data.
@@ -98,6 +99,7 @@ export async function syncClaudeUsage(
 
   const endDate = new Date();
   const startDate = subDays(endDate, 7);
+  const run = await startSyncRun(organizationId, "anthropic");
 
   try {
     // Fetch all usage entries from Anthropic (paginated)
@@ -209,6 +211,7 @@ export async function syncClaudeUsage(
       } as any,
     });
 
+    await completeSyncRun(run.id, synced);
     return { synced, newUsers: newUsersCreated };
   } catch (err) {
     const error = err instanceof Error ? err.message : "Unknown error";
@@ -216,6 +219,7 @@ export async function syncClaudeUsage(
       where: { organizationId_provider: { organizationId, provider: "anthropic" } },
       data: { status: "failed", lastSyncError: error },
     });
+    await failSyncRun(run.id, err);
     return { synced: 0, newUsers: 0, error };
   }
 }

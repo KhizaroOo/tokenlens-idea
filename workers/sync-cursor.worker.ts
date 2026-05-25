@@ -6,6 +6,7 @@ import {
 import {
   fetchCursorMembers, fetchCursorDailyUsage, fetchCursorSpending,
 } from "@/modules/providers/cursor/connector";
+import { startSyncRun, completeSyncRun, failSyncRun } from "./sync-run-logger";
 
 // Cursor Business: $40/seat/month → ~$1.33/seat/day
 const CURSOR_COST_PER_SEAT_MONTHLY = 40;
@@ -17,6 +18,7 @@ export async function syncCursor(
   if (!apiKey) return { synced: 0, errors: ["Cursor not connected"] };
 
   const errors: string[] = [];
+  const run = await startSyncRun(organizationId, "cursor");
 
   try {
     // Clear demo/seed data before writing real API data
@@ -106,10 +108,12 @@ export async function syncCursor(
     }
 
     await markProviderSynced(organizationId, "cursor");
+    await completeSyncRun(run.id, synced);
     return { synced, errors };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
     await markProviderFailed(organizationId, "cursor", msg);
+    await failSyncRun(run.id, err);
     return { synced: 0, errors: [msg] };
   }
 }

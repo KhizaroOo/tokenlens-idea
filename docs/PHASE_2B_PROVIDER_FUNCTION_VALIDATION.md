@@ -78,8 +78,8 @@
 
 | Gap | Description | Impact | Resolution |
 |---|---|---|---|
-| `ProviderSyncRun` not written | None of the workers (including Anthropic) write `ProviderSyncRun` records after a sync | Audit log and sync history UI will show no data | Add `providerSyncRun.create()` calls once the Audit Logs page is built |
-| Microsoft CSV field name mismatch | `parseCopilotUserDetailCSV` uses CSV headers as literal object keys; the worker accesses `u.lastActivityDateTeams` but real CSV headers are `Last Activity Date (Teams)` | App activity counts will all be 0 at runtime | Headers need normalization on parse, or the worker field access must use the literal header string |
+| ~~`ProviderSyncRun` not written~~ | ✅ **Fixed** — All 6 workers now call `startSyncRun` / `completeSyncRun` / `failSyncRun` via `workers/sync-run-logger.ts` | Resolved | See Section 8 |
+| ~~Microsoft CSV field name mismatch~~ | ✅ **Fixed** — `CSV_HEADER_MAP` in `microsoft_copilot/connector.ts` normalizes real MS Graph CSV headers to camelCase fields | Resolved | `parseCopilotUserDetailCSV` now maps `"Last Activity Date (Teams)"` → `lastActivityDateTeams` |
 | Cursor API paths undocumented | Cursor's API paths are not publicly documented; primary paths may return 404 | Worker falls back to all known alternatives; if all fail, 404 warning is added to errors | Validate with real Cursor admin key |
 | GitHub metrics endpoint post-April 2026 | Old `/copilot/metrics` endpoints retired; new endpoints tried but may not be available on all plans | Falls back to seat data (0 completions) | Validate with real GitHub org |
 | OpenAI `has_more: undefined` | Older OpenAI API versions may return no `has_more` field; fixed with `data.has_more ? (data.next_page ?? null) : null` | Without fix: would treat undefined as falsy (correct), but `data.next_page ?? null` ensures no undefined next_page | Fix applied |
@@ -136,7 +136,7 @@ When real provider credentials are available, perform the following:
 | Microsoft Copilot | `SeatUsageDaily` | `organizationId + provider + date` |
 | Microsoft Copilot | `BusinessAiDaily` | `organizationId + provider + app + date` |
 | Microsoft Copilot | `ProviderUserMapping` | `organizationId + provider + providerUserId` |
-| All providers (gap) | `ProviderSyncRun` | Not written yet — known gap |
+| All providers | `ProviderSyncRun` | `id` (auto) — written by `sync-run-logger.ts` |
 
 All workers also update `ProviderConnection.lastSyncAt` / `status` via `markProviderSynced()` / `markProviderFailed()`.
 
@@ -167,3 +167,66 @@ All workers also update `ProviderConnection.lastSyncAt` / `status` via `markProv
 - Every API route and worker filters by `organizationId` from the session JWT
 - Workers receive `organizationId` as an explicit parameter, never from user input
 - `getProviderCredential()` in `connector.interface.ts` fetches credentials only for the given `organizationId`
+
+---
+
+## 8. ProviderSyncRun Logging
+
+### Overview
+
+All 6 sync workers write audit records to the `ProviderSyncRun` table via the shared helper `workers/sync-run-logger.ts`.
+
+### Helper: `workers/sync-run-logger.ts`
+
+| Export | Signature | Behavior |
+|---|---|---|
+| `startSyncRun` | `(organizationId, provider) → SyncRunHandle` | Creates a `ProviderSyncRun` row with `status: "running"` and `recordsSynced: 0` |
+| `completeSyncRun` | `(runId, synced) → void` | Updates row to `status: "success"`, sets `recordsSynced` and `finishedAt` |
+| `failSyncRun` | `(runId, err) → void` | Updates row to `status: "failed"`, sets `errorMessage` (sanitized, max 500 chars) and `finishedAt` |
+| `sanitizeErrorMessage` | `(msg) → string` | Strips API keys, Bearer tokens, and high-entropy strings from error messages before persisting |
+
+### Worker Behavior
+
+| Worker | Provider String | DB Table | `recordsSynced` Counts |
+|---|---|---|---|
+| `sync-claude-usage.worker.ts` | `"anthropic"` | `ProviderSyncRun` | 1 per `UsageDaily` row + 1 per `ModelUsageDaily` row written |
+| `sync-claude-code.worker.ts` | `"claude_code"` | `ProviderSyncRun` | 1 per `ClaudeCodeDaily` row written |
+| `sync-openai.worker.ts` | `"openai"` | `ProviderSyncRun` | 1 per `AiUsageDaily` row (model rows not counted separately) |
+| `sync-github-copilot.worker.ts` | `"github_copilot"` | `ProviderSyncRun` | 1 (seat row) + 1 per user row |
+| `sync-cursor.worker.ts` | `"cursor"` | `ProviderSyncRun` | 1 (seat row) + 1 per daily usage row |
+| `sync-microsoft-copilot.worker.ts` | `"microsoft_copilot"` | `ProviderSyncRun` | 1 (seat row) + 1 per app row |
+
+### Schema Fields Used
+
+| Field | Type | Notes |
+|---|---|---|
+| `id` | `String` (cuid) | Auto-generated |
+| `organizationId` | `String` | Always scoped to the calling org |
+| `provider` | `String` | One of: `anthropic`, `claude_code`, `openai`, `github_copilot`, `cursor`, `microsoft_copilot` |
+| `status` | `String` | `"running"` → `"success"` or `"failed"` |
+| `recordsSynced` | `Int` | Count of rows upserted in this run |
+| `errorMessage` | `String?` | Null on success; sanitized error string (max 500 chars) on failure |
+| `startedAt` | `DateTime` | Set at run creation |
+| `finishedAt` | `DateTime?` | Set on complete or fail |
+
+### Secret Sanitization
+
+`sanitizeErrorMessage()` removes:
+- `Bearer <token>` patterns
+- Anthropic keys (`sk-ant-...`)
+- GitHub tokens (`ghp_...`, `ghs_...`, `github_pat_...`)
+- OpenAI keys (`sk-<20+ chars>`)
+- Generic high-entropy strings (40+ chars of `[A-Za-z0-9\-_]`)
+
+Any error message written to `ProviderSyncRun.errorMessage` is guaranteed to contain no API keys or secrets.
+
+### Validation
+
+All logging is verified by `scripts/validate-provider-integrations.ts` Test 9:
+- Logger file exists and exports all 4 functions
+- All 6 workers import the logger
+- All 6 workers call `startSyncRun`, `completeSyncRun`, and `failSyncRun`
+- All 6 workers pass the correct provider string to `startSyncRun`
+- `sanitizeErrorMessage` strips Anthropic and GitHub token patterns
+
+Run: `npm run validate:providers` — all 94 tests must pass.

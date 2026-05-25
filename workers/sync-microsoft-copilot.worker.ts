@@ -6,6 +6,7 @@ import {
 import {
   parseMicrosoftCredential, fetchM365CopilotUsers, fetchM365CopilotSeats,
 } from "@/modules/providers/microsoft_copilot/connector";
+import { startSyncRun, completeSyncRun, failSyncRun } from "./sync-run-logger";
 
 // Microsoft 365 Copilot: $30/user/month → ~$1/user/day
 const M365_COST_PER_SEAT_MONTHLY = 30;
@@ -29,6 +30,7 @@ export async function syncMicrosoftCopilot(
   if (!raw) return { synced: 0, errors: ["Microsoft Copilot not connected"] };
 
   const errors: string[] = [];
+  const run = await startSyncRun(organizationId, "microsoft_copilot");
 
   try {
     // Clear demo/seed data before writing real API data
@@ -125,10 +127,12 @@ export async function syncMicrosoftCopilot(
     }
 
     await markProviderSynced(organizationId, "microsoft_copilot");
+    await completeSyncRun(run.id, synced);
     return { synced, errors };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
     await markProviderFailed(organizationId, "microsoft_copilot", msg);
+    await failSyncRun(run.id, err);
     return { synced: 0, errors: [msg] };
   }
 }

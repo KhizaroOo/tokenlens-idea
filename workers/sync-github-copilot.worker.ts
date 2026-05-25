@@ -6,6 +6,7 @@ import {
 import {
   parseGitHubCredential, fetchCopilotSeats, fetchCopilotUserMetrics,
 } from "@/modules/providers/github_copilot/connector";
+import { startSyncRun, completeSyncRun, failSyncRun } from "./sync-run-logger";
 
 // GitHub Copilot Business: $19/seat/month → ~$0.63/seat/day
 const COPILOT_COST_PER_SEAT_MONTHLY = 19;
@@ -17,6 +18,7 @@ export async function syncGitHubCopilot(
   if (!raw) return { synced: 0, errors: ["GitHub Copilot not connected"] };
 
   const errors: string[] = [];
+  const run = await startSyncRun(organizationId, "github_copilot");
 
   try {
     // Clear demo/seed data before writing real API data
@@ -118,10 +120,12 @@ export async function syncGitHubCopilot(
     }
 
     await markProviderSynced(organizationId, "github_copilot");
+    await completeSyncRun(run.id, synced);
     return { synced, errors };
   } catch (err) {
     const msg = err instanceof Error ? err.message : "Unknown error";
     await markProviderFailed(organizationId, "github_copilot", msg);
+    await failSyncRun(run.id, err);
     return { synced: 0, errors: [msg] };
   }
 }
