@@ -9,8 +9,9 @@ import { Button } from "@/components/ui/button";
 import {
   RefreshCw, Shield, Eye, EyeOff, Loader2, CheckCircle,
   AlertCircle, AlertTriangle, DollarSign, Bell, ToggleLeft, ToggleRight,
-  X, Settings2,
+  X, Settings2, History, Clock, CheckCheck, XCircle, AlertOctagon,
 } from "lucide-react";
+import { TH, TR, TD, TD_MONO } from "@/lib/table-styles";
 import type { ProviderStatus } from "@/types/claude";
 import {
   PROVIDERS, CATEGORY_LABELS, CATEGORY_BADGE, DATA_COVERAGE_BADGE, providersByCategory,
@@ -37,6 +38,74 @@ type SettingsData = {
   alertRules: AlertRule[];
   lastClaudeCodeSyncedAt?: string | null;
 };
+
+// ── Sync-run types & helpers ──────────────────────────────────────────────────
+
+type SyncRun = {
+  id:            string;
+  provider:      string;
+  status:        "running" | "success" | "failed" | "stale" | string;
+  recordsSynced: number;
+  errorMessage:  string | null;
+  startedAt:     string;
+  finishedAt:    string | null;
+  durationMs:    number | null;
+  isStale:       boolean;
+};
+
+const PROVIDER_DISPLAY: Record<string, string> = {
+  anthropic:          "Anthropic Claude",
+  claude_code:        "Claude Code",
+  openai:             "OpenAI",
+  github_copilot:     "GitHub Copilot",
+  cursor:             "Cursor",
+  microsoft_copilot:  "Microsoft Copilot",
+};
+
+function fmtDuration(ms: number | null): string {
+  if (ms == null) return "—";
+  if (ms < 1000) return `${ms}ms`;
+  if (ms < 60_000) return `${(ms / 1000).toFixed(1)}s`;
+  const mins = Math.floor(ms / 60_000);
+  const secs = Math.round((ms % 60_000) / 1000);
+  return `${mins}m ${secs}s`;
+}
+
+function fmtRelative(iso: string): string {
+  const diff = Date.now() - new Date(iso).getTime();
+  if (diff < 60_000)         return "just now";
+  if (diff < 3_600_000)      return `${Math.floor(diff / 60_000)}m ago`;
+  if (diff < 86_400_000)     return `${Math.floor(diff / 3_600_000)}h ago`;
+  return `${Math.floor(diff / 86_400_000)}d ago`;
+}
+
+function SyncRunStatusBadge({ status }: { status: string }) {
+  if (status === "success") return (
+    <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-emerald-500/10 text-emerald-400">
+      <CheckCheck className="h-3 w-3" /> Success
+    </span>
+  );
+  if (status === "failed") return (
+    <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-red-500/10 text-red-400">
+      <XCircle className="h-3 w-3" /> Failed
+    </span>
+  );
+  if (status === "stale") return (
+    <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-amber-500/10 text-amber-400">
+      <AlertOctagon className="h-3 w-3" /> Stale
+    </span>
+  );
+  if (status === "running") return (
+    <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-cyan-500/10 text-cyan-400">
+      <Loader2 className="h-3 w-3 animate-spin" /> Running
+    </span>
+  );
+  return (
+    <span className="inline-flex items-center gap-1 rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider bg-slate-500/10 text-slate-400">
+      Unknown
+    </span>
+  );
+}
 
 // ── Inline message ────────────────────────────────────────────────────────────
 
@@ -356,6 +425,11 @@ export default function SettingsPage() {
   const [syncing, setSyncing]   = useState<string | null>(null); // providerKey or "all"
   const [syncMsg, setSyncMsg]   = useState<{ type: "ok" | "err"; text: string } | null>(null);
 
+  // Sync run history
+  const [syncRuns, setSyncRuns]         = useState<SyncRun[]>([]);
+  const [loadingSyncRuns, setLoadingSyncRuns] = useState(true);
+  const [syncRunsErr, setSyncRunsErr]   = useState(false);
+
   const isViewer  = userRole === "viewer";
   const connected = providerStatus?.status === "connected";
 
@@ -387,6 +461,13 @@ export default function SettingsPage() {
         setProvConnections(map);
       })
       .catch(() => {});
+
+    // Fetch recent sync runs for history table
+    fetch("/api/providers/sync-runs?limit=50")
+      .then(r => { if (!r.ok) throw new Error("Failed"); return r.json(); })
+      .then(d => setSyncRuns(d.runs ?? []))
+      .catch(() => setSyncRunsErr(true))
+      .finally(() => setLoadingSyncRuns(false));
   }, []);
 
   // ── Provider connect / disconnect ──────────────────────────────────────────
@@ -484,6 +565,11 @@ export default function SettingsPage() {
       }
     } finally {
       setSyncing(null);
+      // Refresh sync run history after sync
+      fetch("/api/providers/sync-runs?limit=50")
+        .then(r => r.ok ? r.json() : Promise.reject())
+        .then(d => setSyncRuns(d.runs ?? []))
+        .catch(() => {});
     }
   }
 
@@ -806,7 +892,91 @@ export default function SettingsPage() {
         )}
       </SectionCard>
 
-      {/* 6 — Security */}
+      {/* 6 — Recent Sync Runs */}
+      <SectionCard
+        title="Recent Sync Runs"
+        subtitle={
+          <span className="flex items-center gap-1.5">
+            <Clock className="h-3.5 w-3.5" />
+            Latest 50 sync attempts across all providers
+          </span>
+        }
+        noPadding
+      >
+        {loadingSyncRuns ? (
+          <div className="p-6 space-y-2">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={i} className="h-10 rounded-xl bg-muted animate-pulse" />
+            ))}
+          </div>
+        ) : syncRunsErr ? (
+          <div className="flex items-center gap-2 m-5 rounded-xl px-3.5 py-2.5 text-sm border bg-red-500/10 border-red-500/20 text-red-400">
+            <AlertCircle className="h-4 w-4 flex-shrink-0" />
+            Could not load sync history. The table will appear after a provider sync is triggered.
+          </div>
+        ) : syncRuns.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-12 text-center px-6">
+            <History className="h-8 w-8 text-muted-foreground/40 mb-3" />
+            <p className="text-sm font-semibold text-foreground">No sync runs yet</p>
+            <p className="text-xs text-muted-foreground mt-1 max-w-sm">
+              Sync history will appear here after a provider sync is triggered.
+            </p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[640px]">
+              <thead>
+                <tr className="border-b border-border">
+                  <th className={TH}>Provider</th>
+                  <th className={TH}>Status</th>
+                  <th className={TH}>Records</th>
+                  <th className={TH}>Started</th>
+                  <th className={TH}>Duration</th>
+                  <th className={TH}>Error / Message</th>
+                </tr>
+              </thead>
+              <tbody>
+                {syncRuns.map(run => (
+                  <tr key={run.id} className={TR}>
+                    <td className={TD}>
+                      <span className="font-medium text-foreground">
+                        {PROVIDER_DISPLAY[run.provider] ?? run.provider}
+                      </span>
+                    </td>
+                    <td className={TD}>
+                      <SyncRunStatusBadge status={run.status} />
+                    </td>
+                    <td className={TD_MONO}>{run.recordsSynced.toLocaleString()}</td>
+                    <td className={TD}>
+                      <span className="text-muted-foreground" title={new Date(run.startedAt).toLocaleString()}>
+                        {fmtRelative(run.startedAt)}
+                      </span>
+                    </td>
+                    <td className={TD_MONO}>{fmtDuration(run.durationMs)}</td>
+                    <td className={TD}>
+                      {run.errorMessage ? (
+                        <span className="text-red-400/80 text-xs truncate max-w-xs block" title={run.errorMessage}>
+                          {run.errorMessage.length > 80
+                            ? run.errorMessage.slice(0, 80) + "…"
+                            : run.errorMessage}
+                        </span>
+                      ) : run.status === "success" ? (
+                        <span className="text-muted-foreground/50 text-xs">—</span>
+                      ) : run.status === "running" || run.status === "stale" ? (
+                        <span className="text-cyan-400/60 text-xs">In progress…</span>
+                      ) : (
+                        <span className="text-muted-foreground/50 text-xs">—</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </SectionCard>
+
+      {/* 7 — Security */}
       <SectionCard title="Security">
         <div className="flex items-center gap-4 rounded-xl border border-border bg-muted/30 p-4 max-w-md">
           <div className="rounded-xl bg-emerald-500/10 p-2.5 flex-shrink-0">

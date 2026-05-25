@@ -230,3 +230,57 @@ All logging is verified by `scripts/validate-provider-integrations.ts` Test 9:
 - `sanitizeErrorMessage` strips Anthropic and GitHub token patterns
 
 Run: `npm run validate:providers` — all 94 tests must pass.
+
+---
+
+## 9. Provider Sync History UI
+
+### Where sync runs appear
+
+Recent sync runs are visible at **Settings → Recent Sync Runs** (section 6 on the Settings page at `/settings`). The section is positioned between "Data Sync" and "Security".
+
+### API route
+
+`GET /api/providers/sync-runs`
+
+- Requires session (calls `requireSession()`); scoped by `organizationId`
+- Returns latest 50 runs by default; supports `?limit=N` (max 100) and `?provider=<key>` filter
+- Computes `durationMs` from `startedAt` / `finishedAt` (or current elapsed for in-progress runs)
+- Adds `isStale: true` and maps `status` → `"stale"` for any `"running"` run older than 30 minutes (does **not** mutate DB)
+- Never returns `organizationId` or any secrets
+
+### Fields shown in the table
+
+| Column | Source | Notes |
+|---|---|---|
+| Provider | `provider` (mapped to display name) | e.g. `github_copilot` → "GitHub Copilot" |
+| Status | `status` | Color-coded badge: Success (emerald), Failed (red), Running (cyan), Stale (amber) |
+| Records | `recordsSynced` | `font-data` monospaced numeric |
+| Started | `startedAt` | Relative time (e.g. "3m ago"), full datetime on hover |
+| Duration | calculated `durationMs` | e.g. "1.2s", "3m 5s", "—" if null |
+| Error / Message | `errorMessage` | Truncated at 80 chars for layout; full text on hover |
+
+### Provider display-name mapping
+
+| DB key | Display name |
+|---|---|
+| `anthropic` | Anthropic Claude |
+| `claude_code` | Claude Code |
+| `openai` | OpenAI |
+| `github_copilot` | GitHub Copilot |
+| `cursor` | Cursor |
+| `microsoft_copilot` | Microsoft Copilot |
+
+### Stale running detection
+
+If a sync run has `status = "running"` and `startedAt` is more than 30 minutes ago, the API response sets `status: "stale"` and `isStale: true`. This renders an amber **Stale** badge in the UI, indicating the worker likely crashed or the server restarted mid-sync. No DB mutation occurs — the `ProviderSyncRun.status` column is left as `"running"` until the next sync overwrites it.
+
+### How this helps real-key testing
+
+When a real provider credential is added and Sync is clicked, the next page load (or the automatic refresh after sync) will show:
+- Whether the sync run completed (`success`) or errored (`failed`)
+- Exactly how many DB records were upserted (`recordsSynced`)
+- The elapsed duration, which reveals slow API calls or pagination issues
+- The sanitized error message for any failure, enabling rapid diagnosis without needing server logs
+
+This makes the Settings page the first stop for real-key debugging before checking Prisma Studio or server logs.
