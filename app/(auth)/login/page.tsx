@@ -1,15 +1,39 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Zap, Eye, EyeOff, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+
+/**
+ * Sanitize a `?redirect=` value: only allow same-origin app paths.
+ * Rejects external URLs, protocol-relative URLs, and auth-loop paths.
+ */
+function safeRedirect(raw: string | null): string {
+  if (!raw) return "/dashboard";
+  // Must be an absolute path starting with "/" — not "//", not "/\"
+  if (!raw.startsWith("/") || raw.startsWith("//") || raw.startsWith("/\\")) return "/dashboard";
+  // Don't loop back to /login or /signup
+  if (raw.startsWith("/login") || raw.startsWith("/signup")) return "/dashboard";
+  return raw;
+}
 
 const INPUT_CLS = "w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder-white/25 transition-all duration-200 focus:border-emerald-500/60 focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:bg-white/8";
 const LABEL_CLS = "block text-[11px] font-bold text-white/40 uppercase tracking-widest mb-1.5";
 
 export default function LoginPage() {
-  const router = useRouter();
+  // useSearchParams() must be inside a Suspense boundary
+  return (
+    <Suspense fallback={<div className="w-full max-w-[400px] h-10" aria-hidden />}>
+      <LoginForm />
+    </Suspense>
+  );
+}
+
+function LoginForm() {
+  const router       = useRouter();
+  const searchParams = useSearchParams();
+  const redirectTo   = safeRedirect(searchParams.get("redirect"));
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -31,7 +55,7 @@ export default function LoginPage() {
         setError(data.error ?? "Invalid email or password");
         return;
       }
-      router.push("/dashboard");
+      router.push(redirectTo);
       router.refresh();
     } catch {
       setError("Network error. Please try again.");
