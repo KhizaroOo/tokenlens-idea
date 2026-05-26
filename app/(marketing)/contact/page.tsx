@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Briefcase, LifeBuoy, Handshake, ArrowUpRight, CheckCircle2 } from "lucide-react";
+import { Briefcase, LifeBuoy, Handshake, ArrowUpRight, CheckCircle2, Mail } from "lucide-react";
 import { ExhibitLabel } from "@/components/marketing/gallery";
 
 export default function ContactPage() {
@@ -10,7 +10,9 @@ export default function ContactPage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // TODO: wire to real contact endpoint
+    // NOTE: This form is intentionally a frontend preview. No backend is wired,
+    // so the submitted state below is explicit about that — see TODO.
+    // TODO: wire to a real contact endpoint (e.g. /api/contact) before public launch.
     setSubmitted(true);
   }
 
@@ -84,13 +86,32 @@ export default function ContactPage() {
 
           <div className="lg:col-span-3">
             {submitted ? (
-              <div className="border-2 border-[var(--sg-signal)] p-10 text-center bg-[var(--sg-bg)]">
-                <CheckCircle2 className="mx-auto h-10 w-10 text-[var(--sg-signal)]" />
-                <p className="mt-4 sg-display text-2xl text-[var(--sg-text)]">Got it.</p>
-                <p className="mt-2 text-sm text-[var(--sg-text-soft)]">A team member will be in touch within one business day.</p>
+              <div className="border-2 border-[var(--sg-budget)] p-10 text-center bg-[var(--sg-bg)]">
+                <CheckCircle2 className="mx-auto h-10 w-10 text-[var(--sg-budget)]" />
+                <p className="mt-4 sg-display text-2xl text-[var(--sg-text)]">Preview only.</p>
+                <p className="mt-3 text-sm text-[var(--sg-text-soft)] leading-relaxed max-w-md mx-auto">
+                  This form is a frontend preview — no backend is wired yet, so your message wasn&apos;t actually sent.
+                </p>
+                <p className="mt-4 text-sm text-[var(--sg-text)] leading-relaxed max-w-md mx-auto">
+                  For now, reach us directly:
+                </p>
+                <div className="mt-4 inline-flex flex-col gap-1.5 text-sm">
+                  <a href="mailto:sales@tokenlens.io" className="inline-flex items-center gap-2 text-[var(--sg-signal)] hover:text-[var(--sg-text)] transition-colors">
+                    <Mail className="h-3.5 w-3.5" /> sales@tokenlens.io
+                  </a>
+                  <a href="mailto:support@tokenlens.io" className="inline-flex items-center gap-2 text-[var(--sg-signal)] hover:text-[var(--sg-text)] transition-colors">
+                    <Mail className="h-3.5 w-3.5" /> support@tokenlens.io
+                  </a>
+                </div>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="border sg-line bg-[var(--sg-bg)] p-7 lg:p-9 space-y-4">
+                <div className="flex items-start gap-2 -mt-1 mb-2 pb-3 border-b sg-line-soft">
+                  <span className="sg-caption text-[var(--sg-budget)]">PREVIEW FORM ·</span>
+                  <span className="text-[11px] text-[var(--sg-text-soft)] leading-snug">
+                    Not yet connected to a backend. Until launch, please use the emails above to reach us.
+                  </span>
+                </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div><label htmlFor="name"  className={LABEL}>NAME</label>       <input id="name"  type="text"  required className={INPUT} placeholder="Jane Doe" /></div>
                   <div><label htmlFor="email" className={LABEL}>WORK EMAIL</label> <input id="email" type="email" required className={INPUT} placeholder="jane@company.com" /></div>

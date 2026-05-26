@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarDays, BarChart3, Network, Users, GitBranch, ShieldCheck, FileBarChart, ArrowUpRight, CheckCircle2, Clock } from "lucide-react";
+import { CalendarDays, BarChart3, Network, Users, GitBranch, ShieldCheck, FileBarChart, ArrowUpRight, CheckCircle2, Clock, Mail } from "lucide-react";
 import { ExhibitLabel, KineticMetricCard } from "@/components/marketing/gallery";
 import { DashboardMockup } from "@/components/marketing/DashboardMockup";
 
@@ -19,7 +19,9 @@ export default function DemoPage() {
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // TODO: wire to real demo-booking endpoint
+    // NOTE: Frontend preview form. No backend or calendar integration yet.
+    // The submitted state below is honest about that — see TODO.
+    // TODO: wire to a real /api/demo-request endpoint and a calendar provider before launch.
     setSubmitted(true);
   }
 
@@ -112,17 +114,32 @@ export default function DemoPage() {
 
           <div className="lg:col-span-3">
             {submitted ? (
-              <div className="border-2 border-[var(--sg-signal)] p-10 text-center bg-[var(--sg-panel)]">
-                <CheckCircle2 className="mx-auto h-10 w-10 text-[var(--sg-signal)]" />
-                <p className="mt-4 sg-display text-2xl text-[var(--sg-text)]">Demo request received.</p>
-                <p className="mt-2 text-sm text-[var(--sg-text-soft)]">Check your inbox for a calendar link with available time slots.</p>
+              <div className="border-2 border-[var(--sg-budget)] p-10 text-center bg-[var(--sg-panel)]">
+                <CheckCircle2 className="mx-auto h-10 w-10 text-[var(--sg-budget)]" />
+                <p className="mt-4 sg-display text-2xl text-[var(--sg-text)]">Preview only.</p>
+                <p className="mt-3 text-sm text-[var(--sg-text-soft)] leading-relaxed max-w-md mx-auto">
+                  This demo form is a frontend preview — no booking system is connected yet, so your request wasn&apos;t actually sent.
+                </p>
+                <p className="mt-4 text-sm text-[var(--sg-text)] leading-relaxed max-w-md mx-auto">
+                  To book a real time slot today, email:
+                </p>
+                <a href="mailto:sales@tokenlens.io?subject=Demo%20request" className="mt-3 inline-flex items-center gap-2 text-sm text-[var(--sg-signal)] hover:text-[var(--sg-text)] transition-colors">
+                  <Mail className="h-3.5 w-3.5" /> sales@tokenlens.io
+                </a>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="border sg-line bg-[var(--sg-panel)] p-7 lg:p-9 space-y-4">
-                <div className="flex items-center gap-2 mb-3">
-                  <CalendarDays className="h-4 w-4 text-[var(--sg-signal)]" />
-                  <span className="sg-caption text-[var(--sg-text-mute)]">DEMO REQUEST FORM</span>
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <div className="flex items-center gap-2">
+                    <CalendarDays className="h-4 w-4 text-[var(--sg-signal)]" />
+                    <span className="sg-caption text-[var(--sg-text-mute)]">DEMO REQUEST FORM</span>
+                  </div>
+                  <span className="sg-caption text-[var(--sg-budget)] text-[9px]">PREVIEW</span>
                 </div>
+                <p className="text-[11px] text-[var(--sg-text-soft)] leading-snug pb-3 border-b sg-line-soft">
+                  This form is a frontend preview — not yet wired to a backend. Until launch, email{" "}
+                  <a href="mailto:sales@tokenlens.io" className="text-[var(--sg-signal)] hover:text-[var(--sg-text)]">sales@tokenlens.io</a> to book a real slot.
+                </p>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div><label htmlFor="name" className={LABEL}>NAME</label> <input id="name" type="text" required className={INPUT} placeholder="Jane Doe" /></div>
                   <div><label htmlFor="email" className={LABEL}>WORK EMAIL</label> <input id="email" type="email" required className={INPUT} placeholder="jane@company.com" /></div>

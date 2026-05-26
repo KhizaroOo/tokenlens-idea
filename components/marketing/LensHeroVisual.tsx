@@ -135,7 +135,7 @@ export function LensHeroVisual() {
       {/* Bottom caption */}
       <div className="absolute -bottom-12 left-0 right-0 flex justify-between sg-caption text-[var(--sg-text-mute)]">
         <span>LENS · v2.1</span>
-        <span>LIVE · 7/7 PROVIDERS SYNCING</span>
+        <span>8 PROVIDERS COVERED</span>
         <span>{new Date().getFullYear()}</span>
       </div>
     </div>

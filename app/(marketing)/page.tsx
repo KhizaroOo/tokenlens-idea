@@ -16,6 +16,25 @@ export const metadata: Metadata = {
   title: "TokenLens — The operating lens for company-wide AI spend",
   description:
     "Control your company's AI spend before it becomes your next cloud bill. TokenLens turns scattered AI usage across Claude, OpenAI, GitHub Copilot, Cursor, Microsoft Copilot, and more into one operating layer.",
+  keywords: [
+    "AI spend", "AI cost management", "AI FinOps", "AI governance",
+    "Claude usage", "OpenAI usage", "GitHub Copilot analytics",
+    "Cursor analytics", "Microsoft Copilot analytics",
+    "AI dashboard", "multi-provider AI", "AI ROI",
+  ],
+  openGraph: {
+    title: "TokenLens — One operating lens for company-wide AI",
+    description:
+      "Cost, adoption, productivity, and governance — across every AI provider — in one editorial dashboard.",
+    type: "website",
+    siteName: "TokenLens",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "TokenLens — One operating lens for company-wide AI",
+    description:
+      "Cost, adoption, productivity, governance — across every AI provider.",
+  },
 };
 
 export default function Home() {
@@ -83,8 +102,8 @@ export default function Home() {
                 />
                 <MuseumCaption
                   meta="ON DISPLAY"
-                  title="Continuous since 2026"
-                  subtitle="Spend · Adoption · Governance · ROI"
+                  title="Spend · Adoption · Governance · ROI"
+                  subtitle="One operating layer across every connected provider."
                 />
               </div>
             </div>
@@ -135,7 +154,7 @@ export default function Home() {
                 own dashboard, its own pricing model, its own admin console. Leadership has no unified
                 view of cost, adoption, or governance.
               </p>
-              <p className="mt-4 sg-caption text-[var(--sg-text-mute)]">— ON THE WALL, FRAGMENTS COLLECTED FROM REAL FINANCE TEAMS —</p>
+              <p className="mt-4 sg-caption text-[var(--sg-text-mute)]">— REPRESENTATIVE FINANCE-TEAM SCENARIOS · ILLUSTRATIVE NUMBERS —</p>
             </div>
           </div>
 
