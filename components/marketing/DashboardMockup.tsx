@@ -19,10 +19,13 @@ import { useEffect, useState } from "react";
 export function DashboardMockup() {
   const { resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+  const [imgFailed, setImgFailed] = useState(false);
 
   // Hydration-safe theme detection — avoid SSR/CSR mismatch
   // eslint-disable-next-line react-hooks/set-state-in-effect -- standard hydration-safe mount flag for theme-aware rendering
   useEffect(() => { setMounted(true); }, []);
+  // Reset error state whenever the theme (and therefore src) changes
+  useEffect(() => { setImgFailed(false); }, [resolvedTheme]);
 
   // Pre-mount: render dark version by default (matches typical SSR theme)
   const isDark = mounted ? resolvedTheme === "dark" : true;
@@ -59,32 +62,30 @@ export function DashboardMockup() {
         </div>
 
         {/* Screenshot — aspect ratio matches the source images (~1920×1078 ≈ 16:9) */}
-        <div className="relative w-full" style={{ aspectRatio: "1920 / 1078" }}>
-          <Image
-            key={src}                              // force swap when theme flips
-            src={src}
-            alt={alt}
-            fill
-            sizes="(max-width: 1024px) 100vw, 50vw"
-            className="object-cover object-top"
-            priority={false}
-            onError={(e) => {
-              // Graceful fallback if the screenshot file isn't in /public yet —
-              // hide the broken image and let the placeholder underneath show.
-              (e.currentTarget as HTMLImageElement).style.display = "none";
-            }}
-          />
-
-          {/* Placeholder underneath — only visible if the <Image> fails to load */}
-          <div className="absolute inset-0 -z-0 flex flex-col items-center justify-center gap-3 bg-[var(--sg-bg)] text-center p-8">
-            <span className="sg-caption text-[var(--sg-text-mute)]">DASHBOARD SCREENSHOT</span>
-            <p className="sg-display text-2xl text-[var(--sg-text)] max-w-md">
-              Add <code className="font-data text-sm bg-[var(--sg-panel)] px-2 py-1">/public/screenshots/dashboard-{isDark ? "dark" : "light"}.png</code>
-            </p>
-            <p className="text-xs text-[var(--sg-text-soft)] max-w-md">
-              Drop the {isDark ? "dark" : "light"}-mode dashboard screenshot at the path above. The component will pick it up on the next request.
-            </p>
-          </div>
+        <div className="relative w-full bg-[var(--sg-bg)]" style={{ aspectRatio: "1920 / 1078" }}>
+          {imgFailed ? (
+            // Fallback — only renders if the image actually fails to load
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-center p-8">
+              <span className="sg-caption text-[var(--sg-text-mute)]">DASHBOARD SCREENSHOT</span>
+              <p className="sg-display text-2xl text-[var(--sg-text)] max-w-md">
+                Add <code className="font-data text-sm bg-[var(--sg-panel)] px-2 py-1">/public/screenshots/dashboard-{isDark ? "dark" : "light"}.png</code>
+              </p>
+              <p className="text-xs text-[var(--sg-text-soft)] max-w-md">
+                Drop the {isDark ? "dark" : "light"}-mode dashboard screenshot at the path above. The component will pick it up on the next request.
+              </p>
+            </div>
+          ) : (
+            <Image
+              key={src}                              // force swap when theme flips
+              src={src}
+              alt={alt}
+              fill
+              sizes="(max-width: 1024px) 100vw, 50vw"
+              className="object-cover object-top"
+              priority={false}
+              onError={() => setImgFailed(true)}
+            />
+          )}
         </div>
       </div>
 
