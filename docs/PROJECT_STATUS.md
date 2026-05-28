@@ -24,16 +24,16 @@
 
 | Domain | Score / 10 | Notes |
 |---|---|---|
-| Public marketing website | **8.0** | All 13 pages live, theme polished, screenshots wired, SEO complete; `/contact`, `/demo`, `/resources` still preview. |
+| Public marketing website | **8.5** | All 13 pages live, theme polished, screenshots wired, SEO complete with sitemap + robots + dynamic OG; `/resources` still preview content. |
 | Auth & access control | **9.5** | Three-layer enforcement (proxy + layout + handler) verified end-to-end. Smoke-tested last session. |
 | Dashboard portal | **7.5** | 20 of 26 routes 🟢 Live; 4 Phase 2B placeholders; 2 Phase 3 placeholders. |
-| API surface | **7.0** | 45 protected routes wired; some Phase 2B/3 endpoints render placeholder data. |
+| API surface | **7.5** | 45 protected routes wired; `/api/contact` and `/api/demo-request` public lead-capture endpoints live with zod + rate-limit + Prisma persistence. |
 | Provider integrations | **6.5** | 2 of 8 providers verifiably live (Anthropic, Claude Code). 4 implemented but unverified. 2 limited. |
-| Forms / lead capture | **3.0** | Frontend preview only; no backend wired. Mailto fallback in place. |
+| Forms / lead capture | **7.5** | Real `/api/contact` and `/api/demo-request` POST endpoints live, zod-validated, rate-limited, persisted via Prisma. Email/calendar delivery still manual until provider configured. |
 | Resources / blog | **3.5** | UI shipped; content collection not yet built. |
-| SEO | **8.0** | Metadata on all pages, OG/Twitter on homepage. `robots.txt` and `sitemap.xml` not yet generated. |
+| SEO | **9.0** | Metadata on all pages, OG/Twitter on homepage + contact + demo. `/robots.txt`, `/sitemap.xml`, and dynamic `/og` image all live. Set `NEXT_PUBLIC_SITE_URL` in prod for canonical absolute URLs. |
 | Deployment | **5.0** | Server build works; static-export config present; GH Pages workflow disabled. |
-| **Overall GTM readiness** | **6.5 / 10** | Strong for stakeholder/investor demo; not yet for paid customer onboarding. |
+| **Overall GTM readiness** | **7.0 / 10** | Stronger for stakeholder/investor demo; paid customer onboarding still gated by provider verification + production hosting + `/api/auth/signup`. |
 
 ---
 
@@ -52,8 +52,8 @@
 | `/privacy` | 🟢 Live · 🌐 Public |
 | `/terms` | 🟢 Live · 🌐 Public |
 | `/resources` | 🟠 Preview · 🌐 Public — 6 article cards labelled COMING SOON |
-| `/contact` | 🟠 Preview · 🌐 Public — frontend form; no backend; mailto fallback |
-| `/demo` | 🟠 Preview · 🌐 Public — frontend form; no backend; mailto fallback |
+| `/contact` | 🟢 Live · 🌐 Public — POSTs to `/api/contact`, persists to `ContactSubmission` |
+| `/demo` | 🟢 Live · 🌐 Public — POSTs to `/api/demo-request`, persists to `DemoRequest` |
 
 **Known divergence from `CLAUDE.md` design rule:** `--sg-anomaly: #7C3AED` in the marketing CSS palette is violet. The rule says "never purple" (Claude.ai's brand colour). It is used as one of five accent tones, not a primary. Replacing it would also touch the dashboard. Out of scope without an explicit redesign request.
 
@@ -95,6 +95,7 @@ Smoke-test result from previous session: 13/13 marketing 200 · 2/2 auth 200 · 
 | Category | Count | Status |
 |---|---|---|
 | Auth (login + logout, public) | 2 | 🟢 Live · 🌐 Public |
+| Lead capture (contact + demo, public) | 2 | 🟢 Live · 🌐 Public |
 | Auth (me, protected) | 1 | 🟢 Live · 🔒 |
 | Dashboard | 4 | 🟢 Live · 🔒 |
 | Users / Teams / Models | 8 | 🟢 Live · 🔒 |
@@ -127,8 +128,8 @@ Per-endpoint detail: [`URL_INVENTORY.md`](URL_INVENTORY.md).
 
 | Feature | Status | Notes |
 |---|---|---|
-| `/contact` form | 🟠 Preview | No POST endpoint. Submitted state says "Preview only" + mailto fallback. |
-| `/demo` form | 🟠 Preview | No POST endpoint. Submitted state says "Preview only" + mailto fallback. |
+| `/contact` form | 🟢 Live | POSTs to `/api/contact`. Zod-validated, rate-limited (5/min/IP), persisted to `ContactSubmission`. Mailto fallback shown as secondary path. **Email delivery not wired** — submissions land in DB only. |
+| `/demo` form | 🟢 Live | POSTs to `/api/demo-request`. Same protections. Persisted to `DemoRequest`. Success: "Demo request received. Our team will contact you to schedule a time." **No calendar integration** — sales team contacts manually. |
 | `/signup` | 🟠 Preview | UI present; no `/api/auth/signup` route. |
 | Newsletter | 🚫 Not built | Implicit in `/resources` CTA. |
 
@@ -151,11 +152,12 @@ Per-endpoint detail: [`URL_INVENTORY.md`](URL_INVENTORY.md).
 |---|---|
 | `<title>` + `description` on all 13 marketing pages | 🟢 Live |
 | OpenGraph + Twitter card on `/` | 🟢 Live |
-| Server `layout.tsx` metadata for `/contact` + `/demo` (client pages) | 🟢 Live |
+| OpenGraph + Twitter card on `/contact` + `/demo` (via sibling `layout.tsx`) | 🟢 Live |
 | Viewport theme-color | 🟢 Live |
-| `robots.txt` (via `app/robots.ts`) | 🚫 Not built |
-| `sitemap.xml` (via `app/sitemap.ts`) | 🚫 Not built |
-| OG image artwork (1200×630 PNG) | 🚫 Not built |
+| `robots.txt` (via `app/robots.ts`) | 🟢 Live |
+| `sitemap.xml` (via `app/sitemap.ts`) | 🟢 Live |
+| Dynamic OG image (`/og` via `next/og` `ImageResponse`, 1200×630) | 🟢 Live — Signal Gallery style, edge runtime, accepts `?title=` override |
+| `NEXT_PUBLIC_SITE_URL` env var for canonical absolute URLs | 🟡 Recommended in prod (defaults to `http://localhost:3000` in dev) |
 
 ---
 
@@ -176,11 +178,13 @@ Per-endpoint detail: [`URL_INVENTORY.md`](URL_INVENTORY.md).
 | Priority | Item |
 |---|---|
 | 🔴 High | Validate the 4 non-Anthropic provider connectors against real customer tenants and graduate them from 🟡 to 🟢. |
-| 🔴 High | Build `/api/contact` and `/api/demo-request` POST endpoints + persist to DB. Wire calendar booking (Cal.com / Calendly) for `/demo`. |
 | 🔴 High | Build `/api/auth/signup` and connect the existing `/signup` page to it. |
-| 🟡 Medium | Wire Phase 2B delivery channels (Slack, Teams, email, PagerDuty) end-to-end for the existing `NotificationChannel` schema. |
+| 🔴 High | Wire an email delivery provider (Resend / Postmark / SES) so contact + demo submissions trigger an actual notification. Today they only land in Postgres. |
+| 🔴 High | Wire a calendar booking provider (Cal.com / Calendly / Google Calendar) so `/demo` returns a real time slot link instead of relying on sales-team follow-up. |
+| 🟡 Medium | Wire Phase 2B delivery channels (Slack, Teams, PagerDuty) end-to-end for the existing `NotificationChannel` schema. |
 | 🟡 Medium | Ship MDX/blog collection at `/resources/[slug]`. |
-| 🟡 Medium | Generate `robots.txt`, `sitemap.xml`, OG image. |
+| 🟡 Medium | Add an admin triage UI to view/respond to `ContactSubmission` and `DemoRequest` rows. |
+| 🟡 Medium | Set `NEXT_PUBLIC_SITE_URL` in production env so sitemap/robots/OG point at the canonical domain. |
 | 🟢 Low | Implement Phase 3 scoring engine using existing `AiAdoptionScoreDaily`, `AiWasteScoreDaily`, `TeamEfficiencyScoreDaily` tables. |
 | 🟢 Low | Re-enable GitHub Pages workflow (marketing-only static deploy). |
 | 🟢 Low | Address the violet `--sg-anomaly` colour token (out of scope without redesign). |

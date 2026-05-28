@@ -7,15 +7,15 @@
 
 ## 1 · Current GTM readiness score
 
-**Overall: 6.5 / 10**
+**Overall: 7.0 / 10** *(+0.5 after Phase 2B-c launch-blocker pass)*
 
 | Audience | Readiness | Rationale |
 |---|---|---|
 | Internal stakeholders | **9.0 / 10** | Working portal, working marketing site, real Anthropic data. |
-| Investors / board | **8.0 / 10** | Strong narrative + working dashboard + honest roadmap. Provider verification gap is the main delta. |
-| Design partners / pilot customers (Anthropic-only) | **7.5 / 10** | Phase 1 fully works for Anthropic Admin API users. |
+| Investors / board | **8.5 / 10** | Strong narrative + working dashboard + lead-capture pipeline + sitemap/OG + honest roadmap. |
+| Design partners / pilot customers (Anthropic-only) | **8.0 / 10** | Phase 1 fully works for Anthropic Admin API users; lead capture now real. |
 | Design partners / pilot customers (multi-provider) | **5.5 / 10** | Connectors exist but production validation pending. Customers using OpenAI/Copilot/Cursor/M365 will likely uncover edge cases. |
-| Public paid customer launch | **4.5 / 10** | Blocked by: lead-capture backend, multi-provider validation, Phase 2B governance, content library. |
+| Public paid customer launch | **5.5 / 10** | Lead capture unblocked. Still blocked by: multi-provider validation, `/api/auth/signup`, production hosting, email/calendar delivery, Phase 2B governance, content library. |
 
 ---
 
@@ -34,14 +34,15 @@
 
 ## 3 · What is NOT ready for public customer launch
 
-❌ `/contact` and `/demo` forms are frontend previews — **no real lead capture**.
+✅ `/contact` and `/demo` forms now POST to real endpoints (`/api/contact`, `/api/demo-request`) — submissions persist in Postgres (`ContactSubmission`, `DemoRequest`).
+❌ Email notification + calendar booking still manual — submissions land in DB but no email is sent and no booking link is generated yet.
 ❌ `/signup` page has no `/api/auth/signup` endpoint.
 ❌ OpenAI, GitHub Copilot, Cursor, Microsoft 365 Copilot connectors are **implemented but not customer-validated**.
 ❌ Alerts, Reports, Audit Logs, Notifications UIs are placeholders.
 ❌ Slack / Teams / Email / PagerDuty alert delivery is not wired.
 ❌ AI ROI dashboard and Recommendations engine are placeholders.
 ❌ `/resources` library has zero published articles.
-❌ `robots.txt`, `sitemap.xml`, OG image artwork are not generated.
+✅ `robots.txt`, `sitemap.xml`, dynamic OG image (`/og`) now generated.
 ❌ No production hosting set up. No CI tests.
 ❌ No customer logos, testimonials, or case studies (and none should be invented).
 ❌ No formal SOC 2 / ISO 27001 certification.
@@ -104,18 +105,21 @@
 
 ## 5 · Required launch blockers (before paid customer launch)
 
-| # | Blocker | Severity |
-|---|---|---|
-| 1 | Build `/api/contact` + persist + notify | 🔴 Critical |
-| 2 | Build `/api/demo-request` + persist + calendar integration | 🔴 Critical |
-| 3 | Build `/api/auth/signup` + connect existing UI | 🔴 Critical |
-| 4 | Validate OpenAI, GH Copilot, Cursor, M365 connectors against at least one real customer tenant each | 🔴 Critical |
-| 5 | Set up production hosting (Vercel/Railway/Render/etc.) | 🔴 Critical |
-| 6 | Generate `robots.txt`, `sitemap.xml`, OG image | 🟡 Important |
-| 7 | Ship at least 2-3 real articles in `/resources/[slug]` | 🟡 Important |
-| 8 | Wire at least one notification delivery channel end-to-end (email recommended) | 🟡 Important |
-| 9 | Set up basic CI: typecheck + build on PR | 🟡 Important |
-| 10 | Document incident-response runbook for production | 🟢 Helpful |
+| # | Blocker | Severity | Status |
+|---|---|---|---|
+| 1 | Build `/api/contact` + persist | 🔴 Critical | ✅ Done — `/api/contact` + `ContactSubmission` |
+| 2 | Build `/api/demo-request` + persist | 🔴 Critical | ✅ Done — `/api/demo-request` + `DemoRequest` |
+| 3 | Generate `robots.txt`, `sitemap.xml`, OG image | 🟡 Important | ✅ Done — `app/robots.ts`, `app/sitemap.ts`, `app/og/route.tsx` |
+| 4 | Build `/api/auth/signup` + connect existing UI | 🔴 Critical | ❌ Pending |
+| 5 | Validate OpenAI, GH Copilot, Cursor, M365 connectors against at least one real customer tenant each | 🔴 Critical | ❌ Pending |
+| 6 | Set up production hosting (Vercel/Railway/Render/etc.) | 🔴 Critical | ❌ Pending |
+| 7 | Wire email delivery (Resend/Postmark/SES) so contact + demo submissions notify sales team | 🔴 Critical | ❌ Pending |
+| 8 | Wire calendar booking (Cal.com/Calendly) so `/demo` returns a real time-slot link | 🟡 Important | ❌ Pending |
+| 9 | Set `NEXT_PUBLIC_SITE_URL` in production env | 🟡 Important | ❌ Pending |
+| 10 | Add admin triage UI for `ContactSubmission` / `DemoRequest` | 🟡 Important | ❌ Pending |
+| 11 | Ship at least 2-3 real articles in `/resources/[slug]` | 🟡 Important | ❌ Pending |
+| 12 | Set up basic CI: typecheck + build on PR | 🟡 Important | ❌ Pending |
+| 13 | Document incident-response runbook for production | 🟢 Helpful | ❌ Pending |
 
 ---
 

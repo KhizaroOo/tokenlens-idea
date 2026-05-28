@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import { SITE_URL } from "@/lib/site";
 
 /**
  * Server-side metadata for /demo.
@@ -7,6 +8,7 @@ import type { ReactNode } from "react";
  * export metadata directly. This thin server layout supplies it.
  */
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Book a Demo — TokenLens",
   description:
     "See TokenLens applied to your AI stack — a twenty-minute live walkthrough of the multi-provider AI spend, adoption, and governance dashboard.",
@@ -15,7 +17,9 @@ export const metadata: Metadata = {
     description:
       "A twenty-minute live walkthrough of the AI operating dashboard, against your provider mix.",
     type: "website",
+    images: [{ url: "/og?title=See%20TokenLens%20applied%20to%20your%20AI%20stack.", width: 1200, height: 630 }],
   },
+  twitter: { card: "summary_large_image", images: ["/og?title=See%20TokenLens%20applied%20to%20your%20AI%20stack."] },
 };
 
 export const viewport: Viewport = {

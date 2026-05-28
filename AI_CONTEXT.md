@@ -3,7 +3,7 @@
 > **Source of truth for AI agents and future Claude Code sessions.**
 > If this file disagrees with a legacy `TOKENLENS_*.md` file at the repo root, **this file wins**. Those legacy files (`TOKENLENS_COMPLETE.md`, `TOKENLENS_FEATURES.md`, `TOKENLENS_HIGHLIGHTS.md`, `TOKENLENS_PROJECT_DOCUMENTATION.md`) are kept for history and should not be relied on for current state.
 
-**Last verified against repo:** 2026-05-28
+**Last verified against repo:** 2026-05-28 *(updated after Phase 2B-c launch-blocker pass: lead-capture endpoints, robots/sitemap, OG image)*
 **Verified against:** `package.json`, `prisma/schema.prisma`, `app/(*)/`, `app/api/**`, `modules/providers/**`, `workers/**`, `proxy.ts`, `lib/auth.ts`.
 
 ---
@@ -57,10 +57,10 @@ Numbers below are verified by `find app -name "page.tsx"` and `find app/api -nam
 | Public auth pages (`/login`, `/signup`) | **2** |
 | **Public website + auth pages — total** | **15** |
 | Authenticated portal pages (unique URLs) | **26** |
-| API routes — total | **47** |
-| API — public (auth) | 2 (`/api/auth/login`, `/api/auth/logout`) |
+| API routes — total | **49** |
+| API — public | 4 (`/api/auth/login`, `/api/auth/logout`, `/api/contact`, `/api/demo-request`) |
 | API — protected | 45 (every other route) |
-| Special routes | 1 (`app/not-found.tsx`) |
+| Special routes | `app/not-found.tsx`, `app/robots.ts` (`/robots.txt`), `app/sitemap.ts` (`/sitemap.xml`), `app/og/route.tsx` (`/og`) |
 
 Full per-route table lives in [`docs/URL_INVENTORY.md`](docs/URL_INVENTORY.md).
 
@@ -148,9 +148,9 @@ See [`docs/CLAIMS_AND_COPY_GUARDRAILS.md`](docs/CLAIMS_AND_COPY_GUARDRAILS.md) f
 | Total public marketing pages | 13 (`/`, `/platform`, `/solutions`, `/use-cases`, `/integrations`, `/pricing`, `/security`, `/resources`, `/about`, `/contact`, `/demo`, `/privacy`, `/terms`) |
 | Header / footer | `components/marketing/MarketingHeader.tsx` + `MarketingFooter.tsx`. Header is fixed with scroll-aware blur. Mobile menu has `aria-label` and `aria-expanded`. Theme toggle has `aria-label`. |
 | Dashboard preview | `components/marketing/DashboardMockup.tsx` renders the real product dashboard screenshots from `public/screenshots/dashboard-{light,dark}.png` (theme-aware swap). Falls back to a placeholder card if the PNG is missing. |
-| Forms | `/contact` and `/demo` are **frontend previews** — no backend wired. The submitted state explicitly says "Preview only" and offers `sales@tokenlens.io` / `support@tokenlens.io` as mailto fallbacks. |
+| Forms | `/contact` POSTs to `/api/contact` (persists to `ContactSubmission`). `/demo` POSTs to `/api/demo-request` (persists to `DemoRequest`). Both rate-limited (5/min/IP) and zod-validated. Success states are honest ("Message received" / "Demo request received. Our team will contact you to schedule a time."). Mailto fallback still offered as a secondary path on every form. |
 | Resources | All 6 article cards are previews labeled "COMING SOON" with a "LIBRARY IN CURATION" disclosure block. |
-| SEO | All 13 pages have `<title>` + `description`. Homepage has full OpenGraph + Twitter card + keywords. `/contact` and `/demo` are `"use client"`, so each has a sibling server `layout.tsx` supplying metadata. |
+| SEO | All 13 pages have `<title>` + `description`. Homepage has full OpenGraph + Twitter card + keywords. `/contact` and `/demo` use sibling server `layout.tsx` for metadata. `app/robots.ts` serves `/robots.txt` (allows marketing, disallows portal + API). `app/sitemap.ts` serves `/sitemap.xml` (15 public URLs). `app/og/route.tsx` serves `/og` as a dynamic 1200×630 Signal-Gallery-style OpenGraph image (accepts `?title=` override). Canonical site URL resolved by `lib/site.ts` from `NEXT_PUBLIC_SITE_URL` env var. |
 | Animations | CSS-only (`sg-pulse`, `sg-orbit-slow`, `sg-orbit-med`). All disabled under `prefers-reduced-motion`. |
 | Dashboard screenshots | Live PNGs in `public/screenshots/`. Replace by saving new captures at the same path. |
 

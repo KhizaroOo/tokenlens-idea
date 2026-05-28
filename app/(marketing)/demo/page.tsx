@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarDays, BarChart3, Network, Users, GitBranch, ShieldCheck, FileBarChart, ArrowUpRight, CheckCircle2, Clock, Mail } from "lucide-react";
+import { CalendarDays, BarChart3, Network, Users, GitBranch, ShieldCheck, FileBarChart, ArrowUpRight, CheckCircle2, Clock } from "lucide-react";
 import { ExhibitLabel, KineticMetricCard } from "@/components/marketing/gallery";
 import { DashboardMockup } from "@/components/marketing/DashboardMockup";
 
@@ -14,15 +14,44 @@ const AGENDA = [
   { icon: FileBarChart, label: "Reporting roadmap",       hint: "What ships next, how it fits your workflow" },
 ];
 
-export default function DemoPage() {
-  const [submitted, setSubmitted] = useState(false);
+type SubmitState = "idle" | "submitting" | "success" | "error";
 
-  function handleSubmit(e: React.FormEvent) {
+export default function DemoPage() {
+  const [state, setState]   = useState<SubmitState>("idle");
+  const [errMsg, setErrMsg] = useState<string | null>(null);
+
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    // NOTE: Frontend preview form. No backend or calendar integration yet.
-    // The submitted state below is honest about that — see TODO.
-    // TODO: wire to a real /api/demo-request endpoint and a calendar provider before launch.
-    setSubmitted(true);
+    setErrMsg(null);
+    setState("submitting");
+
+    const fd = new FormData(e.currentTarget);
+    const payload = {
+      name:    String(fd.get("name")    ?? "").trim(),
+      email:   String(fd.get("email")   ?? "").trim(),
+      company: String(fd.get("company") ?? "").trim(),
+      role:    String(fd.get("role")    ?? "").trim(),
+      aiTools: String(fd.get("tools")   ?? "").trim(),
+      message: String(fd.get("msg")     ?? "").trim(),
+    };
+
+    try {
+      const res = await fetch("/api/demo-request", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify(payload),
+      });
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        setErrMsg(body?.error ?? `Submission failed (HTTP ${res.status}).`);
+        setState("error");
+        return;
+      }
+      setState("success");
+    } catch {
+      setErrMsg("Network error. Please email sales@tokenlens.io directly.");
+      setState("error");
+    }
   }
 
   const INPUT = "w-full border sg-line bg-[var(--sg-bg)] px-3.5 py-2.5 text-sm text-[var(--sg-text)] placeholder:text-[var(--sg-text-mute)] focus:border-[var(--sg-ink)] focus:outline-none transition-colors";
@@ -113,46 +142,52 @@ export default function DemoPage() {
           </div>
 
           <div className="lg:col-span-3">
-            {submitted ? (
-              <div className="border-2 border-[var(--sg-budget)] p-10 text-center bg-[var(--sg-panel)]">
-                <CheckCircle2 className="mx-auto h-10 w-10 text-[var(--sg-budget)]" />
-                <p className="mt-4 sg-display text-2xl text-[var(--sg-text)]">Preview only.</p>
+            {state === "success" ? (
+              <div className="border-2 border-[var(--sg-signal)] p-10 text-center bg-[var(--sg-panel)]">
+                <CheckCircle2 className="mx-auto h-10 w-10 text-[var(--sg-signal)]" />
+                <p className="mt-4 sg-display text-2xl text-[var(--sg-text)]">Demo request received.</p>
                 <p className="mt-3 text-sm text-[var(--sg-text-soft)] leading-relaxed max-w-md mx-auto">
-                  This demo form is a frontend preview — no booking system is connected yet, so your request wasn&apos;t actually sent.
+                  Our team will contact you to schedule a time.
                 </p>
-                <p className="mt-4 text-sm text-[var(--sg-text)] leading-relaxed max-w-md mx-auto">
-                  To book a real time slot today, email:
+                <p className="mt-5 text-xs text-[var(--sg-text-mute)] leading-relaxed max-w-md mx-auto">
+                  Need a slot sooner? Email{" "}
+                  <a href="mailto:sales@tokenlens.io?subject=Demo%20request" className="text-[var(--sg-signal)] hover:text-[var(--sg-text)]">
+                    sales@tokenlens.io
+                  </a>.
                 </p>
-                <a href="mailto:sales@tokenlens.io?subject=Demo%20request" className="mt-3 inline-flex items-center gap-2 text-sm text-[var(--sg-signal)] hover:text-[var(--sg-text)] transition-colors">
-                  <Mail className="h-3.5 w-3.5" /> sales@tokenlens.io
-                </a>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="border sg-line bg-[var(--sg-panel)] p-7 lg:p-9 space-y-4">
-                <div className="flex items-center justify-between gap-2 mb-1">
-                  <div className="flex items-center gap-2">
-                    <CalendarDays className="h-4 w-4 text-[var(--sg-signal)]" />
-                    <span className="sg-caption text-[var(--sg-text-mute)]">DEMO REQUEST FORM</span>
+                <div className="flex items-center gap-2 mb-1">
+                  <CalendarDays className="h-4 w-4 text-[var(--sg-signal)]" />
+                  <span className="sg-caption text-[var(--sg-text-mute)]">DEMO REQUEST FORM</span>
+                </div>
+                {state === "error" && errMsg && (
+                  <div role="alert" className="border border-[var(--sg-risk)] bg-[var(--sg-risk)]/5 p-3 text-xs text-[var(--sg-risk)] leading-relaxed">
+                    {errMsg}
                   </div>
-                  <span className="sg-caption text-[var(--sg-budget)] text-[9px]">PREVIEW</span>
-                </div>
-                <p className="text-[11px] text-[var(--sg-text-soft)] leading-snug pb-3 border-b sg-line-soft">
-                  This form is a frontend preview — not yet wired to a backend. Until launch, email{" "}
-                  <a href="mailto:sales@tokenlens.io" className="text-[var(--sg-signal)] hover:text-[var(--sg-text)]">sales@tokenlens.io</a> to book a real slot.
-                </p>
+                )}
                 <div className="grid sm:grid-cols-2 gap-4">
-                  <div><label htmlFor="name" className={LABEL}>NAME</label> <input id="name" type="text" required className={INPUT} placeholder="Jane Doe" /></div>
-                  <div><label htmlFor="email" className={LABEL}>WORK EMAIL</label> <input id="email" type="email" required className={INPUT} placeholder="jane@company.com" /></div>
+                  <div><label htmlFor="name"  className={LABEL}>NAME</label>       <input id="name"  name="name"  type="text"  required maxLength={200} className={INPUT} placeholder="Jane Doe" /></div>
+                  <div><label htmlFor="email" className={LABEL}>WORK EMAIL</label> <input id="email" name="email" type="email" required maxLength={254} className={INPUT} placeholder="jane@company.com" /></div>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
-                  <div><label htmlFor="company" className={LABEL}>COMPANY</label> <input id="company" type="text" className={INPUT} placeholder="Acme Inc." /></div>
-                  <div><label htmlFor="role" className={LABEL}>ROLE</label> <input id="role" type="text" className={INPUT} placeholder="VP Engineering / CFO" /></div>
+                  <div><label htmlFor="company" className={LABEL}>COMPANY</label> <input id="company" name="company" type="text" maxLength={200} className={INPUT} placeholder="Acme Inc." /></div>
+                  <div><label htmlFor="role"    className={LABEL}>ROLE</label>    <input id="role"    name="role"    type="text" maxLength={200} className={INPUT} placeholder="VP Engineering / CFO" /></div>
                 </div>
-                <div><label htmlFor="tools" className={LABEL}>AI TOOLS YOU CURRENTLY PAY FOR</label> <input id="tools" type="text" className={INPUT} placeholder="Claude, OpenAI, GitHub Copilot…" /></div>
-                <div><label htmlFor="msg" className={LABEL}>WHAT MAKES THIS DEMO WORTH YOUR TIME?</label> <textarea id="msg" rows={3} className={INPUT} placeholder="The biggest gap in our AI cost visibility is…" /></div>
-                <button type="submit" className="group inline-flex items-center justify-center gap-2 px-6 py-3 bg-[var(--sg-ink)] text-[var(--sg-bg)] font-semibold text-sm hover:bg-[var(--sg-signal)] hover:text-[#050505] transition-colors">
-                  <Clock className="h-4 w-4" /> Request Demo <ArrowUpRight className="h-4 w-4 group-hover:rotate-12 transition-transform" />
+                <div><label htmlFor="tools" className={LABEL}>AI TOOLS YOU CURRENTLY PAY FOR</label> <input id="tools" name="tools" type="text" maxLength={2000} className={INPUT} placeholder="Claude, OpenAI, GitHub Copilot…" /></div>
+                <div><label htmlFor="msg" className={LABEL}>WHAT MAKES THIS DEMO WORTH YOUR TIME?</label> <textarea id="msg" name="msg" rows={3} maxLength={10000} className={INPUT} placeholder="The biggest gap in our AI cost visibility is…" /></div>
+                <button
+                  type="submit"
+                  disabled={state === "submitting"}
+                  className="group inline-flex items-center justify-center gap-2 px-6 py-3 bg-[var(--sg-ink)] text-[var(--sg-bg)] font-semibold text-sm hover:bg-[var(--sg-signal)] hover:text-[#050505] transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  {state === "submitting" ? "Submitting…" : (<><Clock className="h-4 w-4" /> Request Demo <ArrowUpRight className="h-4 w-4 group-hover:rotate-12 transition-transform" /></>)}
                 </button>
+                <p className="text-[11px] text-[var(--sg-text-mute)] leading-snug pt-3 border-t sg-line-soft">
+                  Prefer email? Reach{" "}
+                  <a href="mailto:sales@tokenlens.io?subject=Demo%20request" className="text-[var(--sg-signal)] hover:text-[var(--sg-text)]">sales@tokenlens.io</a> directly.
+                </p>
               </form>
             )}
           </div>

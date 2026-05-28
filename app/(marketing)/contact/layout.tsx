@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
+import { SITE_URL } from "@/lib/site";
 
 /**
  * Server-side metadata for /contact.
@@ -9,6 +10,7 @@ import type { ReactNode } from "react";
  * the rendered tree.
  */
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "Contact — TokenLens",
   description:
     "Talk to the TokenLens team. Sales, support, and partnerships for the multi-provider AI spend, adoption, and governance dashboard.",
@@ -17,7 +19,9 @@ export const metadata: Metadata = {
     description:
       "Sales, support, and partnerships for the TokenLens AI operating dashboard.",
     type: "website",
+    images: [{ url: "/og?title=Talk%20to%20the%20TokenLens%20team.", width: 1200, height: 630 }],
   },
+  twitter: { card: "summary_large_image", images: ["/og?title=Talk%20to%20the%20TokenLens%20team."] },
 };
 
 export const viewport: Viewport = {

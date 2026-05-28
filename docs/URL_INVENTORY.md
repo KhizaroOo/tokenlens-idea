@@ -13,10 +13,10 @@
 | Public auth pages (`/login`, `/signup`) | **2** |
 | **Public website + auth pages — total** | **15** |
 | Authenticated portal pages (unique URLs) | **26** |
-| API routes — total | **47** |
-| API — public (auth) | 2 (`/api/auth/login`, `/api/auth/logout`) |
+| API routes — total | **49** |
+| API — public | 4 (`/api/auth/login`, `/api/auth/logout`, `/api/contact`, `/api/demo-request`) |
 | API — protected | 45 |
-| Special routes | 1 (`app/not-found.tsx`) + 1 proxy (`proxy.ts`) |
+| Special routes | `app/not-found.tsx`, `app/robots.ts`, `app/sitemap.ts`, `app/og/route.tsx`, `proxy.ts` |
 
 ---
 
@@ -37,8 +37,8 @@
 | 9 | `/privacy` | Privacy Policy | 🟢 Live · 🌐 |
 | 10 | `/terms` | Terms of Service | 🟢 Live · 🌐 |
 | 11 | `/resources` | Library (preview articles) | 🟠 Preview · 🌐 |
-| 12 | `/contact` | Contact form (preview) | 🟠 Preview · 🌐 |
-| 13 | `/demo` | Demo request form (preview) | 🟠 Preview · 🌐 |
+| 12 | `/contact` | Contact form → `/api/contact` | 🟢 Live · 🌐 |
+| 13 | `/demo` | Demo request form → `/api/demo-request` | 🟢 Live · 🌐 |
 
 ### 1b · Public auth pages — 2
 
@@ -112,9 +112,9 @@
 
 ---
 
-## 3 · API routes — 47
+## 3 · API routes — 49
 
-> 2 public + 45 protected.
+> 4 public + 45 protected.
 
 ### 3a · Auth API — 3 (2 public + 1 protected)
 
@@ -123,6 +123,15 @@
 | `/api/auth/login` | POST | 🟢 Live · 🌐 |
 | `/api/auth/logout` | POST | 🟢 Live · 🌐 |
 | `/api/auth/me` | GET | 🟢 Live · 🔒 |
+
+### 3a-bis · Public lead-capture API — 2 (both public · POST only)
+
+| URL | Method | Status | Notes |
+|---|---|---|---|
+| `/api/contact` | POST | 🟢 Live · 🌐 | zod-validated, rate-limit 5/min/IP, persists to `ContactSubmission` |
+| `/api/demo-request` | POST | 🟢 Live · 🌐 | zod-validated, rate-limit 5/min/IP, persists to `DemoRequest` |
+
+Both endpoints return 405 for GET/PUT/PATCH/DELETE.
 
 ### 3b · Dashboard API — 4 (all 🟢 Live · 🔒)
 
@@ -191,7 +200,7 @@
 - `/api/roi/by-team`
 - `/api/roi/trends`
 
-**Arithmetic check:** `3 + 4 + 8 + 6 + 8 + 4 + 6 + 8 = 47` ✓
+**Arithmetic check:** `3 (auth) + 2 (lead capture) + 4 (dashboard) + 8 (users/teams/models) + 6 (provider spend) + 8 (providers/sync) + 4 (settings) + 6 (Phase 2B) + 8 (Phase 3) = 49` ✓
 
 ---
 
@@ -200,6 +209,9 @@
 | URL | Purpose | Status |
 |---|---|---|
 | `app/not-found.tsx` (served on any unmatched URL) | 404 page | 🟢 Live · 🌐 |
+| `app/robots.ts` → `/robots.txt` | Crawl rules — allows public routes, disallows `/api/*` and all dashboard routes | 🟢 Live · 🌐 |
+| `app/sitemap.ts` → `/sitemap.xml` | 15 public URLs (13 marketing + 2 auth) with lastmod / changefreq / priority | 🟢 Live · 🌐 |
+| `app/og/route.tsx` → `/og` | Dynamic 1200×630 OpenGraph image (edge runtime, `ImageResponse`). Accepts `?title=` override. Used by homepage + `/contact` + `/demo` metadata. | 🟢 Live · 🌐 |
 | `proxy.ts` (`config.matcher`) | Edge auth gate — runs on every matched request | 🟢 Live |
 
 ---
@@ -213,7 +225,9 @@
 │                       /contact, /demo, /privacy, /terms
 │  2  auth pages:       /login, /signup
 │  2  auth APIs:        /api/auth/login, /api/auth/logout
-│  +  static assets:    /_next/*, /favicon.ico, /robots.txt, images
+│  2  lead-capture APIs: /api/contact, /api/demo-request
+│  +  framework routes: /robots.txt, /sitemap.xml, /og
+│  +  static assets:    /_next/*, /favicon.ico, images
 │
 ├─ PROTECTED (tl_session JWT required) ──────────────────────────
 │  26 dashboard pages       → 307 → /login?redirect=...

@@ -14,7 +14,7 @@ TokenLens gives organisations a single editorial dashboard for every AI tool the
 - **Phase 2A — 🟢 UI complete, 🟡 backend verification pending:** Multi-provider UI shipped for OpenAI, GitHub Copilot, Cursor, Microsoft 365 Copilot. Connector + sync-worker **code is in the repo**, but production validation against a real customer tenant is not yet confirmed. Non-Anthropic providers show seeded demo data until credentials are added in Settings.
 - **Phase 2B — 🔵 Coming Soon:** Alerts, Reports, Audit Logs, Notifications (placeholders shipped; data plumbing partial).
 - **Phase 3 — ⚪ Planned:** ROI dashboard, Recommendations/Suggestions engine, intelligence scoring (Prisma tables exist; UI is placeholder).
-- **Public marketing website — 🟢 Live (Signal Gallery theme).** `/contact` and `/demo` forms are **frontend previews** with mailto fallbacks. `/resources` articles are **previews** labeled COMING SOON.
+- **Public marketing website — 🟢 Live (Signal Gallery theme).** `/contact` and `/demo` now POST to real persistence endpoints (`/api/contact`, `/api/demo-request`), with `robots.txt`, `sitemap.xml`, and a dynamic OG image (`/og`) all live. Email notification + calendar booking still manual; mailto fallback shown as secondary. `/resources` articles remain **previews** labeled COMING SOON.
 
 Full breakdown: [`docs/PROJECT_STATUS.md`](docs/PROJECT_STATUS.md).
 
@@ -34,7 +34,9 @@ Full breakdown: [`docs/PROJECT_STATUS.md`](docs/PROJECT_STATUS.md).
 | ROI, Suggestions | Placeholder pages + Prisma tables | ⚪ Planned |
 | Settings, Provider Limits | Credential storage, sync controls | 🟢 Live |
 | Marketing website (13 pages) | Signal Gallery theme; SEO; responsive | 🟢 Live |
-| `/contact`, `/demo`, `/resources` | Frontend previews, no backend | 🟠 Preview |
+| `/contact`, `/demo` → real persistence endpoints | `/api/contact`, `/api/demo-request` (zod + rate-limit + Prisma) | 🟢 Live |
+| `/resources` library | Article previews, no MDX collection yet | 🟠 Preview |
+| `/robots.txt`, `/sitemap.xml`, dynamic `/og` (1200×630) | SEO + sharing infrastructure | 🟢 Live |
 
 Per-page detail: [`docs/FEATURE_MATRIX.md`](docs/FEATURE_MATRIX.md). Per-URL inventory: [`docs/URL_INVENTORY.md`](docs/URL_INVENTORY.md).
 
@@ -165,7 +167,7 @@ Walk-through: [`docs/PROVIDER_SETUP_GUIDE.md`](docs/PROVIDER_SETUP_GUIDE.md).
 | Area | Limitation |
 |---|---|
 | Gemini, Perplexity | No aggregate admin usage API; shown on `/limitations` |
-| `/contact`, `/demo` | Frontend preview forms — no backend wired; mailto fallback to `sales@`/`support@tokenlens.io` |
+| `/contact`, `/demo` | POST endpoints live and persist to DB. **Email notification + calendar booking not yet wired** — sales team must check submissions in Postgres until an email provider + calendar are configured. Mailto fallback shown as secondary. |
 | `/resources` | Article cards are previews labeled COMING SOON; MDX/blog collection not yet shipped |
 | Alerts / Reports / Audit Logs / Notifications | Placeholder pages; Prisma tables exist, delivery channels not wired |
 | ROI / Suggestions | Placeholder pages; intelligence-score Prisma tables exist, scoring engine pending |

@@ -27,8 +27,8 @@ User-facing claim allowed?
 | Security | `/security` | — | 🟢 Live | Yes | Pillars + FAQ; honest about SOC 2 status |
 | Resources | `/resources` | — | 🟠 Preview | Soft (with COMING SOON label) | 6 article previews; no MDX/blog collection yet |
 | About | `/about` | — | 🟢 Live | Yes | Manifesto + 6 product values |
-| Contact form | `/contact` | none yet | 🟠 Preview | Soft | Mailto fallback; submitted state says "Preview only" |
-| Demo form | `/demo` | none yet | 🟠 Preview | Soft | Mailto fallback; submitted state says "Preview only" |
+| Contact form | `/contact` | `/api/contact` (POST) | 🟢 Live | Yes | Zod-validated, rate-limited 5/min/IP, persisted to `ContactSubmission`. Email notification not yet wired — submissions land in DB. Mailto fallback shown as secondary. |
+| Demo form | `/demo` | `/api/demo-request` (POST) | 🟢 Live | Yes | Same protections, persisted to `DemoRequest`. Calendar booking not yet wired — sales team contacts the submitter manually. |
 | Privacy Policy | `/privacy` | — | 🟢 Live | Yes | 7 sections |
 | Terms of Service | `/terms` | — | 🟢 Live | Yes | 7 sections |
 | Signal Gallery theme | `app/(marketing)/layout.tsx` + `globals.css` | — | 🟢 Live | Yes | Editorial museum aesthetic, light + dark mode |
@@ -178,9 +178,10 @@ User-facing claim allowed?
 | OpenGraph + Twitter card on `/` | 🟢 Live | Yes | |
 | Server `layout.tsx` metadata for `/contact` + `/demo` | 🟢 Live | Yes | Required because pages are `"use client"` |
 | Viewport theme-color | 🟢 Live | Yes | Per-page |
-| `robots.txt` | 🚫 Not built | — | Add via `app/robots.ts` |
-| `sitemap.xml` | 🚫 Not built | — | Add via `app/sitemap.ts` |
-| OG image artwork | 🚫 Not built | — | 1200×630 PNG missing |
+| `/robots.txt` via `app/robots.ts` | 🟢 Live | Yes | Allows public routes, disallows `/api/*` and all dashboard routes |
+| `/sitemap.xml` via `app/sitemap.ts` | 🟢 Live | Yes | 15 public URLs with lastmod / changefreq / priority |
+| Dynamic OG image (`/og`) via `next/og` | 🟢 Live | Yes | 1200×630, edge runtime, Signal Gallery style. `?title=` query overrides headline. Used by `/`, `/contact`, `/demo` metadata. |
+| `NEXT_PUBLIC_SITE_URL` env var for canonical URLs | 🟡 Recommended in prod | Yes | Falls back to `http://localhost:3000` in dev; falls back to `https://$VERCEL_URL` on Vercel previews |
 
 ---
 

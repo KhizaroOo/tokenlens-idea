@@ -39,10 +39,14 @@ const PUBLIC_PAGES = new Set<string>([
   "/signup",
 ]);
 
-// Public API prefixes (login + logout — needed to actually authenticate)
+// Public API prefixes
+//   - auth: needed to actually log in / out
+//   - public lead-capture endpoints: receive submissions from the marketing site
 const PUBLIC_API_PREFIXES = [
   "/api/auth/login",
   "/api/auth/logout",
+  "/api/contact",
+  "/api/demo-request",
 ];
 
 function isPublicPath(pathname: string): boolean {

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { SITE_URL } from "@/lib/site";
 import Link from "next/link";
 import {
   ArrowUpRight, AlertTriangle, Wallet, Eye, Layers, Users,
@@ -13,6 +14,7 @@ import { DashboardMockup } from "@/components/marketing/DashboardMockup";
 import { SignalFlowDiagram } from "@/components/marketing/SignalFlowDiagram";
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "TokenLens — The operating lens for company-wide AI spend",
   description:
     "Control your company's AI spend before it becomes your next cloud bill. TokenLens turns scattered AI usage across Claude, OpenAI, GitHub Copilot, Cursor, Microsoft Copilot, and more into one operating layer.",
@@ -28,12 +30,21 @@ export const metadata: Metadata = {
       "Cost, adoption, productivity, and governance — across every AI provider — in one editorial dashboard.",
     type: "website",
     siteName: "TokenLens",
+    images: [
+      {
+        url: "/og",
+        width: 1200,
+        height: 630,
+        alt: "TokenLens — the operating lens for company-wide AI.",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "TokenLens — One operating lens for company-wide AI",
     description:
       "Cost, adoption, productivity, governance — across every AI provider.",
+    images: ["/og"],
   },
 };
 

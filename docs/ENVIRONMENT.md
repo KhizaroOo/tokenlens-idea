@@ -27,6 +27,15 @@
 
 Both default to unset (server mode, root path).
 
+## 2-bis · Canonical site URL (public, used by `lib/site.ts`)
+
+| Variable | Required? | Used by | Purpose | Example placeholder |
+|---|---|---|---|---|
+| `NEXT_PUBLIC_SITE_URL` | **Strongly recommended in production** | `lib/site.ts` → `app/robots.ts`, `app/sitemap.ts`, OG image references in metadata | Canonical absolute origin used in `robots.txt`, `sitemap.xml`, and `<link rel="canonical">`-style URLs. **No trailing slash.** | `https://tokenlens.io` |
+| `NEXT_PUBLIC_VERCEL_URL` | Auto-set by Vercel | `lib/site.ts` fallback | Used only if `NEXT_PUBLIC_SITE_URL` is not set. Vercel injects host without scheme — `lib/site.ts` prefixes `https://`. | (auto) |
+
+Resolution order: `NEXT_PUBLIC_SITE_URL` → `NEXT_PUBLIC_VERCEL_URL` → `http://localhost:3000` (dev fallback). **TODO before public launch:** set `NEXT_PUBLIC_SITE_URL` so the sitemap and OG points at the real domain.
+
 ---
 
 ## 3 · Provider credentials (NOT env vars)
@@ -65,6 +74,10 @@ JWT_SECRET="REPLACE_ME_32_BYTES_BASE64"
 
 # Provider credential encryption (generate with: openssl rand -base64 32)
 ENCRYPTION_KEY="REPLACE_ME_32_BYTES_BASE64"
+
+# Recommended in production: canonical public origin (no trailing slash)
+# Used by robots.txt, sitemap.xml, and OG image absolute URLs
+# NEXT_PUBLIC_SITE_URL="https://tokenlens.io"
 
 # Optional: only for sub-path deploys
 # NEXT_PUBLIC_BASE_PATH=""
