@@ -1,178 +1,101 @@
-# TokenLens — Claude Code Guide
+# CLAUDE.md — Quick-start for Claude Code sessions
 
-> **Single source of truth for AI assistants working on this codebase.**
-> See `AI_CONTEXT.md` for the full engineering reference. This file is a quick-start summary.
-
----
-
-## Product Overview
-
-TokenLens is a **multi-provider AI Usage, Token Cost & Productivity Intelligence Dashboard**. It connects to admin APIs of major AI platforms and consolidates usage data, costs, and productivity metrics into one unified dashboard.
-
-**Current phase:** Phase 2A complete — real API connectors live for all providers. Anthropic has been live since Phase 1. OpenAI, GitHub Copilot, Cursor, and Microsoft Copilot connectors are fully implemented and ready to sync live data once credentials are added in Settings.
+> **Primary source of truth: [`AI_CONTEXT.md`](AI_CONTEXT.md).** Read that first.
+> This file is the short behavioural guide for AI agents working in the repo.
 
 ---
 
-## Tech Stack
+## 1 · Read first
 
-| Layer | Technology | Version |
-|-------|-----------|---------|
-| Framework | Next.js App Router | **16.2.6** |
-| UI | React | **19.2.4** |
-| Language | TypeScript | 5.x (strict) |
-| Styling | Tailwind CSS | **v4** |
-| Components | shadcn/ui + Base UI | Latest |
-| Charts | **Recharts only** | 3.8.1 |
-| Icons | **Lucide React only** | 1.14.0 |
-| Database | PostgreSQL + Prisma | 5.22.0 |
-| Auth | bcryptjs + JWT | httpOnly cookies, 7-day expiry |
-| Encryption | AES-256-GCM | Node crypto — provider keys only |
-| Validation | Zod | 4.4.3 |
+1. [`AI_CONTEXT.md`](AI_CONTEXT.md) — current state, tech stack, route inventory, provider readiness, engineering rules, GTM honesty rules.
+2. [`docs/DOCS_INDEX.md`](docs/DOCS_INDEX.md) — map of all other docs.
+
+If `AI_CONTEXT.md` and any older file disagree, **`AI_CONTEXT.md` wins**.
 
 ---
 
-## Design System
+## 2 · Stack one-liner
 
-- **Sidebar bg:** `#050810` always — never change
-- **Page bg:** `#060a12` dark / `#f0f2f7` light
-- **Primary accent:** Emerald `#10b981`
-- **Secondary accent:** Cyan `#06b6d4`
-- **Never use purple** — that is Claude.ai's brand color
-- **Fonts:** `font-sans` = Plus Jakarta Sans, `font-data` = JetBrains Mono (ALL numbers/costs/tokens)
-- **Charts:** Recharts only — use `CHART_COLORS` from `lib/table-styles.ts`
-- **Icons:** Lucide React only
+Next.js **16.2.6** App Router · React 19.2.4 · TypeScript strict · Tailwind v4 · Prisma 5.22 (PostgreSQL) · JWT in `tl_session` cookie · Recharts + Lucide only.
+
+There is **no** `middleware.ts`. Next.js 16 uses **`proxy.ts`** at the repo root.
 
 ---
 
-## Absolute Rules
+## 3 · Hard "do not" rules
 
-1. **Auth + scope:** Every API route must call `requireSession()` and filter ALL DB queries by `organizationId`
-2. **No content storage:** Never store prompt text or code content — metadata only (tokens, costs, model names, dates)
-3. **Charts:** Recharts only. **Icons:** Lucide React only
-4. **DB:** Never modify Phase 1 tables — new tables are additive only
-5. **Demo data:** Non-Anthropic providers show demo data from `seed.ts` until real credentials are added. Once a provider is connected and synced, live data replaces demo data automatically
-6. **Design:** Emerald + cyan accents only — never purple
-
----
-
-## Current Phase Status
-
-| Phase | Status | Description |
-|-------|--------|-------------|
-| Phase 1 | ✅ Complete | Anthropic Admin API — Claude + Claude Code live data |
-| Phase 2A | ✅ Complete | All provider UI + real API connectors for OpenAI, GitHub Copilot, Cursor, Microsoft Copilot |
-| Phase 2B | 🔜 Next | Governance — Alerts, Reports, Audit Logs, Notifications |
-| Phase 3 | 🔜 Planned | AI ROI, Suggestions engine |
+| Do not | Why |
+|---|---|
+| Expose dashboard routes publicly | `proxy.ts` allow-list controls this. See `AI_CONTEXT.md §3` before editing. |
+| Skip `requireSession()` in any protected API route | Source of truth for data security. Filter every query by `organizationId`. |
+| Store prompt text, AI responses, or code content | Privacy-by-design. Metadata only. |
+| Use purple in the dashboard | Claude.ai's brand colour. Emerald + cyan only. |
+| Use a chart lib other than Recharts | Locked-in chart system. Use `CHART_COLORS` from `lib/table-styles.ts`. |
+| Use an icon lib other than Lucide React | Same reason. |
+| Redesign the Signal Gallery marketing theme | Out of scope for any non-design task. |
+| Change `next.config.ts` security headers | Production hardening. |
+| Modify Phase 1 Prisma tables | Live data depends on them. New columns OK via migration; new tables OK; existing columns no. |
 
 ---
 
-## Provider Architecture
+## 4 · GTM honesty rules
 
-8 providers in `modules/providers/registry.ts`:
+Full list: [`docs/CLAIMS_AND_COPY_GUARDRAILS.md`](docs/CLAIMS_AND_COPY_GUARDRAILS.md). Short version:
 
-| Provider | Key | Category | Real Connector |
-|----------|-----|----------|---------------|
-| Anthropic | `anthropic` | `api_spend` | ✅ Live |
-| OpenAI | `openai` | `api_spend` | ✅ Live |
-| Gemini | `gemini` | `api_spend` | ⚠️ Limited (no admin API) |
-| Perplexity | `perplexity` | `api_spend` | ⚠️ Limited (no admin API) |
-| Claude Code | `claude_code` | `developer_ai` | ✅ Live (uses Anthropic) |
-| GitHub Copilot | `github_copilot` | `developer_ai` | ✅ Live |
-| Cursor | `cursor` | `developer_ai` | ✅ Live |
-| Microsoft Copilot | `microsoft_copilot` | `business_ai` | ✅ Live |
+- **Never** claim SOC 2 / ISO 27001 (not held).
+- **Never** add fake customers, logos, testimonials, certifications, or case studies.
+- **Never** claim "live across all providers" — only Anthropic + Claude Code are verifiably live.
+- **Never** claim "Slack/Teams/PagerDuty alerts shipped" — schema exists, delivery is not wired.
+- **Never** claim specific savings percentages (e.g. "15-30%", "12-22%") — unsourced.
+- **Never** claim "board-ready PDF reports" or "one-click reclaim" — not shipped.
+- **OK to say:** "implementation present; production validation pending", "Coming Soon", "Roadmap", "Preview".
 
 ---
 
-## Project Structure
+## 5 · Provider one-liner
+
+| | Production-live | Implementation present, needs verification | Limited (no admin API) |
+|---|---|---|---|
+| Providers | Anthropic / Claude · Claude Code | OpenAI · GitHub Copilot · Cursor · Microsoft 365 Copilot | Gemini · Perplexity |
+
+Full matrix: `AI_CONTEXT.md §5`.
+
+---
+
+## 6 · Route boundary one-liner
 
 ```
-app/(auth)/                     — Login page (no sidebar)
-app/(dashboard)/                — All dashboard pages (with sidebar)
-  dashboard/                    — Main dashboard
-  ai-users/, ai-teams/, ai-models/
-  developer-ai-tools/           — Overview + claude-code/, github-copilot/, cursor/
-  llm-spend/                    — Overview + claude/, openai/
-  business-productivity-ai/     — Overview + microsoft-copilot/
-  limitations/                  — Provider limits page
-  settings/                     — Provider config + sync
-  alerts/, reports/, audit-logs/, notifications/, roi/, suggestions/  — Coming Soon
-app/api/                        — API routes (all require requireSession())
-components/layout/              — AppSidebar, AppHeader
-components/dashboard/           — PageShell, SectionCard, StatCard, EmptyState, Skeletons
-lib/                            — prisma.ts, auth.ts, encryption.ts, table-styles.ts
-modules/providers/              — registry.ts, connector.interface.ts, per-provider connectors
-workers/                        — sync-*.worker.ts (one per provider)
-prisma/                         — schema.prisma, seed.ts
+PUBLIC:     13 marketing + /login + /signup + /api/auth/login + /api/auth/logout + static
+PROTECTED:  26 dashboard pages → 307→/login,  45 API routes → 401 JSON
 ```
+
+Full inventory: [`docs/URL_INVENTORY.md`](docs/URL_INVENTORY.md).
 
 ---
 
-## Key Component Patterns
-
-```tsx
-// Every dashboard page wraps content in PageShell
-<PageShell title="Page Title" subtitle="Description">
-  <StatCard label="Total Cost" value="$1,234" icon={DollarSign} iconColor="text-amber-500" iconBg="bg-amber-500/10" />
-  <SectionCard title="Chart Title" subtitle="Last 30 days">
-    {/* Recharts chart or table */}
-  </SectionCard>
-</PageShell>
-```
-
----
-
-## API Route Pattern
-
-```typescript
-import { NextResponse } from "next/server";
-import { requireSession } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
-
-export async function GET(req: Request) {
-  const session = await requireSession(); // throws 401 if not authed
-  const { organizationId } = session;     // ALWAYS scope by org
-
-  const data = await prisma.someTable.findMany({
-    where: { organizationId },            // NEVER omit this
-  });
-
-  return NextResponse.json({ data });
-}
-```
-
----
-
-## Navigation Routes (current — do not invent new routes)
-
-```
-/dashboard                              Live
-/ai-users, /ai-teams, /ai-models        Live
-/roi, /suggestions                      Coming Soon
-/developer-ai-tools                     Live (Overview)
-/developer-ai-tools/claude-code         Live
-/developer-ai-tools/github-copilot      Live
-/developer-ai-tools/cursor              Live
-/llm-spend                              Live (Overview)
-/llm-spend/claude                       Live
-/llm-spend/openai                       Live
-/limitations                            Live (Gemini + Perplexity shown here)
-/business-productivity-ai               Live (Overview)
-/business-productivity-ai/microsoft-copilot  Live
-/alerts, /reports, /audit-logs, /notifications  Coming Soon
-/settings                               Live
-```
-
----
-
-## Commands
+## 7 · Commands
 
 ```bash
-npm run dev           # Start dev server
-npm run db:push       # Push Prisma schema
-npm run db:seed       # Seed demo data
-npm run db:studio     # Open Prisma Studio
-npm run db:generate   # Regenerate Prisma client
-docker-compose up -d  # Start PostgreSQL
+npm run dev             # http://localhost:3000
+npm run build           # production build
+npm run lint            # eslint
+npx tsc --noEmit        # type check
+npm run db:push         # push Prisma schema
+npm run db:seed         # seed demo data (admin@tokenlens.ai / admin123)
+npm run db:studio       # Prisma Studio
+docker-compose up -d    # start PostgreSQL
 ```
 
-**Demo login:** `admin@tokenlens.ai` / `admin123`
+---
+
+## 8 · Common tasks → which docs to read
+
+| Task | Read |
+|---|---|
+| Add a new portal page | `AI_CONTEXT.md §11`, `docs/URL_INVENTORY.md` |
+| Add a new API route | `AI_CONTEXT.md §3, §8`, the `// API Route Pattern` block in AI_CONTEXT |
+| Touch marketing copy | `docs/CLAIMS_AND_COPY_GUARDRAILS.md`, `docs/WEBSITE_CONTENT.md` |
+| Add a new provider | `AI_CONTEXT.md §5`, `modules/providers/registry.ts`, `docs/PROVIDER_SETUP_GUIDE.md` |
+| Plan a release | `docs/ROADMAP.md`, `docs/PROJECT_STATUS.md` |
+| Deploy | `docs/DEPLOYMENT.md`, `docs/ENVIRONMENT.md` |
+| Audit GTM readiness | `docs/GTM_READINESS.md` |
