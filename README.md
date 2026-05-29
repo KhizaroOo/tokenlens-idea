@@ -167,7 +167,7 @@ Walk-through: [`docs/PROVIDER_SETUP_GUIDE.md`](docs/PROVIDER_SETUP_GUIDE.md).
 | Area | Limitation |
 |---|---|
 | Gemini, Perplexity | No aggregate admin usage API; shown on `/limitations` |
-| `/contact`, `/demo` | POST endpoints live and **verified end-to-end against Neon Postgres** — rows land, honeypot drops bots, rate limit fires at 5/min/IP, ipHash stored (no raw IP). **Email notification + calendar booking not yet wired** — sales must check the `ContactSubmission` / `DemoRequest` tables until an email provider + calendar are configured. Mailto fallback shown as secondary. |
+| `/contact`, `/demo` | POST endpoints live and **verified end-to-end against Neon Postgres**. Email notifier wired via Resend (`lib/email.ts`) — fire-and-forget, never blocks lead capture. Currently 🟡 Implemented — pending `RESEND_API_KEY` + `EMAIL_FROM` + `LEAD_NOTIFICATION_EMAIL` env to deliver. Until then, submissions still persist; row's `notificationError` flags missing config. Calendar booking still manual. |
 | `/resources` | Article cards are previews labeled COMING SOON; MDX/blog collection not yet shipped |
 | Alerts / Reports / Audit Logs / Notifications | Placeholder pages; Prisma tables exist, delivery channels not wired |
 | ROI / Suggestions | Placeholder pages; intelligence-score Prisma tables exist, scoring engine pending |

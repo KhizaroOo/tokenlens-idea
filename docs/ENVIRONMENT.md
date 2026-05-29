@@ -27,6 +27,18 @@
 
 Both default to unset (server mode, root path).
 
+## 1-bis · Email notifications (used by `lib/email.ts`)
+
+Required to actually **deliver** the lead-capture notification emails. If any of the three are missing, lead capture still succeeds (rows persist to Postgres), the API returns 200, and the row is flagged with `notificationError = "missing_config:<which>"` for triage. No raw secret is ever logged.
+
+| Variable | Required for email? | Used by | Purpose | Example placeholder |
+|---|---|---|---|---|
+| `RESEND_API_KEY` | **Yes** | `lib/email.ts` | Authenticates with Resend. Get one at [resend.com/api-keys](https://resend.com/api-keys). | `re_xxxxxxxx_xxxxxxxxxxxxxxxxxxxxxxxx` |
+| `EMAIL_FROM` | **Yes** | `lib/email.ts` | The `From:` address on every outbound email. Must use a verified Resend domain. | `TokenLens <noreply@tokenlens.io>` |
+| `LEAD_NOTIFICATION_EMAIL` | **Yes** | `app/api/contact`, `app/api/demo-request` | Where new lead alerts are delivered (sales inbox / shared address). | `sales@tokenlens.io` |
+
+If none are set, the implementation is "Implemented — pending email env configuration": forms work, rows persist, but no email goes out.
+
 ## 2-bis · Canonical site URL (public, used by `lib/site.ts`)
 
 | Variable | Required? | Used by | Purpose | Example placeholder |
@@ -82,6 +94,13 @@ ENCRYPTION_KEY="REPLACE_ME_32_BYTES_BASE64"
 # Used by robots.txt, sitemap.xml, and OG image absolute URLs
 # NEXT_PUBLIC_SITE_URL="https://tokenlens.io"
 
+# Optional but recommended: email notifications for lead capture (Resend)
+# Until all three are set, forms still work — submissions land in Postgres
+# but no email is sent. The row gets notificationError flagged.
+# RESEND_API_KEY="re_REPLACE_ME"
+# EMAIL_FROM="TokenLens <noreply@tokenlens.io>"
+# LEAD_NOTIFICATION_EMAIL="sales@tokenlens.io"
+
 # Optional: only for sub-path deploys
 # NEXT_PUBLIC_BASE_PATH=""
 
@@ -133,7 +152,7 @@ These commonly appear in similar projects but are **not used** by TokenLens toda
 - `NEXTAUTH_*` — not used (custom JWT auth, not NextAuth.js).
 - `STRIPE_*` — billing not implemented.
 - `SENTRY_DSN` — error tracking not wired (recommended for production).
-- `SLACK_WEBHOOK_URL`, `RESEND_API_KEY`, etc. — notification channels not wired (Phase 2B).
+- `SLACK_WEBHOOK_URL` — Slack channel notifications not wired (Phase 2B). (`RESEND_API_KEY` IS used today — see §1-bis above.)
 - `OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc. — provider creds are stored in DB, not env.
 
 If you add any of these in the future, document them here and update `lib/` accordingly.

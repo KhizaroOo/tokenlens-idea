@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { clientIp, hashIp } from "@/lib/ip-hash";
+import { sendEmail, leadNotificationRecipient } from "@/lib/email";
 
 /**
  * POST /api/demo-request — public endpoint.
@@ -67,9 +68,10 @@ export async function POST(req: NextRequest) {
 
   const { name, workEmail, company, role, companySize, aiToolsUsed, preferredTime, message } = parsed.data;
 
-  // 4 · Persist
+  // 4 · Persist (must succeed before anything else)
+  let row: { id: string; createdAt: Date };
   try {
-    await prisma.demoRequest.create({
+    row = await prisma.demoRequest.create({
       data: {
         name,
         workEmail,
@@ -83,15 +85,102 @@ export async function POST(req: NextRequest) {
         userAgent:     req.headers.get("user-agent"),
         ipHash:        hashIp(ip),
       },
-      select: { id: true },
+      select: { id: true, createdAt: true },
     });
-    return NextResponse.json(SAFE_SUCCESS, { status: 200 });
   } catch (err) {
     console.error("[POST /api/demo-request] persistence error", err);
     return NextResponse.json(
       { success: false, error: "Could not save request. Please email us at sales@tokenlens.io." },
       { status: 500 }
     );
+  }
+
+  // 5 · Best-effort email notification — NEVER blocks lead capture.
+  void notifyDemo(row.id, row.createdAt, {
+    name, workEmail, company,
+    role: blank(role), companySize: blank(companySize),
+    aiToolsUsed: blank(aiToolsUsed), preferredTime: blank(preferredTime),
+    message: blank(message),
+  });
+
+  return NextResponse.json(SAFE_SUCCESS, { status: 200 });
+}
+
+/**
+ * Fire-and-forget email notifier for new demo requests.
+ * Updates the row with notificationSentAt / notificationError outcome.
+ */
+async function notifyDemo(
+  id:        string,
+  createdAt: Date,
+  data: {
+    name:          string;
+    workEmail:     string;
+    company:       string;
+    role:          string | null;
+    companySize:   string | null;
+    aiToolsUsed:   string | null;
+    preferredTime: string | null;
+    message:       string | null;
+  }
+): Promise<void> {
+  const recipient = leadNotificationRecipient();
+  if (!recipient) {
+    console.warn("[POST /api/demo-request] LEAD_NOTIFICATION_EMAIL not set — skipping email notification (row id:", id, ")");
+    await prisma.demoRequest.update({
+      where: { id },
+      data:  { notificationError: "missing_config:LEAD_NOTIFICATION_EMAIL" },
+    }).catch(() => {});
+    return;
+  }
+
+  const subject = `New TokenLens demo request — ${data.company}`;
+  const lines = [
+    `Source:         /demo`,
+    `Request id:     ${id}`,
+    `Received:       ${createdAt.toISOString()}`,
+    ``,
+    `Name:           ${data.name}`,
+    `Work email:     ${data.workEmail}`,
+    `Company:        ${data.company}`,
+    `Role:           ${data.role ?? "—"}`,
+    `Company size:   ${data.companySize ?? "—"}`,
+    `AI tools used:  ${data.aiToolsUsed ?? "—"}`,
+    `Preferred time: ${data.preferredTime ?? "—"}`,
+    ``,
+    `Message:`,
+    data.message ?? "(none)",
+  ];
+  const text = lines.join("\n");
+  const html = `<pre style="font-family:JetBrains Mono,Menlo,Consolas,monospace;font-size:13px;white-space:pre-wrap;">${
+    text.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]!))
+  }</pre>`;
+
+  const result = await sendEmail({
+    to:      recipient,
+    subject,
+    text,
+    html,
+    replyTo: data.workEmail,
+  });
+
+  if (result.sent) {
+    await prisma.demoRequest.update({
+      where: { id },
+      data:  { notificationSentAt: new Date(), notificationError: null },
+    }).catch(() => {});
+  } else if (result.reason === "missing_config") {
+    console.warn(`[POST /api/demo-request] email skipped — missing config: ${result.missing.join(", ")} (row id: ${id})`);
+    await prisma.demoRequest.update({
+      where: { id },
+      data:  { notificationError: `missing_config:${result.missing.join(",")}` },
+    }).catch(() => {});
+  } else {
+    console.warn(`[POST /api/demo-request] email send_failed (row id: ${id}): ${result.error}`);
+    await prisma.demoRequest.update({
+      where: { id },
+      data:  { notificationError: `send_failed:${result.error}`.slice(0, 500) },
+    }).catch(() => {});
   }
 }
 

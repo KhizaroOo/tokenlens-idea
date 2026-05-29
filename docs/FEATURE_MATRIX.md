@@ -27,8 +27,9 @@ User-facing claim allowed?
 | Security | `/security` | — | 🟢 Live | Yes | Pillars + FAQ; honest about SOC 2 status |
 | Resources | `/resources` | — | 🟠 Preview | Soft (with COMING SOON label) | 6 article previews; no MDX/blog collection yet |
 | About | `/about` | — | 🟢 Live | Yes | Manifesto + 6 product values |
-| Contact form | `/contact` | `/api/contact` (POST) | 🟢 Live (verified) | Yes | Zod-validated, rate-limited 5/min/IP (verified firing at request #6), honeypot `website` (verified silently dropped, no DB row), persisted to `ContactSubmission` on **Neon**. **Stores `ipHash` only, never raw IP** (confirmed via DB inspection). Email notification not yet wired — submissions land in DB. Mailto fallback shown as secondary. |
-| Demo form | `/demo` | `/api/demo-request` (POST) | 🟢 Live (verified) | Yes | Same protections + `preferredTime` + `companySize`. Persisted to `DemoRequest` on Neon. End-to-end verified. Calendar booking not wired — sales team contacts the submitter manually based on `preferredTime`. |
+| Contact form | `/contact` | `/api/contact` (POST) | 🟢 Live (verified) | Yes | Zod-validated, rate-limited 5/min/IP, honeypot `website`, persisted to `ContactSubmission` on **Neon**. Stores `ipHash` only. Email notifier wired via Resend (`lib/email.ts`); outcome tracked in `notificationSentAt` / `notificationError`. **Email-send itself: 🟡 Implemented — pending env config.** |
+| Demo form | `/demo` | `/api/demo-request` (POST) | 🟢 Live (verified) | Yes | Same protections + `preferredTime` + `companySize` + email pipeline. Calendar booking not wired. |
+| Lead-capture email notification | `/api/contact`, `/api/demo-request` | (via `lib/email.ts` / Resend) | 🟡 Implemented — needs env config | Soft — "Implementation present; email delivery pending env configuration" | Code in repo, missing-config path tested (succeeds + flags `notificationError`). Goes 🟢 once `RESEND_API_KEY`, `EMAIL_FROM`, `LEAD_NOTIFICATION_EMAIL` are set. |
 | Privacy Policy | `/privacy` | — | 🟢 Live | Yes | 7 sections |
 | Terms of Service | `/terms` | — | 🟢 Live | Yes | 7 sections |
 | Signal Gallery theme | `app/(marketing)/layout.tsx` + `globals.css` | — | 🟢 Live | Yes | Editorial museum aesthetic, light + dark mode |

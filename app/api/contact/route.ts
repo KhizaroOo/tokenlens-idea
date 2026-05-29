@@ -3,6 +3,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { clientIp, hashIp } from "@/lib/ip-hash";
+import { sendEmail, leadNotificationRecipient } from "@/lib/email";
 
 /**
  * POST /api/contact — public endpoint.
@@ -66,9 +67,10 @@ export async function POST(req: NextRequest) {
 
   const { name, workEmail, company, role, companySize, aiToolsUsed, message } = parsed.data;
 
-  // 4 · Persist
+  // 4 · Persist (must succeed before we attempt anything else)
+  let row: { id: string; createdAt: Date };
   try {
-    await prisma.contactSubmission.create({
+    row = await prisma.contactSubmission.create({
       data: {
         name,
         workEmail,
@@ -81,15 +83,103 @@ export async function POST(req: NextRequest) {
         userAgent:   req.headers.get("user-agent"),
         ipHash:      hashIp(ip),
       },
-      select: { id: true },
+      select: { id: true, createdAt: true },
     });
-    return NextResponse.json(SAFE_SUCCESS, { status: 200 });
   } catch (err) {
     console.error("[POST /api/contact] persistence error", err);
     return NextResponse.json(
       { success: false, error: "Could not save submission. Please email us at sales@tokenlens.io." },
       { status: 500 }
     );
+  }
+
+  // 5 · Best-effort email notification — NEVER blocks lead capture.
+  //     If RESEND_API_KEY / EMAIL_FROM / LEAD_NOTIFICATION_EMAIL are unset,
+  //     sendEmail returns `{ sent:false, reason:"missing_config" }`. We
+  //     record the outcome on the row for triage but always return success.
+  void notifyContact(row.id, row.createdAt, {
+    name, workEmail, company: blank(company), role: blank(role),
+    companySize: blank(companySize), aiToolsUsed: blank(aiToolsUsed), message,
+  });
+
+  return NextResponse.json(SAFE_SUCCESS, { status: 200 });
+}
+
+/**
+ * Fire-and-forget email notifier for new contact submissions.
+ * Updates the row with notificationSentAt / notificationError outcome.
+ * Errors are swallowed — the user has already seen a success response.
+ */
+async function notifyContact(
+  id:        string,
+  createdAt: Date,
+  data: {
+    name:        string;
+    workEmail:   string;
+    company:     string | null;
+    role:        string | null;
+    companySize: string | null;
+    aiToolsUsed: string | null;
+    message:     string;
+  }
+): Promise<void> {
+  const recipient = leadNotificationRecipient();
+  if (!recipient) {
+    console.warn("[POST /api/contact] LEAD_NOTIFICATION_EMAIL not set — skipping email notification (row id:", id, ")");
+    await prisma.contactSubmission.update({
+      where: { id },
+      data:  { notificationError: "missing_config:LEAD_NOTIFICATION_EMAIL" },
+    }).catch(() => {});
+    return;
+  }
+
+  const subjectLabel = data.company ?? data.name;
+  const subject      = `New TokenLens contact submission — ${subjectLabel}`;
+  const lines = [
+    `Source:        /contact`,
+    `Submission id: ${id}`,
+    `Received:      ${createdAt.toISOString()}`,
+    ``,
+    `Name:          ${data.name}`,
+    `Work email:    ${data.workEmail}`,
+    `Company:       ${data.company ?? "—"}`,
+    `Role:          ${data.role ?? "—"}`,
+    `Company size:  ${data.companySize ?? "—"}`,
+    `AI tools used: ${data.aiToolsUsed ?? "—"}`,
+    ``,
+    `Message:`,
+    data.message,
+  ];
+  const text = lines.join("\n");
+  const html = `<pre style="font-family:JetBrains Mono,Menlo,Consolas,monospace;font-size:13px;white-space:pre-wrap;">${
+    text.replace(/[&<>]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]!))
+  }</pre>`;
+
+  const result = await sendEmail({
+    to:      recipient,
+    subject,
+    text,
+    html,
+    replyTo: data.workEmail,
+  });
+
+  if (result.sent) {
+    await prisma.contactSubmission.update({
+      where: { id },
+      data:  { notificationSentAt: new Date(), notificationError: null },
+    }).catch(() => {});
+  } else if (result.reason === "missing_config") {
+    console.warn(`[POST /api/contact] email skipped — missing config: ${result.missing.join(", ")} (row id: ${id})`);
+    await prisma.contactSubmission.update({
+      where: { id },
+      data:  { notificationError: `missing_config:${result.missing.join(",")}` },
+    }).catch(() => {});
+  } else {
+    console.warn(`[POST /api/contact] email send_failed (row id: ${id}): ${result.error}`);
+    await prisma.contactSubmission.update({
+      where: { id },
+      data:  { notificationError: `send_failed:${result.error}`.slice(0, 500) },
+    }).catch(() => {});
   }
 }
 

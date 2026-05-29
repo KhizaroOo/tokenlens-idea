@@ -712,6 +712,10 @@ model ContactSubmission {
   handledAt DateTime?
   handledBy String?
 
+  // Email notification outcome (best-effort; failure does NOT block the submission)
+  notificationSentAt DateTime?
+  notificationError  String?   @db.Text
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -741,6 +745,10 @@ model DemoRequest {
   scheduledAt DateTime?
   handledAt   DateTime?
   handledBy   String?
+
+  // Email notification outcome (best-effort; failure does NOT block the request)
+  notificationSentAt DateTime?
+  notificationError  String?   @db.Text
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

@@ -59,6 +59,7 @@ The full app needs a Node runtime + PostgreSQL. Any of these work:
 | PostgreSQL 14+ | Data store | Neon (serverless), Supabase, AWS RDS, etc. |
 | HTTPS / TLS | Cookie security | Host typically handles this |
 | Background scheduler (cron) | Periodic provider syncs | Host cron, GitHub Actions cron, or a worker like Railway / Render cron jobs |
+| **Transactional email** | Lead-capture notification delivery (`lib/email.ts` calls Resend) | **Resend** (`RESEND_API_KEY`); requires a verified sending domain |
 | Error tracking (recommended) | Production observability | Sentry, Logtail, Datadog |
 | Object storage (optional) | Future PDF report exports | S3, R2 |
 

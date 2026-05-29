@@ -109,11 +109,12 @@
 |---|---|---|---|
 | 1 | Build `/api/contact` + persist | 🔴 Critical | ✅ **Done & verified** — `/api/contact` + `ContactSubmission`; valid POST → row in Neon, honeypot dropped, rate limit fires, ipHash only |
 | 2 | Build `/api/demo-request` + persist | 🔴 Critical | ✅ **Done & verified** — `/api/demo-request` + `DemoRequest` with `preferredTime`; valid POST → row in Neon |
+| 2-bis | Wire email notification pipeline | 🟡 Important | ✅ **Implemented** — Resend wired via `lib/email.ts`, both endpoints fire-and-forget, outcome tracked in `notificationSentAt` / `notificationError`. **Pending `RESEND_API_KEY` + `EMAIL_FROM` + `LEAD_NOTIFICATION_EMAIL` env config** to actually deliver. |
 | 3 | Generate `robots.txt`, `sitemap.xml`, OG image | 🟡 Important | ✅ Done — `app/robots.ts`, `app/sitemap.ts`, `app/og/route.tsx` |
 | 4 | Build `/api/auth/signup` + connect existing UI | 🔴 Critical | ❌ Pending |
 | 5 | Validate OpenAI, GH Copilot, Cursor, M365 connectors against at least one real customer tenant each | 🔴 Critical | ❌ Pending |
 | 6 | Set up production hosting (Vercel/Railway/Render/etc.) | 🔴 Critical | ❌ Pending |
-| 7 | Wire email delivery (Resend/Postmark/SES) so contact + demo submissions notify sales team | 🔴 Critical | ❌ Pending |
+| 7 | Wire email delivery (Resend) so contact + demo submissions notify sales team | 🟡 Important | ✅ Implementation done — pending `RESEND_API_KEY`/`EMAIL_FROM`/`LEAD_NOTIFICATION_EMAIL` env config |
 | 8 | Wire calendar booking (Cal.com/Calendly) so `/demo` returns a real time-slot link | 🟡 Important | ❌ Pending |
 | 9 | Set `NEXT_PUBLIC_SITE_URL` in production env | 🟡 Important | ❌ Pending |
 | 10 | Add admin triage UI for `ContactSubmission` / `DemoRequest` | 🟡 Important | ❌ Pending |

@@ -128,8 +128,9 @@ Per-endpoint detail: [`URL_INVENTORY.md`](URL_INVENTORY.md).
 
 | Feature | Status | Notes |
 |---|---|---|
-| `/contact` form | 🟢 **Live (verified against Neon)** | POSTs to `/api/contact`. Zod-validated, rate-limited (5/min/IP, **rate limit confirmed firing**), honeypot-protected (hidden `website` field — drop confirmed in DB), persisted to `ContactSubmission`. Stores **only `ipHash`** (SHA-256 of `IP + JWT_SECRET`), never raw IP. Mailto fallback shown as secondary path. **Email delivery not wired** — submissions land in DB only. |
-| `/demo` form | 🟢 **Live (verified against Neon)** | POSTs to `/api/demo-request`. Same protections + honeypot + ipHash. Persisted to `DemoRequest` with `preferredTime`, `companySize`. Success: "Demo request received. Our team will contact you to schedule a time." **No calendar integration** — sales team contacts manually. |
+| `/contact` form | 🟢 **Live (verified against Neon)** | POSTs to `/api/contact`. Zod-validated, rate-limited (5/min/IP), honeypot-protected, persisted to `ContactSubmission`. Stores only `ipHash`. **Email notification wired** via Resend (`lib/email.ts`); outcome tracked on `notificationSentAt` / `notificationError`. **Currently 🟡 Implemented — pending email env configuration** (`RESEND_API_KEY` / `EMAIL_FROM` / `LEAD_NOTIFICATION_EMAIL` not yet set; rows still land, missing-config path verified). |
+| `/demo` form | 🟢 **Live (verified against Neon)** | POSTs to `/api/demo-request`. Same protections + email pipeline + tracking columns. Persisted to `DemoRequest` with `preferredTime`, `companySize`. **No calendar integration** — sales team contacts manually based on `preferredTime`. |
+| Lead-capture email notifications | 🟡 **Implemented — pending email env configuration** | `lib/email.ts` wired into both endpoints; missing-config path tested (returns success, persists row, logs safe warning, sets `notificationError = "missing_config:..."`). Will go 🟢 Live once `RESEND_API_KEY` + `EMAIL_FROM` + `LEAD_NOTIFICATION_EMAIL` are set in prod env. |
 | `/signup` | 🟠 Preview | UI present; no `/api/auth/signup` route. |
 | Newsletter | 🚫 Not built | Implicit in `/resources` CTA. |
 
