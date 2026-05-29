@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import { LanguageProvider } from "@/contexts/LanguageContext";
+import { SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -19,6 +20,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "TokenLens — AI Usage Intelligence",
   description: "Track AI token usage, costs, and team productivity across Claude, OpenAI, GitHub Copilot, Cursor, and Microsoft Copilot — all in one dashboard.",
   keywords: ["AI", "Claude", "OpenAI", "GitHub Copilot", "Cursor", "Microsoft Copilot", "token", "cost", "analytics", "dashboard", "LLM spend"],

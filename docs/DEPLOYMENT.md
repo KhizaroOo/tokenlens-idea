@@ -106,6 +106,20 @@ NEXT_OUTPUT_MODE=export npm run build
 
 ---
 
+## 6-bis · ⚠ Pending schema migration before next deploy
+
+The lead-capture launch added two new Prisma models — `ContactSubmission` and `DemoRequest` (see `prisma/schema.prisma` lines ~695+). The Prisma client has been regenerated locally, but the **database has not been migrated yet**.
+
+Before deploying the API endpoints, run **one of** the following against the target database:
+
+| Environment | Command | Notes |
+|---|---|---|
+| Local dev | `npm run db:push` | Idempotent. Creates the two new tables. Safe to re-run. |
+| Production (no migrations folder yet) | `npm run db:push` once | First-time setup only. Switch to `prisma migrate` for subsequent changes. |
+| Production (with migrations folder) | `npx prisma migrate dev --name add_lead_capture_tables` locally → commit → `npx prisma migrate deploy` in CI | Recommended for any environment with real customer data. |
+
+Until the migration is applied, `POST /api/contact` and `POST /api/demo-request` will return `500` on submit (the form's error path falls back to the mailto link in the footnote).
+
 ## 7 · Database / Prisma deploy
 
 ```bash

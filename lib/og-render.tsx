@@ -1,26 +1,23 @@
 import { ImageResponse } from "next/og";
 
 /**
- * GET /og — dynamic OpenGraph image (1200×630).
+ * Shared OpenGraph renderer for TokenLens.
  *
- * Signal Gallery look in dark mode: museum-black background, emerald lens
- * accent, JetBrains-Mono-style mono caption. No external assets, no fonts —
- * pure CSS via inline styles so it renders identically across all hosts.
+ * Returns a 1200×630 dark-mode Signal Gallery card with:
+ *   - Eyebrow + TokenLens wordmark
+ *   - Big editorial headline (provided by caller)
+ *   - Sub-headline footnote
+ *   - Corner ticks, emerald + cyan radial glows
  *
- * Accepts an optional `?title=` query parameter to override the default
- * headline (useful for per-page OG images later).
+ * Used by `app/opengraph-image.tsx`, `app/(marketing)/contact/opengraph-image.tsx`,
+ * and `app/(marketing)/demo/opengraph-image.tsx`. No external assets or fonts.
  */
-
-export const runtime = "edge";
-
-const W = 1200;
-const H = 630;
-
-export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url);
-  const title    = (searchParams.get("title") ?? "The operating lens for company-wide AI.").slice(0, 140);
-  const eyebrow  = "EXHIBIT 01 · AI OPERATING LAYER";
-  const footnote = "TOKENLENS · COST · ADOPTION · GOVERNANCE";
+export function renderOg(opts: {
+  eyebrow?:  string;
+  title:     string;
+  subtitle?: string;
+}): ImageResponse {
+  const { eyebrow = "TOKENLENS · AI OPERATING LAYER", title, subtitle } = opts;
 
   return new ImageResponse(
     (
@@ -56,10 +53,10 @@ export async function GET(req: Request) {
           }}
         />
         {/* Corner ticks */}
-        <div style={{ position: "absolute", top: 28, left: 28,  width: 18, height: 18, borderTop: "2px solid #10A56F", borderLeft: "2px solid #10A56F", display: "flex" }} />
-        <div style={{ position: "absolute", top: 28, right: 28, width: 18, height: 18, borderTop: "2px solid #10A56F", borderRight: "2px solid #10A56F", display: "flex" }} />
-        <div style={{ position: "absolute", bottom: 28, left: 28,  width: 18, height: 18, borderBottom: "2px solid #10A56F", borderLeft: "2px solid #10A56F", display: "flex" }} />
-        <div style={{ position: "absolute", bottom: 28, right: 28, width: 18, height: 18, borderBottom: "2px solid #10A56F", borderRight: "2px solid #10A56F", display: "flex" }} />
+        <div style={{ position: "absolute", top: 28, left: 28,    width: 18, height: 18, borderTop: "2px solid #10A56F", borderLeft:  "2px solid #10A56F", display: "flex" }} />
+        <div style={{ position: "absolute", top: 28, right: 28,   width: 18, height: 18, borderTop: "2px solid #10A56F", borderRight: "2px solid #10A56F", display: "flex" }} />
+        <div style={{ position: "absolute", bottom: 28, left: 28, width: 18, height: 18, borderBottom: "2px solid #10A56F", borderLeft:  "2px solid #10A56F", display: "flex" }} />
+        <div style={{ position: "absolute", bottom: 28, right: 28,width: 18, height: 18, borderBottom: "2px solid #10A56F", borderRight: "2px solid #10A56F", display: "flex" }} />
 
         {/* Eyebrow */}
         <div
@@ -96,10 +93,10 @@ export async function GET(req: Request) {
         {/* Headline */}
         <div
           style={{
-            marginTop: 56,
-            fontSize: 80,
+            marginTop: 48,
+            fontSize: subtitle ? 64 : 80,
             fontWeight: 800,
-            lineHeight: 1.02,
+            lineHeight: 1.05,
             letterSpacing: "-0.035em",
             maxWidth: 980,
             color: "#F4F1E8",
@@ -109,7 +106,23 @@ export async function GET(req: Request) {
           {title}
         </div>
 
-        {/* Spacer pushes footer down */}
+        {/* Subtitle */}
+        {subtitle && (
+          <div
+            style={{
+              marginTop: 24,
+              fontSize: 30,
+              lineHeight: 1.25,
+              color: "rgba(244,241,232,0.72)",
+              maxWidth: 980,
+              display: "flex",
+            }}
+          >
+            {subtitle}
+          </div>
+        )}
+
+        {/* Spacer */}
         <div style={{ flexGrow: 1, display: "flex" }} />
 
         {/* Footer strip */}
@@ -128,12 +141,12 @@ export async function GET(req: Request) {
         >
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
             <div style={{ width: 6, height: 6, borderRadius: 999, background: "#10A56F", display: "flex" }} />
-            {footnote}
+            COST · ADOPTION · GOVERNANCE
           </div>
           <div style={{ display: "flex" }}>LENS · v2.1</div>
         </div>
       </div>
     ),
-    { width: W, height: H }
+    { width: 1200, height: 630 }
   );
 }

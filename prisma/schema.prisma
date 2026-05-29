@@ -695,17 +695,17 @@ model DataRetentionPolicy {
 model ContactSubmission {
   id          String  @id @default(cuid())
   name        String
-  email       String
+  workEmail   String
   company     String?
   role        String?
   companySize String?
-  aiTools     String? @db.Text
+  aiToolsUsed String? @db.Text
   message     String  @db.Text
 
-  // Provenance
-  sourceIp  String?
+  // Provenance (privacy-preserving — no raw IP)
+  source    String? // referring page or utm source
   userAgent String? @db.Text
-  referer   String?
+  ipHash    String? // SHA-256(IP + server salt); never raw IP
 
   // Triage workflow
   status    String    @default("new") // new | reviewed | replied | archived | spam
@@ -716,23 +716,25 @@ model ContactSubmission {
   updatedAt DateTime @updatedAt
 
   @@index([status, createdAt])
-  @@index([email])
+  @@index([workEmail])
 }
 
 /// A submission from the public /demo form.
 model DemoRequest {
-  id      String  @id @default(cuid())
-  name    String
-  email   String
-  company String?
-  role    String?
-  aiTools String? @db.Text
-  message String? @db.Text
+  id            String  @id @default(cuid())
+  name          String
+  workEmail     String
+  company       String
+  role          String?
+  companySize   String?
+  aiToolsUsed   String? @db.Text
+  preferredTime String? // free-form text from the submitter (e.g. "weekday mornings PT")
+  message       String? @db.Text
 
-  // Provenance
-  sourceIp  String?
+  // Provenance (privacy-preserving — no raw IP)
+  source    String?
   userAgent String? @db.Text
-  referer   String?
+  ipHash    String?
 
   // Booking workflow
   status      String    @default("new") // new | contacted | scheduled | completed | no_show | archived
@@ -744,5 +746,5 @@ model DemoRequest {
   updatedAt DateTime @updatedAt
 
   @@index([status, createdAt])
-  @@index([email])
+  @@index([workEmail])
 }

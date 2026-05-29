@@ -17,9 +17,9 @@ export const metadata: Metadata = {
     description:
       "A twenty-minute live walkthrough of the AI operating dashboard, against your provider mix.",
     type: "website",
-    images: [{ url: "/og?title=See%20TokenLens%20applied%20to%20your%20AI%20stack.", width: 1200, height: 630 }],
+    // OG image auto-wired by sibling `opengraph-image.tsx`.
   },
-  twitter: { card: "summary_large_image", images: ["/og?title=See%20TokenLens%20applied%20to%20your%20AI%20stack."] },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {

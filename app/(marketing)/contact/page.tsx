@@ -18,13 +18,15 @@ export default function ContactPage() {
 
     const fd = new FormData(e.currentTarget);
     const payload = {
-      name:        String(fd.get("name")    ?? "").trim(),
-      email:       String(fd.get("email")   ?? "").trim(),
-      company:     String(fd.get("company") ?? "").trim(),
-      role:        String(fd.get("role")    ?? "").trim(),
-      companySize: String(fd.get("size")    ?? "").trim(),
-      aiTools:     String(fd.get("tools")   ?? "").trim(),
-      message:     String(fd.get("message") ?? "").trim(),
+      name:        String(fd.get("name")        ?? "").trim(),
+      workEmail:   String(fd.get("workEmail")   ?? "").trim(),
+      company:     String(fd.get("company")     ?? "").trim(),
+      role:        String(fd.get("role")        ?? "").trim(),
+      companySize: String(fd.get("companySize") ?? "").trim(),
+      aiToolsUsed: String(fd.get("aiToolsUsed") ?? "").trim(),
+      message:     String(fd.get("message")     ?? "").trim(),
+      // Honeypot — must stay empty. Bots fill anything that looks like a URL field.
+      website:     String(fd.get("website")     ?? ""),
     };
 
     try {
@@ -120,7 +122,7 @@ export default function ContactPage() {
                 <CheckCircle2 className="mx-auto h-10 w-10 text-[var(--sg-signal)]" />
                 <p className="mt-4 sg-display text-2xl text-[var(--sg-text)]">Message received.</p>
                 <p className="mt-3 text-sm text-[var(--sg-text-soft)] leading-relaxed max-w-md mx-auto">
-                  Our team has your message. A real human will reply within one business day.
+                  Our team will review it and respond soon.
                 </p>
                 <p className="mt-5 text-xs text-[var(--sg-text-mute)] leading-relaxed max-w-md mx-auto">
                   Need to reach us urgently? Email{" "}
@@ -130,29 +132,44 @@ export default function ContactPage() {
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="border sg-line bg-[var(--sg-bg)] p-7 lg:p-9 space-y-4">
+              <form onSubmit={handleSubmit} className="border sg-line bg-[var(--sg-bg)] p-7 lg:p-9 space-y-4" noValidate>
                 {state === "error" && errMsg && (
                   <div role="alert" className="border border-[var(--sg-risk)] bg-[var(--sg-risk)]/5 p-3 text-xs text-[var(--sg-risk)] leading-relaxed">
                     {errMsg}
                   </div>
                 )}
+
+                {/* Honeypot — hidden from real users, attractive to bots.
+                    A real submission must leave this empty; if filled, the
+                    server silently drops the request and still returns 200. */}
+                <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", top: "auto", width: "1px", height: "1px", overflow: "hidden" }}>
+                  <label htmlFor="contact-website">Your website (leave blank)</label>
+                  <input
+                    id="contact-website"
+                    name="website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+                </div>
+
                 <div className="grid sm:grid-cols-2 gap-4">
-                  <div><label htmlFor="name"  className={LABEL}>NAME</label>       <input id="name"  name="name"  type="text"  required maxLength={200} className={INPUT} placeholder="Jane Doe" /></div>
-                  <div><label htmlFor="email" className={LABEL}>WORK EMAIL</label> <input id="email" name="email" type="email" required maxLength={254} className={INPUT} placeholder="jane@company.com" /></div>
+                  <div><label htmlFor="name"      className={LABEL}>NAME</label>       <input id="name"      name="name"      type="text"  required maxLength={200} autoComplete="name"          className={INPUT} placeholder="Jane Doe" /></div>
+                  <div><label htmlFor="workEmail" className={LABEL}>WORK EMAIL</label> <input id="workEmail" name="workEmail" type="email" required maxLength={254} autoComplete="email"         className={INPUT} placeholder="jane@company.com" /></div>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
-                  <div><label htmlFor="company" className={LABEL}>COMPANY</label> <input id="company" name="company" type="text" maxLength={200} className={INPUT} placeholder="Acme Inc." /></div>
-                  <div><label htmlFor="role"    className={LABEL}>ROLE</label>    <input id="role"    name="role"    type="text" maxLength={200} className={INPUT} placeholder="VP Engineering" /></div>
+                  <div><label htmlFor="company" className={LABEL}>COMPANY</label> <input id="company" name="company" type="text" maxLength={200} autoComplete="organization"       className={INPUT} placeholder="Acme Inc." /></div>
+                  <div><label htmlFor="role"    className={LABEL}>ROLE</label>    <input id="role"    name="role"    type="text" maxLength={200} autoComplete="organization-title" className={INPUT} placeholder="VP Engineering" /></div>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
-                    <label htmlFor="size" className={LABEL}>SIZE</label>
-                    <select id="size" name="size" className={INPUT} defaultValue="">
+                    <label htmlFor="companySize" className={LABEL}>SIZE</label>
+                    <select id="companySize" name="companySize" className={INPUT} defaultValue="">
                       <option value="" disabled>Select…</option>
                       <option>1–50</option><option>51–200</option><option>201–1,000</option><option>1,001–5,000</option><option>5,000+</option>
                     </select>
                   </div>
-                  <div><label htmlFor="tools" className={LABEL}>AI TOOLS USED</label> <input id="tools" name="tools" type="text" maxLength={2000} className={INPUT} placeholder="Claude, OpenAI, Copilot…" /></div>
+                  <div><label htmlFor="aiToolsUsed" className={LABEL}>AI TOOLS USED</label> <input id="aiToolsUsed" name="aiToolsUsed" type="text" maxLength={2000} className={INPUT} placeholder="Claude, OpenAI, Copilot…" /></div>
                 </div>
                 <div><label htmlFor="message" className={LABEL}>MESSAGE</label> <textarea id="message" name="message" rows={4} required maxLength={10000} className={INPUT} placeholder="What are you trying to solve?" /></div>
                 <button

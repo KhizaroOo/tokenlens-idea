@@ -50,12 +50,28 @@ const PUBLIC_API_PREFIXES = [
 ];
 
 function isPublicPath(pathname: string): boolean {
-  // Drop trailing slash for matching (e.g. "/about/" → "/about")
+  // 1. Next.js file-convention assets — opengraph-image, twitter-image, icon,
+  //    apple-icon. URLs may carry a content-hash suffix and live under any
+  //    route group (e.g. `/contact/opengraph-image-1a8v0t`). `includes` is the
+  //    most defensive check — these names never appear in real product URLs.
+  if (
+    pathname.includes("/opengraph-image") ||
+    pathname.includes("/twitter-image")   ||
+    pathname.endsWith("/icon")            ||
+    pathname.endsWith("/apple-icon")
+  ) {
+    return true;
+  }
+
+  // 2. Exact-match marketing + auth pages
   const normalized = pathname.length > 1 && pathname.endsWith("/")
     ? pathname.slice(0, -1)
     : pathname;
   if (PUBLIC_PAGES.has(normalized)) return true;
+
+  // 3. Public API prefixes
   if (PUBLIC_API_PREFIXES.some(p => pathname.startsWith(p))) return true;
+
   return false;
 }
 

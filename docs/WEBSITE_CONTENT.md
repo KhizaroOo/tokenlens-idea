@@ -162,10 +162,10 @@
 |---|---|
 | Purpose | Inbound contact form + direct email channels. |
 | Primary message | "Talk to the TokenLens team." |
-| Main sections | Hero · 3 inquiry-channel cards (sales/support/partnerships with mailto) · Form (preview) — banner says "PREVIEW FORM · Not yet connected to a backend" |
-| CTAs | Send message (preview), mailto links |
-| Status | 🟠 Preview |
-| Known TODOs | Wire `/api/contact` POST endpoint + DB persistence + email notification. Then remove the preview banner. |
+| Main sections | Hero · 3 inquiry-channel cards (sales/support/partnerships with mailto) · Form (live) with honeypot + state machine (idle/submitting/success/error) |
+| CTAs | Send message → `/api/contact`, mailto fallback footnote |
+| Status | 🟢 Live |
+| Known TODOs | Wire an email-delivery provider so submissions also notify sales by email (today they only persist to Postgres). |
 
 ### 3.11 · `/demo`
 
@@ -173,10 +173,10 @@
 |---|---|
 | Purpose | Demo booking entry. |
 | Primary message | "See TokenLens applied to your AI stack." |
-| Main sections | Hero (with `DashboardMockup` screenshot) · 6-item demo agenda · Schedule form (preview) — header chip says "PREVIEW" |
-| CTAs | Request Demo (preview), mailto to `sales@tokenlens.io?subject=Demo%20request` |
-| Status | 🟠 Preview |
-| Known TODOs | Wire `/api/demo-request` POST endpoint + Cal.com/Calendly integration. Then remove the preview chip. |
+| Main sections | Hero (with `DashboardMockup` screenshot) · 6-item demo agenda · Schedule form (live) — captures `preferredTime` + `companySize` + honeypot |
+| CTAs | Request Demo → `/api/demo-request`, mailto fallback to `sales@tokenlens.io?subject=Demo%20request` |
+| Status | 🟢 Live |
+| Known TODOs | Wire a calendar provider (Cal.com / Calendly / Google Calendar) so demos auto-book based on `preferredTime`. Until then, sales contacts manually. |
 
 ### 3.12 · `/privacy`
 

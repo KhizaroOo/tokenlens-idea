@@ -16,7 +16,7 @@
 | API routes — total | **49** |
 | API — public | 4 (`/api/auth/login`, `/api/auth/logout`, `/api/contact`, `/api/demo-request`) |
 | API — protected | 45 |
-| Special routes | `app/not-found.tsx`, `app/robots.ts`, `app/sitemap.ts`, `app/og/route.tsx`, `proxy.ts` |
+| Special routes | `app/not-found.tsx`, `app/robots.ts`, `app/sitemap.ts`, `app/opengraph-image.tsx` (+ per-page overrides), `proxy.ts` |
 
 ---
 
@@ -211,7 +211,7 @@ Both endpoints return 405 for GET/PUT/PATCH/DELETE.
 | `app/not-found.tsx` (served on any unmatched URL) | 404 page | 🟢 Live · 🌐 |
 | `app/robots.ts` → `/robots.txt` | Crawl rules — allows public routes, disallows `/api/*` and all dashboard routes | 🟢 Live · 🌐 |
 | `app/sitemap.ts` → `/sitemap.xml` | 15 public URLs (13 marketing + 2 auth) with lastmod / changefreq / priority | 🟢 Live · 🌐 |
-| `app/og/route.tsx` → `/og` | Dynamic 1200×630 OpenGraph image (edge runtime, `ImageResponse`). Accepts `?title=` override. Used by homepage + `/contact` + `/demo` metadata. | 🟢 Live · 🌐 |
+| `app/opengraph-image.tsx` → `/opengraph-image` (+ per-page overrides under `/contact` and `/demo`) | Dynamic 1200×630 OpenGraph image (edge runtime, `ImageResponse`). Next.js file convention auto-wires `<meta property="og:image">` and Twitter card. Shared renderer in `lib/og-render.tsx`. | 🟢 Live · 🌐 |
 | `proxy.ts` (`config.matcher`) | Edge auth gate — runs on every matched request | 🟢 Live |
 
 ---
@@ -226,7 +226,7 @@ Both endpoints return 405 for GET/PUT/PATCH/DELETE.
 │  2  auth pages:       /login, /signup
 │  2  auth APIs:        /api/auth/login, /api/auth/logout
 │  2  lead-capture APIs: /api/contact, /api/demo-request
-│  +  framework routes: /robots.txt, /sitemap.xml, /og
+│  +  framework routes: /robots.txt, /sitemap.xml, /opengraph-image (+ per-page overrides)
 │  +  static assets:    /_next/*, /favicon.ico, images
 │
 ├─ PROTECTED (tl_session JWT required) ──────────────────────────

@@ -19,9 +19,9 @@ export const metadata: Metadata = {
     description:
       "Sales, support, and partnerships for the TokenLens AI operating dashboard.",
     type: "website",
-    images: [{ url: "/og?title=Talk%20to%20the%20TokenLens%20team.", width: 1200, height: 630 }],
+    // OG image auto-wired by sibling `opengraph-image.tsx`.
   },
-  twitter: { card: "summary_large_image", images: ["/og?title=Talk%20to%20the%20TokenLens%20team."] },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {

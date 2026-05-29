@@ -27,8 +27,8 @@ User-facing claim allowed?
 | Security | `/security` | — | 🟢 Live | Yes | Pillars + FAQ; honest about SOC 2 status |
 | Resources | `/resources` | — | 🟠 Preview | Soft (with COMING SOON label) | 6 article previews; no MDX/blog collection yet |
 | About | `/about` | — | 🟢 Live | Yes | Manifesto + 6 product values |
-| Contact form | `/contact` | `/api/contact` (POST) | 🟢 Live | Yes | Zod-validated, rate-limited 5/min/IP, persisted to `ContactSubmission`. Email notification not yet wired — submissions land in DB. Mailto fallback shown as secondary. |
-| Demo form | `/demo` | `/api/demo-request` (POST) | 🟢 Live | Yes | Same protections, persisted to `DemoRequest`. Calendar booking not yet wired — sales team contacts the submitter manually. |
+| Contact form | `/contact` | `/api/contact` (POST) | 🟢 Live | Yes | Zod-validated, rate-limited 5/min/IP, honeypot (`website`), persisted to `ContactSubmission`. **Stores `ipHash` only, never raw IP.** Email notification not yet wired — submissions land in DB. Mailto fallback shown as secondary. |
+| Demo form | `/demo` | `/api/demo-request` (POST) | 🟢 Live | Yes | Same protections + `preferredTime` + `companySize`. Persisted to `DemoRequest`. Calendar booking not wired — sales team contacts the submitter manually based on `preferredTime`. |
 | Privacy Policy | `/privacy` | — | 🟢 Live | Yes | 7 sections |
 | Terms of Service | `/terms` | — | 🟢 Live | Yes | 7 sections |
 | Signal Gallery theme | `app/(marketing)/layout.tsx` + `globals.css` | — | 🟢 Live | Yes | Editorial museum aesthetic, light + dark mode |
@@ -180,8 +180,8 @@ User-facing claim allowed?
 | Viewport theme-color | 🟢 Live | Yes | Per-page |
 | `/robots.txt` via `app/robots.ts` | 🟢 Live | Yes | Allows public routes, disallows `/api/*` and all dashboard routes |
 | `/sitemap.xml` via `app/sitemap.ts` | 🟢 Live | Yes | 15 public URLs with lastmod / changefreq / priority |
-| Dynamic OG image (`/og`) via `next/og` | 🟢 Live | Yes | 1200×630, edge runtime, Signal Gallery style. `?title=` query overrides headline. Used by `/`, `/contact`, `/demo` metadata. |
-| `NEXT_PUBLIC_SITE_URL` env var for canonical URLs | 🟡 Recommended in prod | Yes | Falls back to `http://localhost:3000` in dev; falls back to `https://$VERCEL_URL` on Vercel previews |
+| OG image via `opengraph-image.tsx` convention | 🟢 Live | Yes | 1200×630, edge runtime, Signal Gallery dark mode. Default at `app/opengraph-image.tsx`; per-page overrides for `/contact` + `/demo`. Shared renderer in `lib/og-render.tsx`. |
+| `NEXT_PUBLIC_SITE_URL` / `APP_URL` env for canonical URLs | 🟡 Recommended in prod | Yes | Resolution: explicit env → `NEXT_PUBLIC_VERCEL_URL` → `http://localhost:3000` (dev) → `https://tokenlens.ai` (prod placeholder) |
 
 ---
 

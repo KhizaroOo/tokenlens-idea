@@ -30,21 +30,14 @@ export const metadata: Metadata = {
       "Cost, adoption, productivity, and governance — across every AI provider — in one editorial dashboard.",
     type: "website",
     siteName: "TokenLens",
-    images: [
-      {
-        url: "/og",
-        width: 1200,
-        height: 630,
-        alt: "TokenLens — the operating lens for company-wide AI.",
-      },
-    ],
+    // OG image is auto-wired by `app/opengraph-image.tsx` (Next.js file convention).
+    // Per-page overrides live in their own opengraph-image.tsx siblings.
   },
   twitter: {
     card: "summary_large_image",
     title: "TokenLens — One operating lens for company-wide AI",
     description:
       "Cost, adoption, productivity, governance — across every AI provider.",
-    images: ["/og"],
   },
 };
 

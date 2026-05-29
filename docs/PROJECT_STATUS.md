@@ -128,8 +128,8 @@ Per-endpoint detail: [`URL_INVENTORY.md`](URL_INVENTORY.md).
 
 | Feature | Status | Notes |
 |---|---|---|
-| `/contact` form | 🟢 Live | POSTs to `/api/contact`. Zod-validated, rate-limited (5/min/IP), persisted to `ContactSubmission`. Mailto fallback shown as secondary path. **Email delivery not wired** — submissions land in DB only. |
-| `/demo` form | 🟢 Live | POSTs to `/api/demo-request`. Same protections. Persisted to `DemoRequest`. Success: "Demo request received. Our team will contact you to schedule a time." **No calendar integration** — sales team contacts manually. |
+| `/contact` form | 🟢 Live | POSTs to `/api/contact`. Zod-validated, rate-limited (5/min/IP), honeypot-protected (hidden `website` field), persisted to `ContactSubmission`. Stores **only `ipHash`** (SHA-256 of `IP + JWT_SECRET`), never raw IP. Mailto fallback shown as secondary path. **Email delivery not wired** — submissions land in DB only. |
+| `/demo` form | 🟢 Live | POSTs to `/api/demo-request`. Same protections + honeypot + ipHash. Persisted to `DemoRequest` with `preferredTime`, `companySize`. Success: "Demo request received. Our team will contact you to schedule a time." **No calendar integration** — sales team contacts manually. |
 | `/signup` | 🟠 Preview | UI present; no `/api/auth/signup` route. |
 | Newsletter | 🚫 Not built | Implicit in `/resources` CTA. |
 
@@ -156,8 +156,8 @@ Per-endpoint detail: [`URL_INVENTORY.md`](URL_INVENTORY.md).
 | Viewport theme-color | 🟢 Live |
 | `robots.txt` (via `app/robots.ts`) | 🟢 Live |
 | `sitemap.xml` (via `app/sitemap.ts`) | 🟢 Live |
-| Dynamic OG image (`/og` via `next/og` `ImageResponse`, 1200×630) | 🟢 Live — Signal Gallery style, edge runtime, accepts `?title=` override |
-| `NEXT_PUBLIC_SITE_URL` env var for canonical absolute URLs | 🟡 Recommended in prod (defaults to `http://localhost:3000` in dev) |
+| OG image (Next.js `opengraph-image.tsx` convention, 1200×630, edge runtime) | 🟢 Live — Signal Gallery style. Default at `app/opengraph-image.tsx`; per-page overrides for `/contact` and `/demo`. Shared renderer in `lib/og-render.tsx`. |
+| `NEXT_PUBLIC_SITE_URL` / `APP_URL` env var for canonical absolute URLs | 🟡 Recommended in prod (falls back to `https://tokenlens.ai` for prod builds; `http://localhost:3000` in dev) |
 
 ---
 

@@ -31,10 +31,13 @@ Both default to unset (server mode, root path).
 
 | Variable | Required? | Used by | Purpose | Example placeholder |
 |---|---|---|---|---|
-| `NEXT_PUBLIC_SITE_URL` | **Strongly recommended in production** | `lib/site.ts` → `app/robots.ts`, `app/sitemap.ts`, OG image references in metadata | Canonical absolute origin used in `robots.txt`, `sitemap.xml`, and `<link rel="canonical">`-style URLs. **No trailing slash.** | `https://tokenlens.io` |
-| `NEXT_PUBLIC_VERCEL_URL` | Auto-set by Vercel | `lib/site.ts` fallback | Used only if `NEXT_PUBLIC_SITE_URL` is not set. Vercel injects host without scheme — `lib/site.ts` prefixes `https://`. | (auto) |
+| `NEXT_PUBLIC_SITE_URL` | **Strongly recommended in production** | `lib/site.ts` → `app/robots.ts`, `app/sitemap.ts`, OG metadata | Canonical absolute origin used in `robots.txt`, `sitemap.xml`, and `<link rel="canonical">`-style URLs. **No trailing slash.** | `https://tokenlens.ai` |
+| `APP_URL` | Alias for `NEXT_PUBLIC_SITE_URL` | `lib/site.ts` | Some platforms (Heroku-style) prefer non-`NEXT_PUBLIC_` env names. Either one works. | `https://tokenlens.ai` |
+| `NEXT_PUBLIC_VERCEL_URL` | Auto-set by Vercel | `lib/site.ts` fallback | Used only if neither of the above is set. Vercel injects host without scheme — `lib/site.ts` prefixes `https://`. | (auto) |
 
-Resolution order: `NEXT_PUBLIC_SITE_URL` → `NEXT_PUBLIC_VERCEL_URL` → `http://localhost:3000` (dev fallback). **TODO before public launch:** set `NEXT_PUBLIC_SITE_URL` so the sitemap and OG points at the real domain.
+Resolution order: `NEXT_PUBLIC_SITE_URL` / `APP_URL` → `NEXT_PUBLIC_VERCEL_URL` → `http://localhost:3000` (dev) → `https://tokenlens.ai` (prod placeholder).
+
+**TODO before public launch:** set `NEXT_PUBLIC_SITE_URL` so the sitemap, robots, and OG image references point at the actual canonical domain. Until then, production builds with no env will use the `https://tokenlens.ai` placeholder.
 
 ---
 

@@ -27,12 +27,16 @@ export default function DemoPage() {
 
     const fd = new FormData(e.currentTarget);
     const payload = {
-      name:    String(fd.get("name")    ?? "").trim(),
-      email:   String(fd.get("email")   ?? "").trim(),
-      company: String(fd.get("company") ?? "").trim(),
-      role:    String(fd.get("role")    ?? "").trim(),
-      aiTools: String(fd.get("tools")   ?? "").trim(),
-      message: String(fd.get("msg")     ?? "").trim(),
+      name:          String(fd.get("name")          ?? "").trim(),
+      workEmail:     String(fd.get("workEmail")     ?? "").trim(),
+      company:       String(fd.get("company")       ?? "").trim(),
+      role:          String(fd.get("role")          ?? "").trim(),
+      companySize:   String(fd.get("companySize")   ?? "").trim(),
+      aiToolsUsed:   String(fd.get("aiToolsUsed")   ?? "").trim(),
+      preferredTime: String(fd.get("preferredTime") ?? "").trim(),
+      message:       String(fd.get("message")       ?? "").trim(),
+      // Honeypot — must stay empty
+      website:       String(fd.get("website")       ?? ""),
     };
 
     try {
@@ -157,7 +161,7 @@ export default function DemoPage() {
                 </p>
               </div>
             ) : (
-              <form onSubmit={handleSubmit} className="border sg-line bg-[var(--sg-panel)] p-7 lg:p-9 space-y-4">
+              <form onSubmit={handleSubmit} className="border sg-line bg-[var(--sg-panel)] p-7 lg:p-9 space-y-4" noValidate>
                 <div className="flex items-center gap-2 mb-1">
                   <CalendarDays className="h-4 w-4 text-[var(--sg-signal)]" />
                   <span className="sg-caption text-[var(--sg-text-mute)]">DEMO REQUEST FORM</span>
@@ -167,16 +171,39 @@ export default function DemoPage() {
                     {errMsg}
                   </div>
                 )}
+
+                {/* Honeypot — hidden from real users */}
+                <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", top: "auto", width: "1px", height: "1px", overflow: "hidden" }}>
+                  <label htmlFor="demo-website">Your website (leave blank)</label>
+                  <input
+                    id="demo-website"
+                    name="website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                  />
+                </div>
+
                 <div className="grid sm:grid-cols-2 gap-4">
-                  <div><label htmlFor="name"  className={LABEL}>NAME</label>       <input id="name"  name="name"  type="text"  required maxLength={200} className={INPUT} placeholder="Jane Doe" /></div>
-                  <div><label htmlFor="email" className={LABEL}>WORK EMAIL</label> <input id="email" name="email" type="email" required maxLength={254} className={INPUT} placeholder="jane@company.com" /></div>
+                  <div><label htmlFor="name"      className={LABEL}>NAME</label>       <input id="name"      name="name"      type="text"  required maxLength={200} autoComplete="name"          className={INPUT} placeholder="Jane Doe" /></div>
+                  <div><label htmlFor="workEmail" className={LABEL}>WORK EMAIL</label> <input id="workEmail" name="workEmail" type="email" required maxLength={254} autoComplete="email"         className={INPUT} placeholder="jane@company.com" /></div>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
-                  <div><label htmlFor="company" className={LABEL}>COMPANY</label> <input id="company" name="company" type="text" maxLength={200} className={INPUT} placeholder="Acme Inc." /></div>
-                  <div><label htmlFor="role"    className={LABEL}>ROLE</label>    <input id="role"    name="role"    type="text" maxLength={200} className={INPUT} placeholder="VP Engineering / CFO" /></div>
+                  <div><label htmlFor="company" className={LABEL}>COMPANY</label> <input id="company" name="company" type="text" required maxLength={200} autoComplete="organization"       className={INPUT} placeholder="Acme Inc." /></div>
+                  <div><label htmlFor="role"    className={LABEL}>ROLE</label>    <input id="role"    name="role"    type="text"          maxLength={200} autoComplete="organization-title" className={INPUT} placeholder="VP Engineering / CFO" /></div>
                 </div>
-                <div><label htmlFor="tools" className={LABEL}>AI TOOLS YOU CURRENTLY PAY FOR</label> <input id="tools" name="tools" type="text" maxLength={2000} className={INPUT} placeholder="Claude, OpenAI, GitHub Copilot…" /></div>
-                <div><label htmlFor="msg" className={LABEL}>WHAT MAKES THIS DEMO WORTH YOUR TIME?</label> <textarea id="msg" name="msg" rows={3} maxLength={10000} className={INPUT} placeholder="The biggest gap in our AI cost visibility is…" /></div>
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div>
+                    <label htmlFor="companySize" className={LABEL}>SIZE</label>
+                    <select id="companySize" name="companySize" className={INPUT} defaultValue="">
+                      <option value="" disabled>Select…</option>
+                      <option>1–50</option><option>51–200</option><option>201–1,000</option><option>1,001–5,000</option><option>5,000+</option>
+                    </select>
+                  </div>
+                  <div><label htmlFor="preferredTime" className={LABEL}>PREFERRED TIME</label> <input id="preferredTime" name="preferredTime" type="text" maxLength={500} className={INPUT} placeholder="Weekday mornings PT" /></div>
+                </div>
+                <div><label htmlFor="aiToolsUsed" className={LABEL}>AI TOOLS YOU CURRENTLY PAY FOR</label> <input id="aiToolsUsed" name="aiToolsUsed" type="text" maxLength={2000} className={INPUT} placeholder="Claude, OpenAI, GitHub Copilot…" /></div>
+                <div><label htmlFor="message" className={LABEL}>WHAT MAKES THIS DEMO WORTH YOUR TIME?</label> <textarea id="message" name="message" rows={3} maxLength={10000} className={INPUT} placeholder="The biggest gap in our AI cost visibility is…" /></div>
                 <button
                   type="submit"
                   disabled={state === "submitting"}

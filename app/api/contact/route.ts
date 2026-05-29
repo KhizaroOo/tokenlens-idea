@@ -2,84 +2,105 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { checkRateLimit } from "@/lib/rate-limit";
+import { clientIp, hashIp } from "@/lib/ip-hash";
 
 /**
  * POST /api/contact — public endpoint.
  *
- * Persists submissions from the public /contact form to ContactSubmission.
- * Returns 200 on success, 400 on validation error, 405 on wrong method,
- * 429 on rate-limit, 500 on persistence error.
- *
- * No email is sent — that wiring is intentionally out of scope until an
- * email provider (Resend/Postmark/SES) is configured via env. The mailto
- * fallback on the /contact page covers urgent inbound until then.
+ * - Validates with zod (name, workEmail, message required; rest optional).
+ * - Honeypot: hidden `website` field. If filled, return a safe 200 success
+ *   without storing anything — bots see the same response a human sees.
+ * - Rate-limited (5/min/IP) via the existing `checkRateLimit` util.
+ * - Persists to `ContactSubmission` (workEmail, company, role, etc.).
+ * - **No raw IP is stored** — only a SHA-256(`IP + JWT_SECRET`) fingerprint.
+ * - **No email is sent.** Submissions live in Postgres until an email
+ *   provider is configured. Sales team must triage from there.
  */
 
 const schema = z.object({
   name:        z.string().trim().min(1).max(200),
-  email:       z.string().trim().toLowerCase().email().max(254),
+  workEmail:   z.string().trim().toLowerCase().email().max(254),
   company:     z.string().trim().max(200).optional().or(z.literal("")),
   role:        z.string().trim().max(200).optional().or(z.literal("")),
   companySize: z.string().trim().max(50).optional().or(z.literal("")),
-  aiTools:     z.string().trim().max(2000).optional().or(z.literal("")),
+  aiToolsUsed: z.string().trim().max(2000).optional().or(z.literal("")),
   message:     z.string().trim().min(1).max(10000),
+  // Honeypot — must be empty. Bots auto-fill anything that looks like a URL field.
+  website:     z.string().max(500).optional().or(z.literal("")),
 });
 
-function emptyToNull(v: string | undefined | null): string | null {
-  return v && v.length > 0 ? v : null;
-}
+const SAFE_SUCCESS = {
+  success: true,
+  message: "Message received. Our team will review it and respond soon.",
+} as const;
+
+const blank = (v: string | undefined | null): string | null =>
+  v && v.length > 0 ? v : null;
 
 export async function POST(req: NextRequest) {
-  // Rate limit: 5 submissions per minute per IP (matches login-style guardrail)
-  const ip = req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
+  // 1 · Rate limit (5 submissions / minute / IP)
+  const ip = clientIp(req) ?? "unknown";
   const rl = checkRateLimit(`contact:${ip}`, 5, 60_000);
   if (!rl.allowed) {
     return NextResponse.json(
-      { error: "Too many submissions. Please try again shortly." },
+      { success: false, error: "Too many submissions. Please try again shortly." },
       { status: 429, headers: { "Retry-After": String(rl.retryAfter) } }
     );
   }
 
+  // 2 · Parse + validate
   const body = await req.json().catch(() => null);
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
     return NextResponse.json(
-      { error: "Invalid request", details: parsed.error.flatten() },
+      { success: false, error: "Invalid request", details: parsed.error.flatten() },
       { status: 400 }
     );
   }
 
-  const { name, email, company, role, companySize, aiTools, message } = parsed.data;
+  // 3 · Honeypot — if filled, pretend everything is fine and silently drop.
+  //     This is deliberate: returning 400 would teach bots to skip the field.
+  if (parsed.data.website && parsed.data.website.trim().length > 0) {
+    return NextResponse.json(SAFE_SUCCESS, { status: 200 });
+  }
 
+  const { name, workEmail, company, role, companySize, aiToolsUsed, message } = parsed.data;
+
+  // 4 · Persist
   try {
-    const row = await prisma.contactSubmission.create({
+    await prisma.contactSubmission.create({
       data: {
         name,
-        email,
-        company:     emptyToNull(company),
-        role:        emptyToNull(role),
-        companySize: emptyToNull(companySize),
-        aiTools:     emptyToNull(aiTools),
+        workEmail,
+        company:     blank(company),
+        role:        blank(role),
+        companySize: blank(companySize),
+        aiToolsUsed: blank(aiToolsUsed),
         message,
-        sourceIp:    ip === "unknown" ? null : ip,
-        userAgent:   req.headers.get("user-agent") ?? null,
-        referer:     req.headers.get("referer") ?? null,
+        source:      req.headers.get("referer"),
+        userAgent:   req.headers.get("user-agent"),
+        ipHash:      hashIp(ip),
       },
       select: { id: true },
     });
-
-    return NextResponse.json({ ok: true, id: row.id }, { status: 200 });
+    return NextResponse.json(SAFE_SUCCESS, { status: 200 });
   } catch (err) {
     console.error("[POST /api/contact] persistence error", err);
     return NextResponse.json(
-      { error: "Could not save submission. Please email us at sales@tokenlens.io." },
+      { success: false, error: "Could not save submission. Please email us at sales@tokenlens.io." },
       { status: 500 }
     );
   }
 }
 
-// Explicitly reject non-POST methods so a misconfigured client gets a clean 405.
-export function GET()    { return NextResponse.json({ error: "Method Not Allowed" }, { status: 405, headers: { Allow: "POST" } }); }
-export function PUT()    { return NextResponse.json({ error: "Method Not Allowed" }, { status: 405, headers: { Allow: "POST" } }); }
-export function PATCH()  { return NextResponse.json({ error: "Method Not Allowed" }, { status: 405, headers: { Allow: "POST" } }); }
-export function DELETE() { return NextResponse.json({ error: "Method Not Allowed" }, { status: 405, headers: { Allow: "POST" } }); }
+// Reject other methods explicitly — never imply a successful submission.
+function methodNotAllowed() {
+  return NextResponse.json(
+    { success: false, error: "Method Not Allowed" },
+    { status: 405, headers: { Allow: "POST" } }
+  );
+}
+export const GET    = methodNotAllowed;
+export const PUT    = methodNotAllowed;
+export const PATCH  = methodNotAllowed;
+export const DELETE = methodNotAllowed;
