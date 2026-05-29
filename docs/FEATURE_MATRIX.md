@@ -27,8 +27,8 @@ User-facing claim allowed?
 | Security | `/security` | — | 🟢 Live | Yes | Pillars + FAQ; honest about SOC 2 status |
 | Resources | `/resources` | — | 🟠 Preview | Soft (with COMING SOON label) | 6 article previews; no MDX/blog collection yet |
 | About | `/about` | — | 🟢 Live | Yes | Manifesto + 6 product values |
-| Contact form | `/contact` | `/api/contact` (POST) | 🟢 Live | Yes | Zod-validated, rate-limited 5/min/IP, honeypot (`website`), persisted to `ContactSubmission`. **Stores `ipHash` only, never raw IP.** Email notification not yet wired — submissions land in DB. Mailto fallback shown as secondary. |
-| Demo form | `/demo` | `/api/demo-request` (POST) | 🟢 Live | Yes | Same protections + `preferredTime` + `companySize`. Persisted to `DemoRequest`. Calendar booking not wired — sales team contacts the submitter manually based on `preferredTime`. |
+| Contact form | `/contact` | `/api/contact` (POST) | 🟢 Live (verified) | Yes | Zod-validated, rate-limited 5/min/IP (verified firing at request #6), honeypot `website` (verified silently dropped, no DB row), persisted to `ContactSubmission` on **Neon**. **Stores `ipHash` only, never raw IP** (confirmed via DB inspection). Email notification not yet wired — submissions land in DB. Mailto fallback shown as secondary. |
+| Demo form | `/demo` | `/api/demo-request` (POST) | 🟢 Live (verified) | Yes | Same protections + `preferredTime` + `companySize`. Persisted to `DemoRequest` on Neon. End-to-end verified. Calendar booking not wired — sales team contacts the submitter manually based on `preferredTime`. |
 | Privacy Policy | `/privacy` | — | 🟢 Live | Yes | 7 sections |
 | Terms of Service | `/terms` | — | 🟢 Live | Yes | 7 sections |
 | Signal Gallery theme | `app/(marketing)/layout.tsx` + `globals.css` | — | 🟢 Live | Yes | Editorial museum aesthetic, light + dark mode |

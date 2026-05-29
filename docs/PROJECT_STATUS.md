@@ -29,7 +29,7 @@
 | Dashboard portal | **7.5** | 20 of 26 routes 🟢 Live; 4 Phase 2B placeholders; 2 Phase 3 placeholders. |
 | API surface | **7.5** | 45 protected routes wired; `/api/contact` and `/api/demo-request` public lead-capture endpoints live with zod + rate-limit + Prisma persistence. |
 | Provider integrations | **6.5** | 2 of 8 providers verifiably live (Anthropic, Claude Code). 4 implemented but unverified. 2 limited. |
-| Forms / lead capture | **7.5** | Real `/api/contact` and `/api/demo-request` POST endpoints live, zod-validated, rate-limited, persisted via Prisma. Email/calendar delivery still manual until provider configured. |
+| Forms / lead capture | **8.5** | Real `/api/contact` and `/api/demo-request` POST endpoints **verified end-to-end against Neon** — valid POST → 200 + DB row landed; honeypot → 200 + no row; rate limit → 429 after 5/min; invalid email → 400; GET → 405. ipHash stored (not raw IP). Email/calendar delivery still manual until provider configured. |
 | Resources / blog | **3.5** | UI shipped; content collection not yet built. |
 | SEO | **9.0** | Metadata on all pages, OG/Twitter on homepage + contact + demo. `/robots.txt`, `/sitemap.xml`, and dynamic `/og` image all live. Set `NEXT_PUBLIC_SITE_URL` in prod for canonical absolute URLs. |
 | Deployment | **5.0** | Server build works; static-export config present; GH Pages workflow disabled. |
@@ -128,8 +128,8 @@ Per-endpoint detail: [`URL_INVENTORY.md`](URL_INVENTORY.md).
 
 | Feature | Status | Notes |
 |---|---|---|
-| `/contact` form | 🟢 Live | POSTs to `/api/contact`. Zod-validated, rate-limited (5/min/IP), honeypot-protected (hidden `website` field), persisted to `ContactSubmission`. Stores **only `ipHash`** (SHA-256 of `IP + JWT_SECRET`), never raw IP. Mailto fallback shown as secondary path. **Email delivery not wired** — submissions land in DB only. |
-| `/demo` form | 🟢 Live | POSTs to `/api/demo-request`. Same protections + honeypot + ipHash. Persisted to `DemoRequest` with `preferredTime`, `companySize`. Success: "Demo request received. Our team will contact you to schedule a time." **No calendar integration** — sales team contacts manually. |
+| `/contact` form | 🟢 **Live (verified against Neon)** | POSTs to `/api/contact`. Zod-validated, rate-limited (5/min/IP, **rate limit confirmed firing**), honeypot-protected (hidden `website` field — drop confirmed in DB), persisted to `ContactSubmission`. Stores **only `ipHash`** (SHA-256 of `IP + JWT_SECRET`), never raw IP. Mailto fallback shown as secondary path. **Email delivery not wired** — submissions land in DB only. |
+| `/demo` form | 🟢 **Live (verified against Neon)** | POSTs to `/api/demo-request`. Same protections + honeypot + ipHash. Persisted to `DemoRequest` with `preferredTime`, `companySize`. Success: "Demo request received. Our team will contact you to schedule a time." **No calendar integration** — sales team contacts manually. |
 | `/signup` | 🟠 Preview | UI present; no `/api/auth/signup` route. |
 | Newsletter | 🚫 Not built | Implicit in `/resources` CTA. |
 

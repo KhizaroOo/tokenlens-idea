@@ -3,7 +3,7 @@
 > **Source of truth for AI agents and future Claude Code sessions.**
 > If this file disagrees with a legacy `TOKENLENS_*.md` file at the repo root, **this file wins**. Those legacy files (`TOKENLENS_COMPLETE.md`, `TOKENLENS_FEATURES.md`, `TOKENLENS_HIGHLIGHTS.md`, `TOKENLENS_PROJECT_DOCUMENTATION.md`) are kept for history and should not be relied on for current state.
 
-**Last verified against repo:** 2026-05-28 *(updated after Phase 2B-c launch-blocker pass: lead-capture endpoints with honeypot + ipHash, robots/sitemap, per-page OG via `opengraph-image.tsx` convention)*
+**Last verified against repo:** 2026-05-29 *(lead-capture verified end-to-end against the live Neon database: ContactSubmission + DemoRequest rows confirmed, honeypot drops verified, ipHash present + no raw IP, rate limit triggers at 5/min/IP)*
 **Verified against:** `package.json`, `prisma/schema.prisma`, `app/(*)/`, `app/api/**`, `modules/providers/**`, `workers/**`, `proxy.ts`, `lib/auth.ts`.
 
 ---

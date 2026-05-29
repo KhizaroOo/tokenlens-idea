@@ -14,7 +14,7 @@ TokenLens gives organisations a single editorial dashboard for every AI tool the
 - **Phase 2A — 🟢 UI complete, 🟡 backend verification pending:** Multi-provider UI shipped for OpenAI, GitHub Copilot, Cursor, Microsoft 365 Copilot. Connector + sync-worker **code is in the repo**, but production validation against a real customer tenant is not yet confirmed. Non-Anthropic providers show seeded demo data until credentials are added in Settings.
 - **Phase 2B — 🔵 Coming Soon:** Alerts, Reports, Audit Logs, Notifications (placeholders shipped; data plumbing partial).
 - **Phase 3 — ⚪ Planned:** ROI dashboard, Recommendations/Suggestions engine, intelligence scoring (Prisma tables exist; UI is placeholder).
-- **Public marketing website — 🟢 Live (Signal Gallery theme).** `/contact` and `/demo` now POST to real persistence endpoints (`/api/contact`, `/api/demo-request`), with `robots.txt`, `sitemap.xml`, and a dynamic OG image (`/og`) all live. Email notification + calendar booking still manual; mailto fallback shown as secondary. `/resources` articles remain **previews** labeled COMING SOON.
+- **Public marketing website — 🟢 Live (Signal Gallery theme).** `/contact` and `/demo` POST to real persistence endpoints (`/api/contact`, `/api/demo-request`) — verified end-to-end against Neon Postgres. SEO infrastructure live: `robots.txt`, `sitemap.xml`, per-page OG images via `opengraph-image.tsx` convention. Email notification + calendar booking still manual; mailto fallback shown as secondary. `/resources` articles remain **previews** labeled COMING SOON.
 
 Full breakdown: [`docs/PROJECT_STATUS.md`](docs/PROJECT_STATUS.md).
 
@@ -167,7 +167,7 @@ Walk-through: [`docs/PROVIDER_SETUP_GUIDE.md`](docs/PROVIDER_SETUP_GUIDE.md).
 | Area | Limitation |
 |---|---|
 | Gemini, Perplexity | No aggregate admin usage API; shown on `/limitations` |
-| `/contact`, `/demo` | POST endpoints live and persist to DB. **Email notification + calendar booking not yet wired** — sales team must check submissions in Postgres until an email provider + calendar are configured. Mailto fallback shown as secondary. |
+| `/contact`, `/demo` | POST endpoints live and **verified end-to-end against Neon Postgres** — rows land, honeypot drops bots, rate limit fires at 5/min/IP, ipHash stored (no raw IP). **Email notification + calendar booking not yet wired** — sales must check the `ContactSubmission` / `DemoRequest` tables until an email provider + calendar are configured. Mailto fallback shown as secondary. |
 | `/resources` | Article cards are previews labeled COMING SOON; MDX/blog collection not yet shipped |
 | Alerts / Reports / Audit Logs / Notifications | Placeholder pages; Prisma tables exist, delivery channels not wired |
 | ROI / Suggestions | Placeholder pages; intelligence-score Prisma tables exist, scoring engine pending |

@@ -7,15 +7,15 @@
 
 ## 1 · Current GTM readiness score
 
-**Overall: 7.0 / 10** *(+0.5 after Phase 2B-c launch-blocker pass)*
+**Overall: 7.5 / 10** *(+0.5 — lead capture now verified end-to-end against the live Neon database; no longer a "needs migration" caveat)*
 
 | Audience | Readiness | Rationale |
 |---|---|---|
-| Internal stakeholders | **9.0 / 10** | Working portal, working marketing site, real Anthropic data. |
-| Investors / board | **8.5 / 10** | Strong narrative + working dashboard + lead-capture pipeline + sitemap/OG + honest roadmap. |
-| Design partners / pilot customers (Anthropic-only) | **8.0 / 10** | Phase 1 fully works for Anthropic Admin API users; lead capture now real. |
-| Design partners / pilot customers (multi-provider) | **5.5 / 10** | Connectors exist but production validation pending. Customers using OpenAI/Copilot/Cursor/M365 will likely uncover edge cases. |
-| Public paid customer launch | **5.5 / 10** | Lead capture unblocked. Still blocked by: multi-provider validation, `/api/auth/signup`, production hosting, email/calendar delivery, Phase 2B governance, content library. |
+| Internal stakeholders | **9.0 / 10** | Working portal, working marketing site, real Anthropic data, real lead capture. |
+| Investors / board | **9.0 / 10** | Strong narrative + working dashboard + **verified end-to-end lead-capture pipeline** + sitemap/OG + honest roadmap. |
+| Design partners / pilot customers (Anthropic-only) | **8.5 / 10** | Phase 1 fully works for Anthropic Admin API users; lead capture verified live. |
+| Design partners / pilot customers (multi-provider) | **5.5 / 10** | Connectors exist but production validation pending. |
+| Public paid customer launch | **6.0 / 10** | Lead capture verified. Still blocked by: multi-provider validation, `/api/auth/signup`, production hosting, email/calendar delivery, Phase 2B governance, content library. |
 
 ---
 
@@ -34,7 +34,7 @@
 
 ## 3 · What is NOT ready for public customer launch
 
-✅ `/contact` and `/demo` forms now POST to real endpoints (`/api/contact`, `/api/demo-request`) — submissions persist in Postgres (`ContactSubmission`, `DemoRequest`).
+✅ `/contact` and `/demo` forms now POST to real endpoints (`/api/contact`, `/api/demo-request`) — submissions persist to **Neon Postgres** (`ContactSubmission`, `DemoRequest`). End-to-end verified: valid POSTs land rows, honeypot drops bot submissions, rate limit fires at 5/min/IP, ipHash stored (no raw IP).
 ❌ Email notification + calendar booking still manual — submissions land in DB but no email is sent and no booking link is generated yet.
 ❌ `/signup` page has no `/api/auth/signup` endpoint.
 ❌ OpenAI, GitHub Copilot, Cursor, Microsoft 365 Copilot connectors are **implemented but not customer-validated**.
@@ -107,8 +107,8 @@
 
 | # | Blocker | Severity | Status |
 |---|---|---|---|
-| 1 | Build `/api/contact` + persist | 🔴 Critical | ✅ Done — `/api/contact` + `ContactSubmission` |
-| 2 | Build `/api/demo-request` + persist | 🔴 Critical | ✅ Done — `/api/demo-request` + `DemoRequest` |
+| 1 | Build `/api/contact` + persist | 🔴 Critical | ✅ **Done & verified** — `/api/contact` + `ContactSubmission`; valid POST → row in Neon, honeypot dropped, rate limit fires, ipHash only |
+| 2 | Build `/api/demo-request` + persist | 🔴 Critical | ✅ **Done & verified** — `/api/demo-request` + `DemoRequest` with `preferredTime`; valid POST → row in Neon |
 | 3 | Generate `robots.txt`, `sitemap.xml`, OG image | 🟡 Important | ✅ Done — `app/robots.ts`, `app/sitemap.ts`, `app/og/route.tsx` |
 | 4 | Build `/api/auth/signup` + connect existing UI | 🔴 Critical | ❌ Pending |
 | 5 | Validate OpenAI, GH Copilot, Cursor, M365 connectors against at least one real customer tenant each | 🔴 Critical | ❌ Pending |
